@@ -1,0 +1,309 @@
+﻿@model RSPP.Models.AccountModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>RSPP|Register</title>
+
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/font.css" rel="stylesheet" />
+    <link href="~/css/simple-line-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <style>
+        .container {
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            float: left;
+            min-height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
+    @*@Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")*@
+
+
+    @using (Html.BeginForm("AccountRegister", "Account", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="container">
+            <center>
+                <div style="margin-top: 175px">
+
+                    <div style="background-color:white; max-width: 400px; padding:30px; border-radius:4px; box-shadow: 0 17px 50px 0 rgba(0,0,0,0.19),0 12px 15px 0 rgba(0,0,0,0.24); overflow: hidden; opacity:0.9" class="text-left">
+
+                        <div class="logo"><big><b class="text-info"></b> </big>  <img src="~/images/nsclogo.png" height="100" width="120" style="margin-left:110px" /></div>
+                        <br />
+
+                        @*<div class="form-group">
+                                <div class="">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-at text-dark"></i></span>
+                                        <select class="form-control agency" required="required" id="txtagency" name="txtagency"></select>
+                                    </div>
+
+                                </div>
+                            </div>*@
+
+
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil-square text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.CompanyName, new { @class = "form-control", @required = "required", @placeholder = "Enter Company Name", @autocomplete = "off" })
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-at text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.UserEmail, new { @class = "form-control", @required = "required", @placeholder = "Enter Company Email", @autocomplete = "off" })
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-phone-square text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.PhoneNum, new { @class = "form-control", @required = "required", @placeholder = "Enter Phone Number", @autocomplete = "off" })
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-leaf text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.CompanyAddress, new { @class = "form-control", @required = "required", @placeholder = "Enter Company Address", @autocomplete = "off" })
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-key text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.Password, new { @class = "form-control", @required = "required", @placeholder = "Create Password", @autocomplete = "off", @type = "password" })
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-lock text-dark"></i></span>
+                                @Html.TextBoxFor(log => log.ConfirmPassword, new { @class = "form-control", @required = "required", @placeholder = "Confirm Password", @type = "password", @autocomplete = "off" })
+                            </div>
+
+                        </div>
+
+                        <br />
+
+
+                        <div id="RegDiv">
+
+                            <button class="col-lg-12 col-sm-12 col-xs-12 btn btn-success" type="button" id="btnregister" style="height:45px;"> Register </button>
+                            <span class="text-success" style="font-size:12px">Already have an account on this portal? <a href="/Account/Login" style="text-decoration:underline">Login here</a></span>
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+            </center>
+        </div>
+
+        <div style="display:none" id="loadingImage" class="loadingImage">
+            <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+            </div>
+        </div>
+
+        <div id="modalMapDialog" style="display: none">
+            <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+        </div>
+    }
+    <script src="~/js/jquery-3.3.1.js"></script>
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+
+    <script src="~/js/jquery.ui.widget.js"></script>
+    <script src="~/js/jquery.iframe-transport.js"></script>
+    <script src="~/js/select2.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2df9i_A809q2eQQizBb7UqSGXASsQHVQ&libraries=places"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/solid.css" integrity="sha384-+0VIRx+yz1WBcCTXBkVQYIBVNEFH1eP6Zknm16roZCyeNg2maWEpk/l/KsyFKs7G" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+
+    <script type="text/javascript">
+
+
+        google.maps.event.addDomListener(window, 'load', function () {
+            var options = {
+                componentRestrictions: { country: "ng" }
+            };
+            var places = new google.maps.places.Autocomplete(document.getElementById('CompanyAddress'), options);
+            google.maps.event.addListener(places, 'place_changed', function () {
+                var place = places.getPlace();
+                var address = place.formatted_address;
+                var latitude = place.geometry.location.lat();
+                var longitude = place.geometry.location.lng();
+                var mesg = "Location Address Is : " + address;
+                mesg += "\nLocation Latitude Is : " + latitude;
+                mesg += "\nLocation Longitude Is: " + longitude;
+                showMap(address, latitude, longitude);
+            });
+        });
+
+
+        function showMap(locationaddress, latitude, longitude) {
+            var markers = [];
+
+            $("#modalMapDialog").dialog({
+                modal: true,
+                title: "Address Location on Map",
+                width: 550,
+                hright: 400,
+                buttons: {
+                    Close: function () {
+                        $(this).dialog('close');
+                    },
+                    Okay: function () {
+                        //$('#secondDiv').show();
+                        $("#GPS").val(latitude + ',' + longitude);
+                        $(this).dialog('close');
+                    }
+                },
+                open: function () {
+
+                    google.maps.visualRefresh = true;
+                    var myCenter = new google.maps.LatLng(latitude, longitude);
+                    var mapCanvas = document.getElementById("MapContainer");
+                    var mapOptions = {
+                        center: myCenter,
+                        zoom: 14,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        panControl: true,
+                        zoomControl: true,
+                        mapTypeControl: true,
+                        scaleControl: true,
+                        streetViewControl: true,
+                        overviewMapControl: true,
+                        rotateControl: true,
+                        zoomControl: true,
+                        zoomControlOptions: {
+                            style: google.maps.ZoomControlStyle.SMALL
+                        },
+                        mapTypeControl: true,
+                        mapTypeControlOptions: {
+                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                            position: google.maps.ControlPosition.TOP_CENTER,
+                            mapTypeIds: [
+                                google.maps.MapTypeId.ROADMAP,
+                                google.maps.MapTypeId.TERRAIN,
+                                google.maps.MapTypeId.SATELLITE,
+                                google.maps.MapTypeId.HYBRID
+                            ]
+                        }
+                    };
+
+                    var map = new google.maps.Map(mapCanvas, mapOptions);
+                    var marker = new google.maps.Marker({ position: myCenter, animation: google.maps.Animation.BOUNCE });
+                    marker.setMap(map);
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: locationaddress
+                    });
+                    infowindow.open(map, marker);
+
+                    // Zoom to 9 when clicking on marker
+                    google.maps.event.addListener(marker, 'click', function () {
+                        map.setZoom(13);
+                        map.setCenter(marker.getPosition());
+                    });
+                }
+            });
+        }
+
+
+        $(document).ready(function () {
+            debugger;
+
+            $("#btnregister").click(function () {
+                debugger;
+                if ($("#formid").valid()) {
+                    $(".loadingImage").show();
+                    var email = $("#UserEmail").val();
+                    var PhoneNum = $("#PhoneNum").val();
+                    var CompanyAddress = $("#CompanyAddress").val();
+                    var Password = $("#Password").val();
+                    var ConfirmPassword = $("#ConfirmPassword").val()
+                    var CompanyName = $("#CompanyName").val();
+                    if (Password != ConfirmPassword) {
+                        $(".loadingImage").hide();
+                        alert("Password and Confirm Password do not match");
+                        return false;
+                    }
+
+                    $.post("/Account/AccountRegister", { Email: email, PhoneNbr: PhoneNum, Companyaddress: CompanyAddress, Passwrd: Password, Companyname: CompanyName }, function (data) {
+                        debugger;
+                        var status = data.status;
+                        var message = data.message;
+                        if (status === "success") {
+                            $(".loadingImage").hide();
+                            alert(message);
+                            window.location = "/Account/Login";
+                        } else {
+                            $(".loadingImage").hide();
+                            alert(message);
+                        }
+
+                    })
+
+
+
+                }
+            });
+
+
+        });
+    </script>
+</body>
+</html>

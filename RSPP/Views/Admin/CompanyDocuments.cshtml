@@ -1,0 +1,149 @@
+﻿@model List<RSPP.Models.DB.UploadedDocuments>
+
+    @{
+        ViewBag.Title = "Company Documents";
+        Layout = "~/Views/Shared/_ElaLayout.cshtml";
+    }
+
+
+    <div class="content">
+        <h2 class="lefty">@ViewBag.ApplicantName Document Library</h2>
+        <div class="righty">
+            <a href="@Url.Action("Companies")" class="btn btn-default">Back <i class="icon-arrow-left"></i></a>
+        </div>
+        <hr class="clear" />
+
+        <div class="">
+            <table class="table table-hover table-striped dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Document Type</th>
+                        <th style="width: 150px;">Document Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int i = 1;}
+                    @foreach (RSPP.Models.DB.UploadedDocuments doc in Model)
+                    {
+
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>@doc.DocumentName</td>
+                        <td>
+                            @if (doc.DocumentName.Contains(".pdf"))
+                            {
+                                <a href="javascript:FileView('@doc.DocumentSource')" class="list-group-item">
+                                    <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                         style="display: inline-block;" />
+                                </a>
+                            }
+                            else
+                            {
+                                <a href="javascript:FileView('@doc.DocumentSource')" class="list-group-item">
+                                    <img src="@(doc.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                         style="display: inline-block;" />
+                                </a>
+                            }
+                        </td>
+
+                        @*<td>
+                <a href="javascript:FileView('@doc.DocumentSource')" class="list-group-item">
+                    <img src="@(doc.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                         style="display: inline-block;" />
+                </a>
+
+            </td>
+        }*@
+                        @*@if (doc.DocumentSource.Contains(".pdf"))
+        {
+            <a href='@(doc.DocumentSource)' target="_blank">
+                <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                     style="max-height: 40px; max-width: 40px; display: inline-block;" />
+            </a>
+        }
+        else
+        {
+            <a href='@(doc.DocumentSource)' target="_blank" data-toggle="modal" role="button" class="imgSilent" data-name="@doc.DocumentName">
+                <img src="@(doc.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                     style="max-height: 40px; max-width: 40px; display: inline-block" />
+            </a>
+        }
+                        </td>*@
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- modal -->
+    <div class="modal fade" id="myModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="myModalBody">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        <h3 id="modal-title">Modal Title</h3>
+                    </div>
+                    <div class="modal-body" id="modalBody">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts{
+        <script type="text/javascript">
+            function Loading() {
+                var loading = '<div class="busy"><img src="~/images/spinning.gif" /></div>';
+                return loading;
+            }
+            $(function () {
+                
+                $("a.pop").click(function (e) {
+                    e.preventDefault();
+                    var url = $(this).attr("data-url");
+                    $("#myModalBody").html(Loading());
+                    $.get(url, function (data) {
+                        $("#myModalBody").html(data);
+                    });
+                });
+
+                $("a.extPop").click(function (e) {
+                    e.preventDefault();
+                    var src = $(this).attr("data-url");
+                    $("#modal-title").html("Document: " + $(this).data("name"));
+                    $("#modalBody").html(Loading());
+                    var image = '<img src="' + src + '" style="position: relative; width: 100%;" />';
+                    $("#modalBody").html(image);
+                });
+
+
+                $(".dataTable").dataTable({
+                    "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                    'iDisplayLength': 10,
+                    columnDefs: [{ orderable: false, "targets": [-1] }],
+                    "language": {
+                        "lengthMenu": "Display  _MENU_ records per page",
+                        "zeroRecords": "Nothing found - sorry",
+                        "info": "Showing page _PAGE_ of _PAGES_",
+                        "infoEmpty": "No records available",
+                        "infoFiltered": "(filtered from _MAX_ total records)"
+                    }
+                });
+            });
+
+            function FileView(docname) {
+                var url = window.location.origin + "/UploadedFiles/" + docname;
+                window.open(url, '_blank');
+            }
+
+        </script>
+    }

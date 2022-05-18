@@ -1,0 +1,712 @@
+﻿@{
+    ViewBag.Title = "Payment List";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+<div class="content">
+
+
+
+    <div class="row top_tiles">
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-info">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.BargeOperators </div>
+                <p>
+                    <b> Barge Operators</b>
+                </p>
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-warning">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CargoConsolidatorsDeConsolidators</div>
+                <p>
+                    <b> Cargo Consolidators/De-Consolidators</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.Chandling</div>
+                <p>
+                    <b> Chandlers</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-success">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.DryPortOperator</div>
+                <p>
+                    <b>Dry Port Operators</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.FreightForwardersClearingAgents</div>
+                <p>
+                    <b> Freight Forwarders and Clearing Agents</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-warning">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.HaulersTruckers</div>
+                <p>
+                    <b> Haulers/Truckers</b>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row top_tiles">
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-info">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ICD</div>
+                <p>
+                    <b>ICD</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-warning">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.LogististicsServiceProvider</div>
+                <p>
+                    <b>Logististics Service Providers</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.StevedoringWarehousing</div>
+                <p>
+                    <b>Stevedoring/Warehousing</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-success">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.SeaportTerminalOperator</div>
+                <p>
+                    <b> Seaport Terminal Operators</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.OffDockTerminalOperator</div>
+                <p>
+                    <b>Off Dock Terminal Operators</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-warning">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippersAssociation</div>
+                <p>
+                    <b> Shippers Association</b>
+                </p>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="row top_tiles">
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-info">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CargoSurveyor</div>
+                <p>
+                    <b>Cargo Surveyor</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-warning">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.IndividualCategory</div>
+                <p>
+                    <b>Individual Category (Importer & Exporter)</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CorperateCategory</div>
+                <p>
+                    <b>Corperate Category</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-success">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.OtherPortServiceProviders</div>
+                <p>
+                    <b>Other Port Service Providers</b>
+                </p>
+
+            </div>
+        </div>
+
+
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippingAgency</div>
+                <p>
+                    <b>Shipping Agency</b>
+                </p>
+
+            </div>
+        </div>
+        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+            <div class="alert alert-mini alert-danger">
+                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippingLine</div>
+                <p>
+                    <b>Shipping Line</b>
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel">
+                        <header class="panel-heading panel-border">
+                            <h3 class="text-primary"> payment Report </h3>
+
+                        </header>
+                        <div class="panel-body">
+
+
+                            <div class="col-md-12">
+                                <table class="table table-striped table-bordered" id="paymentsumary" style="font-size:small">
+                                    <thead>
+                                        <tr>
+                                            <th><b>Payment Category</b></th>
+                                            <th><b>Total</b> </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Barge Operators</td>
+                                            <td>@ViewBag.BargeOperators</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cargo Consolidators/De-Consolidators</td>
+                                            <td>@ViewBag.CargoConsolidatorsDeConsolidators</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Chandlers</td>
+                                            <td>@ViewBag.Chandling</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Dry Port Operators</td>
+                                            <td>@ViewBag.DryPortOperator</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Freight Forwarders and Clearing Agents</td>
+                                            <td>@ViewBag.FreightForwardersClearingAgents</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Haulers/Truckers</td>
+                                            <td>@ViewBag.HaulersTruckers</td>
+                                        </tr>
+                                        <tr>
+                                            <td>ICD</td>
+                                            <td>@ViewBag.ICD</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Logististics Service Providers</td>
+                                            <td>@ViewBag.LogististicsServiceProvider</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Stevedoring Warehousing</td>
+                                            <td>@ViewBag.StevedoringWarehousing</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Seaport Terminal Operators</td>
+                                            <td>@ViewBag.SeaportTerminalOperator</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Off Dock Terminal Operator</td>
+                                            <td>@ViewBag.OffDockTerminalOperator</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shippers Association</td>
+                                            <td>@ViewBag.ShippersAssociation</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shipping Agency</td>
+                                            <td>@ViewBag.ShippingAgency</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shipping Line</td>
+                                            <td>@ViewBag.ShippingLine</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Cargo Surveyor</td>
+                                            <td>@ViewBag.CargoSurveyor</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Individual Category (Importer & Exporter)</td>
+                                            <td>@ViewBag.IndividualCategory</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Corperate Category</td>
+                                            <td>@ViewBag.CorperateCategory</td>
+                                        <tr>
+                                            <td>Other Port Service Providers</td>
+                                            <td>@ViewBag.OtherPortServiceProviders</td>
+                                        </tr>
+
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th><b>Grand Total</b></th>
+                                            <th><b style="float:right">₦@ViewBag.GrandTotal</b></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <hr style="border: 1px solid white" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="piecontainer"></div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div id="barcontainer1" style="min-height:600px; margin: 0 auto"></div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top:10%">
+                                <div class="col-md-2">
+
+                                    <div class="input-group">
+
+                                        <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
+                                        <div><input type="date" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
+                                    </div>
+                                </div><div class="col-md-3">
+                                    <div class="input-group">
+                                        <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
+                                        <div><input type="date" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
+                                        <div class="input-group-addon" style="background-color:red">
+                                            <button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none"></button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <div class="input-group-addon" style="background-color:darkred">
+                                            <span class="fa fa-home"></span>
+                                        </div>
+                                        <div><input id="companyemail" name="companyemail" placeholder="search by company email" class="form-control companyemail" /></div>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <input type="button" class="btn btn-danger" id="all" name="all" value="Show All Record" />
+                                </div>
+                            </div><br /><br />
+
+
+
+
+
+                            <div class="row" style="margin-top:-100px">
+
+                                <div class="col-md-3">
+                                    <div class="input-group">
+                                        <select id="appstatus" name="appstatus" class="form-control">
+                                            <option disabled selected>--Search By Application Status--</option>
+                                            <option value="Processing">PROCESSING</option>
+                                            <option value="Approved">APPROVED</option>
+                                            <option value="Rejected">REJECTED</option>
+                                        </select>
+                                        <div class="input-group-addon" style="background-color:red">
+                                            <button id="clearbtn1" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none; color:white">Clear</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><br /><br /><br /><br />
+
+
+
+                            <div style="margin-top:-50px" class="col-md-12">
+                                <table class="table table-striped table-bordered" id="payment" style="font-size:small">
+                                    <thead>
+                                        <tr>
+                                            <th><strong>ApplicationID</strong> </th>
+                                            <th><strong>Remita Ref</strong> </th>
+                                            <th><strong>Application Type</strong> </th>
+                                            <th><strong>Payment Status</strong> </th>
+                                            <th><strong>Agency Name</strong> </th>
+                                            <th><strong>Company Email</strong> </th>
+                                            <th><strong>Total Amount</strong> </th>
+                                            <th><strong>Transaction Date</strong> </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron">
+        <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+            <div class="panel short-states">
+                <div class="panel-title">
+                </div>
+                <div class="panel-body img-circle" style="border-radius:100%">
+                    <table>
+                        <tr class="cell-">
+                            <td>
+                                <div style="color:darkred; font-weight:bold">₦</div>
+                            </td>
+
+                            <td>
+                                <div id="totalsum" style="font-weight:bold"></div>
+                            </td>
+
+                            <td style="padding:10px">
+                                <div id="amtinword" style="font-weight:bold"></div>
+                            </td>
+                        </tr>
+                    </table>
+                    <small class="label label-danger" style="font-size:15px">Total Payment</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+
+            $("#clearbtn1").click(function () {
+                $("#appstatus").val('');
+                table.search(this.value).draw();
+                table.ajax.reload();
+            });
+
+
+
+            $("#appstatus").change(function () {
+                table.search(this.value).draw();
+                table.ajax.reload();
+            });
+
+
+
+            $("#all").click(function () {
+                table.search("All Payment").draw();
+            });
+            $("#searchdate").click(function () {
+                min1 = $(".min").val();
+                datemax1 = $(".maxdate").val();
+                table.draw();
+            });
+            var table = $("#payment").DataTable({
+                "processing": true,
+                "serverSide": true,
+                //"search": { "search": "Default_filter" },
+                ajax: {
+                    url: "/Admin/GetPaymentReport",
+                    type: "POST",
+                    data: function (d) {
+                        debugger;
+                        d.mymin = $("#min").val();
+                        d.mymax = $("#maxdate").val();
+                    },
+                    
+
+                },
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                columns: [
+                    {
+                        data: "applicationId"
+                    },
+                    {
+                        data: "rrreference"
+                    },
+                    {
+                        data: "applicationTypeId"
+                    },
+                    {
+                        data: "status"
+                    },
+                    {
+                        data: "agencyName"
+                    },
+                    {
+                        data: "companyEmail"
+                    },
+                    
+                    {
+                        data: "txnAmount",
+
+                    },
+                    {
+                        data: "transactionDate",
+
+                    },
+                ],
+
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    debugger;
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+
+                    // Total over this page
+                    pageTotal = api
+                        .column(6, { filter: 'applied' })
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+                    // Update footer
+                    debugger;
+                    $(api.column(6).footer()).html(
+                        'Total= ' + '₦' + pageTotal,
+                        $("#totalsum").text(pageTotal),
+                        $("#amtinword").text("(" + numberToWords(Number(pageTotal)) + ")"),
+                    );
+
+
+                }
+            });
+
+
+            $("#paymentsumary").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 20,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                buttons: [
+                    { extend: 'copyHtml5', footer: true },
+                    { extend: 'excelHtml5', footer: true },
+                    { extend: 'csvHtml5', footer: true },
+                    { extend: 'pdfHtml5', footer: true },
+                ],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+
+            $.getJSON("/Admin/PaymentChartReport", function (data) {
+                debugger;
+                var chart1 = Highcharts.chart({
+                    chart: {
+                        renderTo: 'piecontainer',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie',
+                        options3d: {
+                            enabled: true,
+                            alpha: 45,
+                            beta: 0
+                        }
+                    },
+
+                    title: {
+                        text: 'Revenue Percentage Generated'
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            depth: 35,
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Ratio',
+                        colorByPoint: true,
+                        data: [
+                            { name: 'Bargo Operators', y: data.bargo_Operators },
+                            { name: 'Cargo Consolidators/De-Consolidators', y: data.cargoConsolidators_DeConsolidators },
+                            { name: 'Chandling', y: data.chandling },
+                            { name: 'Dry Port Operator', y: data.dryPortOperator },
+                            { name: 'Freight Forwarders and Clearing Agents', y: data.freightForwarders_ClearingAgents },
+                            { name: 'Haulers/Truckers', y: data.haulers_Truckers },
+                            { name: 'ICD', y: data.icd },
+                            { name: 'Logististics Service Provider', y: data.logististics_Service_Provider },
+                            { name: 'Stevedoring/Warehousing', y: data.stevedoring_Warehousing },
+                            { name: 'Seaport Terminal Operators', y: data.seaportTerminalOperator },
+                            { name: 'Off Dock Terminal Operators', y: data.offDockTerminalOperator },
+                            { name: 'Shipping Agency', y: data.shippingAgency },
+                            { name: 'ShippingCompany/Line', y: data.shippingCompany_Line },
+                            { name: 'Shippers Association', y: data.shippersAssociation },
+                            { name: 'Cargo Surveyor', y: data.cargoSurveyor },
+                            { name: 'Individual Category (Import & Exporter)', y: data.individualCategory },
+                            { name: 'Corperate Category', y: data.corperateCategory },
+                            { name: 'Other Port Service Providers', y: data.otherPortServiceProviders },
+                        ],
+                        exporting: true
+                    }]
+                });
+                var chart2 = Highcharts.chart({
+                    chart: {
+                        renderTo: 'barcontainer1',
+                        type: 'column',
+                        margin: 75,
+                        options3d: {
+                            enabled: true,
+                            alpha: 15,
+                            beta: 15,
+                            depth: 50,
+                            viewDistance: 25
+                        }
+                    },
+                    title: {
+                        text: "Revenue Generated Based on Categories"
+                    },
+                    yAxis: {
+                        type: 'logarithmic',
+                        title: {
+                            text: ''
+                        }
+                    },
+                    xAxis: {
+                        labels: {
+                            rotation: -45,
+                        },
+                        categories: ['Bargo Operators', 'Cargo Consolidators/De-Consolidators', 'Individual Category (Import & Exporter)', 'Dry Port Operator', 'Freight Forwarders and Clearing Agents', 'Haulers/Truckers', 'Other Port Service Providers', 'Logististics Service Provider', 'Stevedoring/Warehousing', 'Seaport Terminal Operators', 'Off Dock Terminal Operators',
+                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandling', 'Corperate Category', 'ICD']
+                    },
+                    plotOptions: {
+                        column: {
+                            depth: 25
+                        }
+                    },
+                    series: [{
+                        name: 'Revenue',
+                        colorByPoint: true,
+                        data: [
+                            [data.bargo_Operators], [data.cargoConsolidators_DeConsolidators], [data.individualCategory], [data.dryPortOperator], [data.freightForwarders_ClearingAgents], [data.haulers_Truckers], [data.otherPortServiceProviders], [data.logististics_Service_Provider], [data.stevedoring_Warehousing], [data.seaportTerminalOperator],
+                            [data.offDockTerminalOperator], [data.shippingAgency], [data.shippingCompany_Line], [data.shippersAssociation], [data.cargoSurveyor], [data.chandling], [data.corperateCategory], [data.icd]
+                        ]
+                    }]
+                });
+
+            });
+
+
+
+            
+            $(".companyemail").autocomplete({
+                source: function (request, response) {
+                    debugger;
+                    $.ajax({
+                        url: '/Admin/AutoSearchCompanyAppId',
+                        type: "GET",
+                        datatype: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data,
+                                function (val, item) {
+
+                                    return { label: val.textvalue, value: val.textvalue, companyemail: val.textvalue, }
+                                }));
+                        }
+
+                    });
+                },
+
+                select: function (event, ui) {
+                    debugger;
+                    $(".companyemail").val(ui.item.companyemail);
+                    var textvalue = $(".companyemail").val();
+                    table.search(this.value).draw();
+                    table.draw();
+                }
+            });
+        });
+
+
+
+        function numberToWords(number) {
+            var digit = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+            var elevenSeries = ['ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+            var countingByTens = ['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+            var shortScale = ['', 'thousand', 'million', 'billion', 'trillion'];
+
+            number = number.toString(); number = number.replace(/[\, ]/g, ''); if (number != parseFloat(number)) return 'not a number'; var x = number.indexOf('.'); if (x == -1) x = number.length; if (x > 15) return 'too big'; var n = number.split(''); var str = ''; var sk = 0; for (var i = 0; i < x; i++) { if ((x - i) % 3 == 2) { if (n[i] == '1') { str += elevenSeries[Number(n[i + 1])] + ' '; i++; sk = 1; } else if (n[i] != 0) { str += countingByTens[n[i] - 2] + ' '; sk = 1; } } else if (n[i] != 0) { str += digit[n[i]] + ' '; if ((x - i) % 3 == 0) str += 'hundred '; sk = 1; } if ((x - i) % 3 == 1) { if (sk) str += shortScale[(x - i - 1) / 3] + ' '; sk = 0; } } if (x != number.length) { var y = number.length; str += 'point '; for (var i = x + 1; i < y; i++) str += digit[n[i]] + ' '; } str = str.replace(/\number+/g, ' '); return str.trim() + ".";
+
+        } 
+
+
+    </script>
+}

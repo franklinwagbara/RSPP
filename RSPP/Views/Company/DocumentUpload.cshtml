@@ -1,0 +1,342 @@
+﻿@model List<RSPP.Models.DocUpload>
+
+
+@{
+    
+    ViewBag.Title = "Document Upload";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+
+}
+<style>
+    tbody {
+        counter-reset: row;
+    }
+
+        tbody tr::before {
+            counter-increment: row;
+            content: counter(row);
+        }
+</style>
+<div class="row" style="height: 10%">
+    <div class="pageTitle bg1" style="background: url('/images/bgblue11.jpg'); width: 100%; background-repeat:no-repeat; background-size:cover ">
+        <h2>Document Upload</h2>
+        <div class="clear"></div>
+    </div>
+</div>
+<div class="padd-t form-horizontal">
+
+    <form id="form" name="form" action="/Company/PostDocuments" enctype="multipart/form-data" method="post">
+
+        <table class="table-bordered table-condensed table-active comfacdoc">
+
+            @if (ViewBag.Rejectioncomments.Count > 0)
+            {
+                foreach (var ah in ViewBag.Rejectioncomments)
+                {
+            <marquee class="text-danger"><b>Reason For Rejection=> @ah.Comment</b></marquee>
+                }
+            }
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Document Name</th>
+                    <th>Select file <span class="text-danger">(Max 4MB; Only images(jpeg, gif, jpg or png) & PDF files are allowed)</span></th>
+                    <th style="width:20%">Progress</th>
+                    <th>File Name</th>
+                    <th>File Image</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (RSPP.Models.DocUpload item in Model)
+                {
+                <tr>
+                    @*<td id="numcounter"></td>*@
+                    @*@(counter +=1)*@
+
+                    <td>
+                        <input type="hidden" name="txtApplicationId[]" id="txtApplicationId" value="@ViewBag.MyApplicationID" />
+                        <input type="hidden" name="txtDocumentId[]" id="@("docid_"+item.DocId)" value="@item.DocId" />
+                        <input type="hidden" name="txtDocumentName[]" id="@("txtDocumentName_"+item.DocId)" value="@item.DocumentName" />
+                        <input type="hidden" class="docsource" name="txtDocumentsource[]" id=@("txtDocumentsource-"+item.DocId) value="@item.UploadedDocName" />
+                        @item.DocumentName
+                    </td>
+                    <td>
+
+                        <label for="@("filebtn"+item.DocId)" id="MyFileLabel" class="custom-file-upload btn btn-info">
+                            <i class="fa fa-upload"></i>
+                            @if (ViewBag.UploadedDocCount == 0)
+                                {
+                            <span>Upload File</span>
+                                }
+                                else
+                                {<span>Re-Upload File</span>}
+                        </label>
+                        <input type="file" name="files" id="@("filebtn"+ item.DocId)" style="display: none;" required="required" multiple class="docUpload" accept="image/gif, image/png, image/jpeg, application/pdf" data-i="@(item.DocId)" onchange="ValidateSingleInput(this);" />
+                        <div id="@("extFileName-"+item.DocId)" class="File"></div>
+                    </td>
+                    <td>
+                        <div class="progress">
+                            <div id="@("progressid_"+item.DocId)" class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+                                 aria-valuemin="0" aria-valuemax="100" style="width:0%">0%</div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div>
+                            <b>
+                                @if (ViewBag.UploadedDocCount == 0)
+                                    {
+                                <label class="@("imagename-"+item.DocId)"></label>
+                                    }
+                                    else
+                                    {
+                                <label class="@("imagename-"+item.DocId)">@item.UploadedDocName</label>
+
+                                    }
+                            </b>
+                        </div>
+                    </td>
+                    <td>
+                        @if (ViewBag.UploadedDocCount == 0)
+                            {
+                        <a class="@("url-"+item.DocId)" href="#" title="">
+                            <img src="" alt="File image" class="@("fileuploaded-"+item.DocId) center-cropped" style="border:groove; height:90px; width:90px" /><br />
+                        </a>
+                            }
+                            else
+                            {
+                        <a class="@("url-"+item.DocId)" href="@Url.Content("~/UploadedFiles/"+item.DocumentSource)" title="" target="_blank">
+                            <img src="@Url.Content("~/UploadedFiles/"+item.DocumentSource)" alt="File image" class="@("fileuploaded-"+item.DocId) center-cropped" style="border:groove; height:90px; width:90px" /><br />
+                        </a>
+                            }
+
+                    </td>
+
+                </tr>
+                }
+            </tbody>
+        </table><br />
+    </form>
+    <button type="button" class="btn btn-primary btn-default round" onclick="submit()" id="submitbtn" style="margin-left:550px">Submit Document</button>
+
+    <div style="display:none" id="loadingImage" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+
+</div>
+
+
+
+
+@section scripts{
+
+
+    <script type="text/javascript">
+        var _validFileExtensions = [".jpg", ".pdf", ".png", ".gif", ".jpeg"];
+        function getContextPath() {
+            return window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+        }
+        $(document).ready(function () {
+
+
+            $(".comfacdoc").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+
+            //$('#submitbtn').click(function (e) {
+            //    debugger;
+            //    var AppID = $("#txtApplicationId").val();
+            //    e.preventDefault();
+            //    if ($("#form").valid()) {
+            //        var msg = confirm("Are you sure the documents you provided are valid?")
+            //        if (msg === true) {
+            //            $("#loadingImage").show();
+            //            $.ajax(
+            //                {
+            //                    url: "/Company/SubmitDocumentUpload",
+            //                    data: { "applicationid": AppID },
+            //                    type: "POST",
+            //                    success: function (data) {
+            //                        if (data === "success") {
+            //                            $("#loadingImage").hide();
+            //                            alert("Document was successfully submitted");
+            //                            window.location.href = "/Company/MyApplications";
+            //                        } else {
+            //                            $("#loadingImage").hide();
+            //                            alert("Unable to submit document");
+            //                        }
+            //                    }
+            //                }
+            //            );
+            //        }
+            //    } else {
+            //        alert("Please ensure you upload all the documents");
+            //    }
+            //});
+            });
+
+        function ValidateSingleInput(oInput) {
+            var filesize = oInput.files[0].size;
+            var extension = oInput.value.split('.').pop();
+            var i = $(oInput).attr("data-i");
+            if (filesize > 4194304) {
+
+                $('<p style="color: red; font-style: italics; font-size: 12px;">Upload file error: Max. File size (4MB) Exceeded OR Invalid file type was selected (only pdf, jpg or png)<i class="elusive-remove" style="padding-left:10px;" /></p>').appendTo('#extFileName-' + i);
+                var progBox = '#extProgress-' + $(this).attr("data-i") + ' .progress-bar';
+                $(progBox).css(
+                    'width',
+                    0 + '%'
+                ).text("");
+
+                return false;
+            }
+            if (oInput.type == "file") {
+                var sFileName = oInput.value;
+
+                $("#txtDocumentsource-" + i).val(oInput.value.replace(/C:\\fakepath\\/i, ''));
+                $(".imagename-" + i).text(oInput.value.replace(/C:\\fakepath\\/i, ''));
+                readURL(oInput, i, extension);
+
+
+                if (sFileName.length > 0) {
+                    var blnValid = false;
+                    for (var j = 0; j < _validFileExtensions.length; j++) {
+                        var sCurExtension = _validFileExtensions[j];
+                        if (sFileName.substr(sFileName.length - sCurExtension.length, sCurExtension.length).toLowerCase() == sCurExtension.toLowerCase()) {
+                            blnValid = true;
+                            break;
+                        }
+                    }
+
+                    if (!blnValid) {
+                        alert("Sorry, " + sFileName + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+                        oInput.value = "";
+                        return false;
+                    }
+                    uploadFiles(i);
+
+                }
+            }
+            return true;
+        }
+
+        function submit() {
+
+            debugger;
+            var AppID = $("#txtApplicationId").val();
+            var c = $('.docUpload').get(0).files.length;
+            if ($('.docUpload').get(0).files.length >= 1 ){
+                var msg = confirm("Are you sure the documents you provided are valid?")
+                if (msg === true) {
+                    $("#loadingImage").show();
+                    $.ajax(
+                        {
+                            url: "/Company/SubmitDocumentUpload",
+                            data: { "applicationid": AppID },
+                            type: "POST",
+                            success: function (data) {
+                                if (data === "success") {
+                                    $("#loadingImage").hide();
+                                    alert("Document was successfully submitted");
+                                    window.location.href = "/Company/MyApplications";
+                                } else {
+                                    $("#loadingImage").hide();
+                                    alert("Unable to submit document");
+                                }
+                            }
+                        }
+                    );
+                }
+            } else {
+                alert("Please select document to be uploaded");
+            }
+        }
+
+        function readURL(input, fileid, extensions) {
+
+                if (input.files && input.files[0]) {
+
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        if (extensions === "pdf") {
+                            $('.fileuploaded-' + fileid).attr('src', '@Url.Content("~/images/pdficon.png")');
+                        } else {
+                            $('.fileuploaded-' + fileid).attr('src', e.target.result);
+                            $('.url-' + fileid).attr('href', e.target.result);
+
+                        }
+                    }
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+
+        function uploadFiles(inputId) {
+            debugger;
+            var AppID = $("#txtApplicationId").val();
+            var DocID = $("#docid_" + inputId).val();
+            var DocName = $("#txtDocumentName_" + inputId).val();
+            var DocSource = $("#txtDocumentsource-" + inputId).val();
+            var input = document.getElementById('filebtn'+inputId);
+            var files = input.files;
+            var formData = new FormData();
+
+            for (var i = 0; i != files.length; i++) {
+                formData.append("files", files[i]);
+            }
+            formData.append('AppID', AppID);
+            formData.append('DocID', DocID);
+            formData.append('DocName', DocName);
+            formData.append('DocSource', DocSource);
+
+            $.ajax(
+                {
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                percentComplete = parseInt(percentComplete * 100);
+
+                                $('#progressid_' + inputId).width(percentComplete + '%');
+                                $('#progressid_' + inputId).html(percentComplete + '%');
+
+                            }
+                        }, false);
+
+                        return xhr;
+                    },
+
+
+                    url: "/Company/PostDocuments",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    type: "POST",
+                    success: function (data) {
+                        alert("Files Uploaded!");
+                    }
+                }
+            );
+        }
+    </script>
+
+
+}

@@ -1,0 +1,327 @@
+﻿@model List<RSPP.Models.FacilityInfo>
+    @{
+        ViewBag.Title = "Update Facility Info";
+        Layout = "~/Views/Shared/_ElaLayout.cshtml";
+
+    }
+
+<div class="content">
+
+    @using (Html.BeginForm("UpdateFacilityRecord", "Admin", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="modal fade updaterecordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-success" id="exampleModalLabel"><span class="fa fa-hand-o-down"></span> Update Applicant Record</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <div><label class="control-label">Application Ref</label></div>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="ApplicationId" name="ApplicationId" readonly class="form-control" />
+
+                                        </div>
+                                    </div>
+
+                                    <label>Agency Name</label>
+                                    <div class="form-group">
+                                        <div class="col-sm-10">
+                                            <input id="AgencyName" name="AgencyName" type="text" class="form-control" />
+
+                                        </div>
+                                    </div>
+
+                                    <label>Company Email</label>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="CompanyEmail" name="CompanyEmail" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <label>Application Type</label>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="ApplicationType" name="ApplicationType" class="form-control" />
+                                        </div>
+                                    </div>
+
+
+
+                                    <label>Company Address</label>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="CompanyAddress" name="CompanyAddress" class="form-control" />
+                                        </div>
+                                    </div>
+
+
+
+                                    <label>Current Stage Id</label>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="CurrentStageId" name="CurrentStageId" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <label>Last Assigned User</label>
+                                    <div class="form-group">
+                                        <div class="col-md-10">
+                                            <input type="text" id="LastAssignedUser" name="LastAssignedUser" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <span style="margin-left:200px"> <button class="btn btn-success" id="facupdaterecord"><span class="fa fa-save"></span> Update Record</button></span>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+        <div class="row">
+            <div class="col-md-12" style="background-color:white">
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Facility Information</legend>
+                    <table class="table table-striped table-condensed table-responsive table-bordered customDT" id="mytable">
+                        <thead>
+                            <tr>
+
+
+
+                                <th><strong>Application Ref</strong>
+                                <th><strong>Agency Name</strong> </th>
+                                <th><strong>Company Email</strong></th>
+                                <th><strong>Application Type</strong></th>
+                                <th><strong>Company Address</strong></th>
+                                <th><strong>Current Assigned User</strong></th>
+                                <th><strong>Applied Date</strong></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (RSPP.Models.FacilityInfo n in Model)
+                            {
+                                <tr>
+                                    <td>@n.ApplicationID</td>
+                                    <td>@n.AgencyName</td>
+                                    <td>@n.CompanyEmail</td>
+                                    <td>@n.ApplicationTypeId</td>
+                                    <td>@n.CompanyAddress</td>
+                                    <td>@n.LastAssignedUser</td>
+                                    <td>@n.AppliedDate</td>
+                                    <td><button class="btn btn-success btn-xs" onclick="CompanyJs('@n.ApplicationID', '@n.AgencyName', '@n.CompanyEmail', '@n.ApplicationTypeId', '@n.CompanyAddress','@n.CurrentStageId', '@n.LastAssignedUser')" id="updatebtn"><i class="fa fa-eye"></i> Update</button></td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+
+        <div style="display:none" class="loadingImage">
+            <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+            </div>
+        </div>
+
+        <div id="modalMapDialog" style="display: none">
+            <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+        </div>
+
+    </div>
+
+
+
+    @section scripts{
+        <script src="@Url.Content("~/Scripts/jquery.ui.widget.js")" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/jquery.iframe-transport.js")" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/select2.min.js")" type="text/javascript"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2df9i_A809q2eQQizBb7UqSGXASsQHVQ&libraries=places"></script>
+        <script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
+        <link href="@Url.Content("~/Content/jquery-ui.css")" rel="stylesheet" />
+        <script type="text/javascript">
+
+
+
+            google.maps.event.addDomListener(window, 'load', function () {
+                var options = {
+                    componentRestrictions: { country: "ng" }
+                };
+                var places = new google.maps.places.Autocomplete(document.getElementById('CompanyAddress'), options);
+                google.maps.event.addListener(places, 'place_changed', function () {
+                    var place = places.getPlace();
+                    var address = place.formatted_address;
+                    var latitude = place.geometry.location.lat();
+                    var longitude = place.geometry.location.lng();
+                    var mesg = "Location Address Is : " + address;
+                    mesg += "\nLocation Latitude Is : " + latitude;
+                    mesg += "\nLocation Longitude Is: " + longitude;
+                    showMap(address, latitude, longitude);
+                });
+            });
+
+
+            function showMap(locationaddress, latitude, longitude) {
+                var markers = [];
+
+                $("#modalMapDialog").dialog({
+                    modal: true,
+                    title: "Address Location on Map",
+                    width: 550,
+                    hright: 400,
+                    buttons: {
+                        Close: function () {
+                            $(this).dialog('close');
+                        },
+                        Okay: function () {
+                            $("#Gps").val(latitude + ',' + longitude);
+                            $(this).dialog('close');
+                        }
+                    },
+                    open: function () {
+
+                        google.maps.visualRefresh = true;
+                        var myCenter = new google.maps.LatLng(latitude, longitude);
+                        var mapCanvas = document.getElementById("MapContainer");
+                        var mapOptions = {
+                            center: myCenter,
+                            zoom: 14,
+                            mapTypeId: google.maps.MapTypeId.ROADMAP,
+                            panControl: true,
+                            zoomControl: true,
+                            mapTypeControl: true,
+                            scaleControl: true,
+                            streetViewControl: true,
+                            overviewMapControl: true,
+                            rotateControl: true,
+                            zoomControl: true,
+                            zoomControlOptions: {
+                                style: google.maps.ZoomControlStyle.SMALL
+                            },
+                            mapTypeControl: true,
+                            mapTypeControlOptions: {
+                                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                                position: google.maps.ControlPosition.TOP_CENTER,
+                                mapTypeIds: [
+                                    google.maps.MapTypeId.ROADMAP,
+                                    google.maps.MapTypeId.TERRAIN,
+                                    google.maps.MapTypeId.SATELLITE,
+                                    google.maps.MapTypeId.HYBRID
+                                ]
+                            }
+                        };
+
+                        var map = new google.maps.Map(mapCanvas, mapOptions);
+                        var marker = new google.maps.Marker({ position: myCenter, animation: google.maps.Animation.BOUNCE });
+                        marker.setMap(map);
+
+                        var infowindow = new google.maps.InfoWindow({
+                            content: locationaddress
+                        });
+                        infowindow.open(map, marker);
+
+                        // Zoom to 9 when clicking on marker
+                        google.maps.event.addListener(marker, 'click', function () {
+                            map.setZoom(13);
+                            map.setCenter(marker.getPosition());
+                        });
+                    }
+                });
+            }
+
+
+            $(function () {
+
+
+
+
+                $("#facupdaterecord").click(function () {
+
+                    var msg = confirm("Are you sure you want to update this record?");
+                    $(".updaterecordmodal").modal("hide");
+                    debugger;
+                    var AgencyName = $("#AgencyName").val();
+                    var ApplicationId = $("#ApplicationId").val();
+                    var CompanyEmail = $("#CompanyEmail").val();
+                    var ApplicationType = $("#ApplicationType").val();
+                    var CompanyAddress = $("#CompanyAddress").val();
+                    var currentStageId = $("#CurrentStageId").val();
+                    var LastAssignedUser = $("#LastAssignedUser").val();
+
+
+
+
+                    if (msg === true) {
+                    $(".loadingImage").show('fast');
+                        $.post("/Admin/UpdateFacilityRecord", { "ApplicationId": ApplicationId, "AgencyName": AgencyName, CurrentStageId: currentStageId, "lastAssignedUser": LastAssignedUser, "ApplicationType": ApplicationType, "Companyemail": CompanyEmail, "CompanyAddress": CompanyAddress}, function (res) {
+                        if (res === "success") {
+                            alert("Update was successful");
+
+
+                            $(".updaterecordmodal").modal("hide");
+                            history.go(0);
+                            $(".loadingImage").hide('fast');
+                        }
+                        else {
+                            alert("Something went wrong");
+                            $(".loadingImage").hide('fast');
+                        }
+                    });
+                    $(".loadingImage").hide('fast');
+                    }
+                    else {
+                        return false;
+                    }
+
+                });
+
+                $("#mytable").dataTable({
+                    "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                    'iDisplayLength': 10,
+                    columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                    "language": {
+                        "lengthMenu": "Display  _MENU_ records",
+                        "zeroRecords": "No record found",
+                        "info": "Showing page _PAGE_ of _PAGES_",
+                        "infoEmpty": "No Record to Display Currently",
+                        "infoFiltered": "(filtered from _MAX_ total records)"
+                    },
+                    "order": [[1, "desc"]]
+                });
+            });
+            function CompanyJs(ApplicationId, AgencyName, Companyemail, ApplicationType, CompanyAddress, CurrentStageId, lastAssignedUser) {
+                debugger;
+                $(".loadingImage").show('fast');
+                $("#AgencyName").val(AgencyName);
+                $("#ApplicationId").val(ApplicationId);
+                $("#CompanyEmail").val(Companyemail);
+                $("#ApplicationType").val(ApplicationType);
+                $("#CompanyAddress").val(CompanyAddress);
+                $("#CurrentStageId").val(CurrentStageId);
+                $("#LastAssignedUser").val(lastAssignedUser);
+                $(".updaterecordmodal").modal('show');
+                $(".loadingImage").hide('fast');
+
+            };
+
+        </script>
+    }

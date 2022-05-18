@@ -1,0 +1,144 @@
+﻿
+@{
+    ViewBag.Title = "Generate Extra Payment";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+    <h2>@ViewBag.Title</h2>
+
+    @using (Html.BeginForm("AddExtraPayment", "Admin", FormMethod.Post))
+    {
+        <div class="modal fade Extrapaymentmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog" style="display:inline-block; vertical-align:middle; margin:0 auto 0 35%; width:400px; height:500px; margin-top:100px" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-success" id="exampleModalLabel"><span class="glyphicon glyphicon-hand-down"></span> Extra Payment for <label id="geneappid"></label></h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="paymentmade">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <input type="hidden" id="myappid" name="myappid" />
+                                        <input type="hidden" id="status" name="status" value="ExtraPaymt" />
+                                        <label style="font-family:Cambria; font-weight:bold">Payment Type</label>
+                                        <select class="form-control" id="sanctiontype" name="sanctiontype" required="">
+                                            <option value=""></option>
+                                            <option value="Sanction">Sanction</option>
+                                            <option value="Incomplete Fee">Incomplete Fee</option>
+                                        </select><br />
+                                        <label style="font-family:Cambria; font-weight:bold">Amount</label>
+                                        <input class="form-control" id="sanctionamount" type="number" name="sanctionamount" required="" /><br />
+                                        <label style="font-family:Cambria; font-weight:bold">Description</label>
+                                        <textarea cols="3" rows="3" class="form-control" id="sanctiondescription" name="sanctiondescription" required="" style="resize:none"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-sm-offset-2">
+                                <div class="col-sm-7">
+                                    <button type="submit" class="btn btn-success">Generate Extra Payment</button>
+                                </div>
+                                <div class="col-sm-3">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @{
+        if (TempData["message"] != null)
+        {
+            <div class="alert alert-danger alert-dismissable text-center" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign"></span> @TempData["message"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+        if (TempData["GeneSuccess"] != null)
+        {
+            <div class="alert alert-success alert-dismissable text-center" role="alert">
+                <span class="glyphicon glyphicon-ok"></span> @TempData["GeneSuccess"]
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        }
+    }
+
+    <table class="table table-striped table-bordered table-hover dataTable">
+        <thead>
+            <tr>
+
+
+                <th>Application Ref Number</th>
+                <th>Company Email</th>
+                <th>Company Address</th>
+                <th>Agency Name</th>
+                <th>Applied Date</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (RSPP.Models.DB.ApplicationRequestForm b in ViewBag.ExtraPaymentStage)
+            {
+                <tr>
+
+                    <td>@b.ApplicationId</td>
+                    <td>@b.CompanyEmail</td>
+                    <td>@b.CompanyAddress</td>
+                    <td>@b.AgencyName</td>
+                    <td>@b.AddedDate</td>
+                    <td>
+                        <a href="javascript:Myextrapaymeny('@b.ApplicationId')" id="extrapaybtn" class="btn btn-info"><span class="glyphicon glyphicon-eye-open"> Generate Extra Payment</span></a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>
+@section scripts{
+    <script type="text/javascript">
+            $(function () {
+            $(".dataTable").dataTable({
+                "aLengthMenu": [25, 50, 75, 100, 200],
+                'iDisplayLength': 25,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                'columnDefs': [{ orderable: false, "targets": [-1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records per page",
+                    "zeroRecords": "Nothing found - sorry",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+        });
+
+        function Myextrapaymeny(appid) {
+            $("#myappid").val(appid);
+            $("#geneappid").text(appid);
+            var confirmaction = confirm("Are you sure you want to generate extra payment for application with reference number " + appid + "?");
+            if (confirmaction === true) {
+                $(".Extrapaymentmodal").modal('show');
+            }
+        }
+    </script>
+}

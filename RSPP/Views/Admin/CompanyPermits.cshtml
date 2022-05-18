@@ -1,0 +1,91 @@
+﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+
+@{
+    ViewBag.Title = "Company Permits";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+
+<div class="content">
+    <h2 class="text-info">All Certificates For &quot;@Model.FirstOrDefault().CompanyEmail&quot;</h2>
+    <hr />
+
+    <table class="table table-striped table-bordered table-condensed table-hover dataTable" id="CertTable">
+        <thead>
+            <tr>
+                <th>Certificate Number</th>
+                <th>Application Id</th>
+                <th>Company Email</th>
+                <th>Company Address</th>
+                <th>Company Website</th>
+                <th>Issued Date</th>
+                <th>Expiry Date</th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var b in Model)
+            {
+            <tr>
+                <td>@b.LicenseReference</td>
+                <td class="nr">@b.ApplicationId</td>
+                <td>@b.CompanyEmail</td>
+                <td>@b.CompanyAddress</td>
+                <td>@b.CompanyWebsite</td>
+                <td>@b.LicenseIssuedDate</td>
+                <td>@b.LicenseExpiryDate</td>
+                <td>
+                    <button type="button" class="use-address media btn btn-success btn-xs">View Certificate</button>
+                </td>
+
+            </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>
+
+
+@section scripts{
+    
+    <script type="text/javascript">
+        $(function () {
+         
+            $("#CertTable").dataTable({
+                "aLengthMenu": [25, 50, 75, 100, 200],
+                'iDisplayLength': 25,
+                columnDefs: [{ orderable: false, "targets": [-1, -3] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records per page",
+                    "zeroRecords": "Nothing found - sorry",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+            $(".use-address").click(function () {
+                var $item = $(this).closest("tr").find(".nr").text();
+
+                window.open('/Admin/ViewCertificate/' + $item, '_blank');
+            });
+
+
+            //$(".dataTable").dataTable({
+            //    "aLengthMenu": [25, 50, 75, 100, 200],
+            //    'iDisplayLength': 25,
+            //    columnDefs: [{ orderable: false, "targets": [-1] }],
+            //    "language": {
+            //        "lengthMenu": "Display  _MENU_ records per page",
+            //        "zeroRecords": "Nothing found - sorry",
+            //        "infoEmpty": "No records available",
+            //        "infoFiltered": "(filtered from _MAX_ total records)"
+            //    },
+            //    "order": [[1, "desc"]]
+            //});
+        });
+    </script>
+
+}

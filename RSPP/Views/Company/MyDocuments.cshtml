@@ -1,0 +1,73 @@
+﻿
+@{
+
+    ViewBag.Title = "Company Documents";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+
+<div class="row xrow" style="margin-top:5%">
+    <div class="col-sm-11">
+        <div class="">
+            <table class="table dataTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">Document Type</th>
+                        <th style="width: 10%;">Document Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (RSPP.Models.DB.UploadedDocuments d in ViewBag.AllCompanyDocument)
+                    {
+
+                        <tr>
+                            <td>
+                                @d.DocumentName
+
+                            </td>
+                            @if (d.DocumentName.Contains(".pdf"))
+                            {
+                                <td>
+                                    <a href="javascript:FileView('@d.DocumentSource')" class="list-group-item">
+                                        <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                             style="display: inline-block;" />
+                                    </a>
+
+                                </td>
+                            }
+                            else
+                            {
+                        <td>
+                            <a href="javascript:FileView('@d.DocumentSource')" class="list-group-item">
+                                <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                     style="display: inline-block;" />
+                            </a>
+
+                        </td>
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+
+    <script type="text/javascript">
+
+        //$(document).ready(function () {
+
+
+        //});
+        function FileView(docname) {
+            var url = window.location.origin + "/UploadedFiles/" + docname;
+            window.open(url, '_blank');
+        }
+    </script>
+
+}

@@ -1,0 +1,418 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+
+.container-fluid {
+    padding: 10px 30px 25px 70px;
+}
+
+h1 {
+    line-height: 1.2;
+    font-size: 3.0rem;
+}
+
+.page-wrapper {
+    background: white;
+    padding-bottom: 20px 0px 0px 0px;
+}
+
+.h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6.h1 {
+    color: #000;
+}
+
+.header {
+    position: relative;
+    z-index: 50;
+    background: #1e1547;
+    box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-header {
+    width: 270px;
+}
+
+.footer {
+    background: white none repeat scroll 0 0;
+    border-top: 1px solid rgba(37, 37, 38, 0.13);
+    left: 40px;
+    position: relative;
+}
+
+/*.form-control:disabled, .form-control[readonly] {
+    background-color: #262626;
+    opacity: 1;
+}*/
+
+.header .top-navbar .navbar-header {
+    line-height: 45px;
+    text-align: center;
+    background: #fff;
+}
+
+.left-sidebar {
+    /*background: rgb(59, 58, 57);*/
+    width: 270px;
+}
+
+.card-black {
+    background: #ffffff none repeat scroll 0 0;
+    margin: 15px 0;
+    padding: 20px;
+    border: 0 solid #171717;
+    border-radius: 5px;
+    box-shadow: 0 5px 20px 0 rgba(0,0,0,0.15);
+}
+
+.dt-buttons .dt-button {
+    background: #fffafa none repeat scroll 0 0;
+    color: black;
+}
+
+button.dt-button, div.dt-button, a.dt-button {
+    border: 1px solid #4c4b4b;
+    border-radius: 0px;
+}
+
+/*.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_processing, .dataTables_wrapper .dataTables_paginate {
+    color: #fff;
+}*/
+
+
+
+
+/*.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #fff;
+    background-color: #262626;
+    background-clip: padding-box;
+    border: #262626;
+    border-top-color: rgb(38, 38, 38);
+    border-right-color: rgb(38, 38, 38);
+    border-bottom-color: rgb(38, 38, 38);
+    border-left-color: rgb(38, 38, 38);
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}*/
+
+
+
+tbody tr td {
+    font-family: 'Poppins', sans-serif;
+    color: #101010;
+}
+
+
+.text-white {
+    color: #c7c9d4 !important;
+}
+
+
+
+sidebar-nav > ul > li.active > a {
+    color: #000;
+}
+
+.sidebar-nav ul li a.active {
+    color: #d7dde9;
+    font-weight: bolder;
+    background: #4c709a99;
+}
+
+.sidebar-nav ul li.active {
+    background-color: #2c2062;
+}
+
+.sidebar-nav ul li a:hover i {
+    color: #e7cf89;
+}
+
+.sidebar-nav ul li a:hover {
+    color: #4a221e;
+    background: #b0d0f466;
+}
+
+.sidebar-nav ul li a:hover {
+    color: #bde9dd;
+}
+
+.sidebar-nav ul li a {
+    color: #e8e9eb;
+    font-size: 15px;
+    padding: 12px;
+    white-space: nowrap;
+    display: block;
+    padding: 7px 35px 7px 15px;
+}
+
+.mini-sidebar .sidebar-nav #sidebarnav > li > ul {
+    background: #30276c;
+}
+
+.sidebar-nav ul li.nav-label {
+    color: #b3c984;
+    font-size: 14px;
+}
+
+
+.sidebar-nav ul li ul {
+    padding-left: 28px;
+    line-height: 30px;
+    padding-bottom:15px;
+}
+
+
+sidebar-nav > ul > li > a i {
+    width: 30px;
+    font-size: 20px;
+}
+
+.sidebar-nav ul li a.active i {
+    color: #cfced2;
+}
+
+
+
+element {
+    position: relative;
+    overflow: hidden;
+    width: auto;
+    height: 100%;
+    background: black;
+}
+
+
+html {
+    position: relative;
+    min-height: 100%;
+    background: #fff;
+}
+
+.sidebar-nav {
+    background: #1e1547;
+    padding: 0px 0px 0px 0px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: Roboto,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
+    padding: 0em;
+}
+
+
+/* Provide sufficient contrast against white background */
+a {
+  color: #0366d6;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+/*.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}*/
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+
+    .mini-sidebar .sidebar-nav #sidebarnav > li:hover > a {
+        width: 260px;
+        background: #301f79;
+    }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+
+.mini-sidebar .sidebar-nav {
+    background: #1e1547;
+}
+
+
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background: #fff;
+}
+
+
+.loading, .loading > td, .loading > th, div.loading, .nav li.loading.active > a, .pagination li.loading, .pagination > li.active.loading > a, .pager > li.loading > a {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+    background-size: 40px 40px;
+    animation: 2s linear 0s normal none infinite progress-bar-stripes;
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
+}
+
+.btn.btn-default.loading, input[type="text"].loading, select.loading, textarea.loading, .well.loading, .list-group-item.loading, .pagination > li.active.loading > a, .pager > li.loading > a {
+    background-image: linear-gradient(45deg, rgba(235, 235, 235, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(235, 235, 235, 0.15) 50%, rgba(235, 235, 235, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+}
+
+.loader {
+    position: relative;
+}
+
+    .loader::after {
+        background-color: rgba(44, 104, 198, 0.92);
+        content: 'Getting Contents..., Please wait';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+.Uploadloader {
+    position: relative;
+}
+
+    .Uploadloader::after {
+        background-color: rgba(90, 134, 152, 0.9);
+        content: 'Uploading..., Please wait';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+.Submitloader {
+    position: relative;
+}
+
+    .Submitloader::after {
+        background-color: rgba(4, 114, 6, 0.55);
+        content: 'Submitting..., Please wait';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+
+.DashCount {
+    opacity: 0.7;
+    float: left;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    width: initial;
+    text-align: center;
+    padding: 10px;
+    background-color: rgb(12, 3, 3);
+    color: white;
+    min-height: 70px;
+    width: inherit;
+    font-weight: bolder;
+    display: inline-block;
+}
+
+
+.FirstDashCount {
+    min-height: 150px;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(0, 0, 0);
+    background-color: rgb(11, 10, 10);
+    color: #f1f0f0;
+    opacity: 1;
+    text-align: center;
+    vertical-align: middle;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+    .FirstDashCount > b {
+        font-size: 90px;
+    }
+
+
+.DashCompanyName {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 30px;
+    color: #eeda6d;
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    box-sizing: border-box;
+    display: inline-block;
+    min-width: 1.5em;
+    padding: 0.5em 1em;
+    margin-left: 2px;
+    text-align: center;
+    text-decoration: none !important;
+    cursor: pointer;
+    *cursor: hand;
+    color: #666565 !important;
+    border: 1px solid transparent;
+    border-radius: 2px;
+}
+
+.sidebar-nav > ul > li.active > a {
+    color: #d4d4e3;
+    font-weight: 500;
+    border-left: 3px solid #fff;
+}
+
+
+.pignose-calendar-wrapper .pignose-calendar.pignose-calendar-dark .pignose-calendar-button-group .pignose-calendar-button, .pignose-calendar.pignose-calendar-blue .pignose-calendar-top .pignose-calendar-top-month, .pignose-calendar.pignose-calendar-blue .pignose-calendar-top .pignose-calendar-top-nav .pignose-calendar-top-icon, .pignose-calendar.pignose-calendar-blue .pignose-calendar-top .pignose-calendar-top-nav .pignose-calendar-top-value, .pignose-calendar.pignose-calendar-blue .pignose-calendar-top .pignose-calendar-top-year {
+    color: #ff2e44;
+}
+

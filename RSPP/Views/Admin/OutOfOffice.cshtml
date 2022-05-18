@@ -1,0 +1,595 @@
+﻿@model RSPP.Models.DB.OutofOffice
+@{
+    /**/
+    ViewBag.Title = "Out Of Office";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("AddOutofOffice", "Admin", FormMethod.Post, new { id = "addOutofOffice" }))
+            {
+                @Html.AntiForgeryToken()
+            <div class="modal fade addstaffmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:40%; margin:0 auto 0 -10%" role="document">
+
+                    @*<div class="modal-dialog modal" style="vertical-align: middle;  margin:0 auto 0 -20%; width:40%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">*@
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Create Out of Office</h4>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-horizontal">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label>Reliever Staff</label>
+                                            <div class="form-group">
+                                                <div class="col-sm-10">
+                                                    <input id="locationid" name="locationid" type="hidden" />
+                                                    <input id="roleuser" name="roleuser" type="hidden" />
+                                                    @Html.TextBoxFor(model => model.Reliever, new { @class = "form-control Reliever", @type = "email", @placeholder = "Enter Email Address", @required = "" })
+                                                    @Html.ValidationMessageFor(model => model.Reliever, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+                                            <label>Relieved Staff </label>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(model => model.Relieved, new { @class = "form-control Relieved", @required = "" })
+                                                    @Html.ValidationMessageFor(model => model.Relieved, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+
+                                            <label>Start Date</label>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control", @autocomplete = "off", @required = "" })
+                                                    @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+
+                                            <label>End Date</label>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control", @autocomplete = "off", @required = "" })
+                                                    @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-11">
+                                            <div class="form-group">
+                                                    @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @required = "", @style = "resize:none; margin-left:17px", @placeholder = "Comments" })
+
+                                                    @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+
+                                            </div></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-4 col-md-offset-4">
+                                                <button type="button" class="btn btn-success" id="AddOutofOffices"><i class="fa fa-save"></i> Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                @using (Html.BeginForm("DeleteOutofOffice", "Admin", FormMethod.Post, new { id = "deleteOutofOffice" }))
+                {
+                    <div class="modal fade DeleteUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                        <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:25%; margin:0 auto 0 -10%; margin-top:100px" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to Delete Out of Office?</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-horizontal">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <div class="form-group">
+                                                        <div class="col-md-9">
+                                                            @Html.HiddenFor(model => model.Relieved, new { @class = "form-control Relieved" })
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <div class="col-md-10 col-md-offset-2">
+                                                            <button type="button" class="btn btn-danger" id="DeleteOutofOffices">Delete</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @using (Html.BeginForm("EndLeave", "Admin", FormMethod.Post, new { id = "endLeave" }))
+                {
+                    <div class="modal fade Endleave" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                        <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:25%; margin:0 auto 0 -10%; margin-top:100px" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to End Out of Office?</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="form-horizontal">
+                                        <div class="container">
+                                            <div class="row">
+                                                @Html.HiddenFor(model => model.Relieved, new { @class = "form-control Relieved" })
+                                                <div class="form-group">
+                                                    <div class="col-md-10 col-md-offset-1">
+                                                        <button type="button" class="btn btn-success" id="EndLeaves">End Leave</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @using (Html.BeginForm("EditOutofOffice", "Admin", FormMethod.Post, new { id = "editOutofOffice" }))
+                {
+                    <div class="modal fade EditUsermodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                        <div class="modal-dialog modal" style="display:inline-block; vertical-align:middle; margin:0 auto 0 -20%; margin-top:100px; overflow-y:hidden; overflow-x:hidden; width:40%" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Edit Out of Office</h4>
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="form-horizontal">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label>Reliever Staff</label>
+                                                <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <input id="locationid" name="locationid" type="hidden" />
+                                                        <input id="roleuser" name="roleuser" type="hidden" />
+                                                        @Html.TextBoxFor(model => model.Reliever, new { @class = "form-control Reliever", @required = "" })
+                                                        @Html.ValidationMessageFor(model => model.Reliever, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+
+                                                <label>Relieved Staff</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.Relieved, new { @class = "form-control Relieved", @required = "", @readonly = "readonly" })
+                                                        @Html.ValidationMessageFor(model => model.Relieved, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+
+                                                <label>Start Date</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.StartDate, new { @class = "form-control StartDate", @id = "EditStartDate", @autocomplete = "off", @required = "" })
+                                                        @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+
+
+                                                <label>End Date</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.EndDate, new { @class = "form-control EndDate", @id = "EditEndDate", @autocomplete = "off", @required = "" })
+                                                        @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.TextAreaFor(model => model.Comment, new { @class = "form-control Comment", @required = "", @style = "resize:none; width:610px; margin-left:17px", @placeholder = "Comments" })
+
+                                                        @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-4 col-md-offset-4">
+                                                    <button type="button" class="btn btn-success" id="EditOutofOffices"><i class="fa fa-save"></i> Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="panel">
+                            <header class="panel-heading panel-border">
+                                <h3 class="text-primary"> Out of Office List </h3>
+                                <span class="tools pull-right">
+                                    <button class="btn btn-xs btn-primary" data-toggle="modal" data-target=".addstaffmodal"><span class="glyphicon glyphicon-plus"></span> Create Out of Office</button>
+                                </span>
+                            </header>
+
+                            @if (TempData["success"] != null)
+                            {
+                                <div id="success" class="alert alert-success alert-dismissable" role="alert">
+
+                                    <span class="glyphicon glyphicon-ok"></span> @TempData["success"]
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+                            @if (TempData["message"] != null)
+                            {
+                                <div id="message" class="alert alert-danger alert-dismissable" role="alert">
+
+                                    <span class="glyphicon glyphicon-ok"></span> @TempData["message"]
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+                            @if (TempData["AlreadyExist"] != null)
+                            {
+                                <div class="alert alert-danger alert-dismissable" role="alert">
+
+                                    <span class="glyphicon glyphicon-ban-circle"></span> @TempData["AlreadyExist"]
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            }
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="staff" style="font-size:small">
+                                        <thead>
+                                            <tr>
+                                                <th><strong>Reliever</strong>
+                                                <th><strong>Relieved Staff</strong> </th>
+                                                <th><strong>Start Date</strong> </th>
+                                                <th><strong>End Date</strong> </th>
+                                                <th><strong>Comment</strong> </th>
+                                                <th><strong>Status</strong> </th>
+                                                <th style="width:5px"></th>
+                                                <th style="width:5px"></th>
+                                                <th style="width:5px"></th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div style="display:none" id="loadingImage" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+    <script type="text/javascript">
+       
+        $(document).ready(function () {
+            
+            var loginemail = '@ViewBag.UserID';
+            $("#success, #message").fadeIn('fast').delay(10000).fadeOut('fast');
+            var table = $("#staff").DataTable({
+                "processing": true,
+                "serverSide": true,
+                ajax: {
+                    url: "/Admin/GetOutofOfficeStaff",
+                    type: "POST",
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+                },
+                dom: 'Blfrtip',
+                buttons: [
+                    'csv', 'excel', 'pdf', 'print'
+                ],
+                columns: [
+                    {
+                        data: "reliever"
+                    },
+                    {
+                        data: "relieved"
+
+                    },
+                    {
+                        data: "startDate"
+                    },
+                    {
+                        data: "endDate"
+                    },
+                    {
+                        data: "comment"
+                    },
+                    {
+                        data: "status",
+                        render: function (data, type, user) {
+                            if (user.status === "Starting") {
+                                return '<strong class="badge" style="background-color:orange; font-size:bold"> Starting</strong>';
+                            } else if (user.status === "Started") {
+                                return '<strong class="badge" style="background-color:green; font-size:bold"> Started</strong>';
+                            } else {
+                                return '<strong class="badge" style="background-color:red; font-size:bold"> Finished</strong>';
+                            }
+                        }
+
+                    },
+
+                ],
+
+                "columnDefs": [
+
+                    {
+                        "targets": 6,
+                        "data": null,
+                        render: function (data, type, user) {
+                            if (user.status === "Starting" && user.relieved === loginemail) {
+                                return '<button id="EditUsers" class="btn btn-xs btn-warning EditUsers"><i class="fa fa-edit"></i>  Edit</button>';
+                            } else {
+                                return '';
+                            }
+                        }
+
+                    },
+                    {
+                        "targets": 7,
+                        "data": null,
+                        render: function (data, type, user) {
+                            debugger;
+                            if (user.status === "Starting" && user.relieved === loginemail) {
+                                return '<span id="endLeave" class="btn btn-xs btn-danger endLeave"><i class="fa fa-remove"></i>  End This</span>';
+                            } else {
+                                return '';
+                            }
+                        }
+                    },
+                    {
+                        "targets": 8,
+                        "data": null,
+                        render: function (data, type, user) {
+                            if (user.status === "Starting" && user.relieved === loginemail) {
+                                return '<p id="DeleteUsers" class="btn btn-xs btn-danger DeleteUsers"><i class="fa fa-trash"></i>  Delete</p>';
+                            } else {
+                                return '';
+                            }
+                        }
+
+                    },
+                ]
+
+            });
+            $('#staff').on('click', 'p', function () {
+                debugger;
+                $(".DeleteUser").modal('show');
+                $(".EditUsermodal").modal('hide');
+                $(".Endleave").modal('hide');
+                var data = table.row($(this).parents('tr')).data();
+                $(".Relieved").val(data.relieved);
+            });
+            $('#staff').on('click', 'button', function () {
+                debugger;
+                $(".EditUsermodal").modal('show');
+                $(".Endleave").modal('hide');
+                $(".DeleteUser").modal('hide');
+                var data = table.row($(this).parents('tr')).data();
+                $(".Relieved").val(data.relieved);
+                $(".Reliever").val(data.reliever);
+                $(".StartDate").val(data.startDate);
+                $(".EndDate").val(data.endDate);
+                $(".Comment").val(data.comment);
+            });
+            $('#staff').on('click', 'span', function () {
+                debugger;
+                $(".Endleave").modal('show');
+                $(".EditUsermodal").modal('hide');
+                $(".DeleteUser").modal('hide');
+                var data = table.row($(this).parents('tr')).data();
+                $(".Relieved").val(data.relieved);
+            });
+
+            $(".Reliever, .Relieved").autocomplete({
+                source: function (request, response) {
+                    debugger;
+                    $.ajax({
+                        url: '/Admin/UserIdAutosearch',
+                        type: "GET",
+                        datatype: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data,
+                                function (val, item) {
+                                    return {
+                                        label: val.userEmail,
+                                        value: val.userEmail,
+                                        staffFullName: val.firstName,
+                                        roleuser: val.userRole
+                                    }
+
+                                }));
+
+                        }
+
+                    });
+                },
+
+                select: function (event, ui) {
+                    debugger;
+                    $("#roleuser").val(ui.item.roleuser);
+                    $("#staffFullName").val(ui.item.staffFullName);
+                    var userid = $(".Reliever").val();
+                }
+            });
+            $("#StartDate, #EndDate").datepicker({
+                beforeShow: function (input, inst) {
+                    $(document).off('focusin.bs.modal');
+                },
+                onClose: function () {
+                    $(document).on('focusin.bs.modal');
+                },
+                changeMonth: true, changeYear: true, dateFormat: "M d yy"
+            });
+            $("#EditStartDate, #EditEndDate").datepicker({
+                beforeShow: function (input, inst) {
+                    $(document).off('focusin.bs.modal');
+                },
+                onClose: function () {
+                    $(document).on('focusin.bs.modal');
+                },
+                changeMonth: true, changeYear: true, dateFormat: "M d yy"
+            });
+
+
+
+            
+            $("#AddOutofOffices").click(function () {
+                $.post($("#addOutofOffice").attr('action'), $("#addOutofOffice").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+            $("#DeleteOutofOffices").click(function () {
+                $.post($("#deleteOutofOffice").attr('action'), $("#deleteOutofOffice").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+            $("#EndLeaves").click(function () {
+                $.post($("#endLeave").attr('action'), $("#endLeave").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+            $("#EditOutofOffices").click(function () {
+                $.post($("#editOutofOffice").attr('action'), $("#editOutofOffice").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+
+        });
+        window.setInterval(function () {
+            $('#staff').DataTable().ajax.reload();
+        }, 30000);
+
+    </script>
+}

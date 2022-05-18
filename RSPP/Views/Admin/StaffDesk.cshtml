@@ -1,0 +1,162 @@
+﻿@model RSPP.Models.StaffDeskModel
+
+@{
+    ViewBag.Title = "Staff Desk";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+
+<div class="content">
+    <h2 class="lefty">My Staff </h2>
+    <hr class="clear" />
+    <table class="table table-striped dataTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Staff Email</th>
+                <th>Staff Name</th>
+                <th>Role</th>
+                <th>On Desk</th>
+                <th>Status</th>
+                <th style="width:2px"></th>
+                @if (ViewBag.UserRole == "SUPPORT" || ViewBag.UserRole == "ICT" || ViewBag.UserRole == "SUPERADMIN")
+                {
+                    <th style="width:2px"></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{int i = 1;}
+            @foreach (RSPP.Models.StaffDesk s in Model.StaffDeskList)
+            {
+
+                <tr>
+                    <td>@(i++)</td>
+                    <td>@s.StaffEmail</td>
+                    <td>@s.StaffName </td>
+                    <td>@s.Role</td>
+                    <td>@s.OnDesk</td>
+                    <td>@s.status</td>
+                    <td>
+                        <a href="#modalPopup" data-url="@Url.Action("ViewStaffDesk", new { userid = s.StaffEmail })"
+                           data-name="@s.StaffName" class="popAlert btn btn-xs btn-info" data-toggle="modal">View Desk</a>
+                    </td>
+                    @if (ViewBag.UserRole == "SUPPORT" || ViewBag.UserRole == "ICT" || ViewBag.UserRole == "SUPERADMIN")
+                    {
+                        <td>
+                            <a class="btn btn-success btn-xs btn-block appidlist" href="javascript:DelegateNewUser('@s.StaffEmail','@s.Role')"><i class="fa fa-recycle"></i> Re-Route</a>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@using (Html.BeginForm("Rerouteuser", "Admin", FormMethod.Post))
+{
+<div class="modal fade Rerouteuser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+    @*<div class="modal-dialog modal-lg" style="margin-top:100px; width:80%" role="document">*@
+    <div class="modal-dialog modal" style="margin:0 auto 0 -40%; margin-top:30%; height:100%; width:80%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                    <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100; width:100px; margin-top:-110px" src="~/images/spinning.gif" />
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to Re-Assign User?</h4>
+
+            </div>
+
+            <div class="modal-body">
+                <div class="form-horizontal">
+                    <div class="patialviewcontainer" id="patialviewcontainer">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+}
+<div class="modal fade adminPopup" id="modalPopup">
+    <div class="modal-dialog" style="margin: 0 auto 0 -20%">
+        <div class="modal-content">
+            @*<div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+               <h3 class="modal-title">Modal header</h3>
+        </div>*@
+            <div id="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+
+            $("#assign").hide('fast');
+            $("[rel='tooltip']").tooltip();
+
+            $(".dataTable").dataTable({
+                "aLengthMenu": [25, 50, 75, 100, 200],
+                'iDisplayLength': 25,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                "columnDefs": [{
+                    orderable: false, "targets": [-1, -3],
+                }],
+                "language": {
+                    "lengthMenu": "Display _MENU_ records per page",
+                    "zeroRecords": "Nothing found - sorry",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                }
+            });
+
+            $("a.popAlert").click(function (e) {
+                e.preventDefault();
+                var elem = $(this);
+                var url = elem.attr("data-url");
+                var staffName = elem.data("name");
+                //$("#modal-body").html(Loading());
+                $(".modal-dialog").addClass("wider-body");;
+                //$(".modal-title").text("Applications on " + staffName + "'s desk");
+
+                $.get(url, function (data) {
+                    $("#modal-body").html(data);
+                });
+            });
+
+        });
+
+
+        function DelegateNewUser(email, userrole) {
+
+            //$("#role").val(userrole);
+            //$("#olduseremail").val(email);
+            //$("#lastassigned").val(email);
+
+            $.get("/Admin/StaffTaskAssignment", { userid: email, role: userrole }, function (data) {
+                $('#patialviewcontainer').html(data);
+                $("#load").hide().ajaxStart(function () {
+                    $("#load").show();
+                }).ajaxStop(function () {
+                    $("#load").hide();
+                });
+            });
+
+            $(".Rerouteuser").modal('show');
+
+        };
+    </script>
+
+}

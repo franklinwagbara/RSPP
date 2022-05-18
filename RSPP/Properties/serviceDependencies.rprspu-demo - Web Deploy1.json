@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/staging-servers/databases/RPRSPU_DB",
+      "type": "mssql.azure",
+      "connectionId": "RSPPConnectionString",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

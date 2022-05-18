@@ -1,0 +1,203 @@
+﻿@model RSPP.Models.AccountModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>RSPP|Login</title>
+
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/font.css" rel="stylesheet" />
+    <link href="~/css/simple-line-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/solid.css" integrity="sha384-+0VIRx+yz1WBcCTXBkVQYIBVNEFH1eP6Zknm16roZCyeNg2maWEpk/l/KsyFKs7G" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+
+    <style>
+        .container {
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            float: left;
+            min-height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
+    @*@Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")*@
+
+
+    @using (Html.BeginForm("ForgotPassword", "Account", FormMethod.Post, new { @id = "forgotpasswordformid" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container">
+            <div class="modal fade ForgotPasswordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                <div class="modal-dialog" style="display:inline-block; vertical-align:middle; margin:0 auto 0 40%; width:450px; height:500px; margin-top:40px" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>Activation link will be sent to your email</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-sm-11">
+                                    <label style="font-family:Cambria; font-weight:bold">Enter Email</label>
+                                    <input class="form-control col-sm-11" id="forgotpasswordemail" placeholder="Enter email registered with this portal" type="email" name="forgotpasswordemail" required="" autocomplete="off" /><br />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-sm-offset-4">
+                                    <div class="col-sm-4">
+                                        <button type="button" id="forgotpasswordbtn" class="btn btn-success">Submit</button>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="container">
+
+            <center>
+
+                <div style="margin-top: 175px">
+
+                    <div style="background-color:white; max-width: 400px; padding:30px; border-radius:4px; box-shadow: 0 17px 50px 0 rgba(0,0,0,0.19),0 12px 15px 0 rgba(0,0,0,0.24); overflow: hidden; opacity:0.9" class="text-left">
+
+                        <div class="logo"><big><b class="text-info"></b> </big>  <img src="~/images/nsclogo.png" height="100" width="120" style="margin-left:110px" /></div>
+                        <br />
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-at text-dark"></i></span>
+                                    @Html.TextBoxFor(log => log.UserEmail, new { @class = "form-control", @placeholder = "Enter Email", @type = "email", @autocomplete = "off" })
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <div class="">
+                            <div class="input-group">
+                                <span class="input-group-addon" style=""><i class="fa fa-lock text-dark"></i></span>
+                                @Html.TextBoxFor(log => log.Password, new { @class = "form-control", @placeholder = "Enter Password", @type = "password", @autocomplete = "off" })
+                            </div>
+
+                        </div>
+
+                        <br />
+
+                        <div id="RegDiv">
+                            <div><a href="#" id="forgotpassword" style="float:right" class="text-success" data-toggle="modal" data-target=".ForgotPasswordmodal">Forgot Password?</a></div>
+                            <button class="col-lg-12 col-sm-12 col-xs-12 btn btn-success" id="btnlogin" type="submit" style="height:45px;"> Login </button>
+                            <span class="text-success" style="font-size:12px; float:left">Don't have an existing account on this portal? <a href="/Account/AccountRegister" style="text-decoration:underline">Register here</a></span>
+
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+            </center>
+        </div>
+
+        <div style="display:none" id="loadingImage" class="loadingImage">
+            <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+            </div>
+        </div>
+    }
+    <script src="~/js/jquery-3.3.1.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            $("#forgotpasswordbtn").click(function (e) {
+                e.preventDefault();
+
+                if ($("#forgotpasswordformid").valid()) {
+                    $(".loadingImage").show();
+                    $(".ForgotPasswordmodal").modal('hide')
+                    var email = $("#forgotpasswordemail").val();
+                    $.post("/Account/ForgotPassword", { Email: email }, function (data) {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    });
+                }
+
+            });
+
+
+            $("#btnlogin").click(function (e) {
+                e.preventDefault();
+
+                if ($("#formid").valid()) {
+                    $(".loadingImage").show();
+                    var email = $("#UserEmail").val();
+                    var passwrd = $("#Password").val();
+
+                    $.post("/Account/Login", { Email: email, Password: passwrd }, function (data) {
+                        var status = data.status;
+                        var message = data.message;
+                        if (status === "success" && message === "Company") {
+                            window.location = "/Company/Index";
+                        } else if (status === "success" && message === "Admin") {
+                            window.location = "/Admin/Index";
+                        } else {
+                            $(".loadingImage").hide();
+                            alert(message);
+                        }
+
+                    });
+                } else {
+                    $(".loadingImage").hide();
+                }
+
+            });
+
+        });
+
+    </script>
+
+
+</body>
+
+
+</html>

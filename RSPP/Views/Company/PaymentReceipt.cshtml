@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewBag.Title = "Payment Receipt";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+@*<div class="row" style="width:100%">
+    <div class="pageTitle bg1">
+        <h2 class="lefty">PAYMENT RECEIPT</h2>
+        <div class="clear"></div>
+    </div>
+</div>*@
+<br /><br />
+<div class="row xrow" style="margin-left:25%">
+    <div class="col-md-8 col-md-offset-1">
+        <div style="color: gray; font-size: 14px; box-sizing: border-box;">
+
+            <div style="background-color: #ece8d4; width:700px; min-height:200px;">
+                <div style="padding: 10px 30px 30px 30px;">
+                    @{
+                        if (ViewBag.PaymentLogStatus == "AUTH")
+                        {
+                            <h3 style="color: green; text-align: center; font-weight: 300; padding-bottom: 8px; border-bottom: 1px solid #ddd;"><b>Transaction Success</b></h3>
+                        }
+                        else if (ViewBag.PaymentLogStatus == "INIT")
+                        {
+                            <h3 style="color: blue; text-align: center; font-weight: 300; padding-bottom: 8px; border-bottom: 1px solid #ddd;"><b>Awaiting Payment</b></h3>
+                        }
+
+                    }
+
+                    <p style="text-align: right; font-size: 14px;"></p>
+                    <div>
+                        Details Of The Transaction Is Listed Below: <br /><br />
+                        <ul>
+                            <li>Application ID: @ViewBag.PaymentLogApplicationId</li>
+                            <li>Remita Reference: @ViewBag.PaymentLogRRReference</li>
+                            <li>Total Amount: @ViewBag.TotalAmount</li>
+                            <li>Application Date: @ViewBag.PaymentLogTransactionDate.ToString()</li>
+                            <li>Message: <strong style="color:green;font-size:large;">@ViewBag.PaymentLogTxnMessage</strong></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <br />
+
+            @{
+                if (ViewBag.PaymentLogStatus == "AUTH")
+                {
+
+                    <a href="@Url.Action("DocumentUpload", "Company", new { ApplicationId=ViewBag.PaymentLogApplicationId})" class="btn btn-success" style="margin-left:40%">Procceed To Document Upload</a>
+                }
+                else if (ViewBag.PaymentLogStatus == "INIT")
+                {
+                    <a href="@Url.Action("GenerateRRR", "Company", new { ApplicationId=ViewBag.PaymentLogApplicationId, Amount=ViewBag.TotalAmount})" style="margin-left:40%" class="btn btn-warning">Generate RRR</a>
+                }
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+
+

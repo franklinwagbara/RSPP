@@ -1,0 +1,412 @@
+﻿@{
+    ViewBag.Title = "Certificate Report";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <header class="panel-heading panel-border">
+                    <h3 class="text-primary"> Certificate Report </h3>
+                    <div class="pull-right">
+                        <div class="row">
+                            <div class="panel short-states" style="background-color:#eaeef3; margin-right:30px; margin-top:-50px">
+                                <div class="panel-title">
+                                </div>
+                                <div class="panel-body">
+                                    <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@TempData["totalLicense"]</span></div>
+                                    <small class="label label-danger" style="font-size:15px">Total Application</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="tools pull-right">
+                    </span>
+                </header>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-2">
+
+                            <div class="input-group">
+
+                                <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
+                                <div><input type="date" class="min form-control" id="min" autocomplete="off" name="min" placeholder="From" /></div>
+                            </div>
+                        </div><div class="col-md-3">
+                            <div class="input-group">
+                                <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
+                                <div><input type="date" class="maxdate form-control" id="maxdate" autocomplete="off" name="maxdate" placeholder="To" /></div>
+                                <div class="input-group-addon" style="background-color:red">
+                                    <button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none"></button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <div class="input-group-addon" style="background-color:darkred">
+                                    <span class="fa fa-home"></span>
+                                </div>
+                                <div><input id="companyname" name="companyname" placeholder="search by company email" class="form-control companyname" /></div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="button" class="btn btn-warning" id="all" name="all" value="Show All Record" />
+                        </div>
+                    </div>
+
+
+
+                    <div class="row" style="margin-top:-50px">
+
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <select id="appstatus" name="appstatus" class="form-control">
+                                    <option disabled selected>--Search By Application Status--</option>
+                                    <option value="Processing">PROCESSING</option>
+                                    <option value="Approved">APPROVED</option>
+                                    <option value="Rejected">REJECTED</option>
+                                </select>
+                                <div class="input-group-addon" style="background-color:red">
+                                    <button id="clearbtn1" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><br /><br />
+
+
+
+
+                    <div style="margin-top:-20px" class="col-md-12">
+                        <table class="table table-striped" id="licenselistreport" style="font-size:small; margin-top:-20px">
+                            <thead>
+                                <tr>
+
+                                    <th><strong>Application ID</strong>
+                                    <th><strong>Application Type</strong></th>
+                                    <th><strong>Company Email</strong></th>
+                                    <th><strong>Status</strong></th>
+                                    <th><strong>Agency Name</strong></th>
+                                    <th><strong>Issued Date</strong></th>
+                                    <th><strong>Expiry Date</strong></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr style="border: 1px solid white" />
+    <div class="row">
+        <div class="col-md-12">
+            <div id="container"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div id="container1" style="min-height:600px; margin: 0 auto"></div>
+        </div>
+    </div>    <hr style="border: 1px solid white" />
+
+    <div class="jumbotron">
+        <div class="row">
+            <div style="margin-left:15px; margin-right:15px">
+                <div class="col-md-4">
+                    <div class="panel short-states" style="background-color:#ffffff">
+                        <div class="panel-title">
+                        </div>
+                        <div class="panel-body">
+                            <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@ViewBag.totalNewApp</span></div>
+                            <small class="label label-danger" style="font-size:15px">Total New Certificate Issued</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel short-states" style="background-color:#ffffff">
+                        <div class="panel-title">
+                        </div>
+                        <div class="panel-body">
+                            <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@ViewBag.totalReNewApp</span></div>
+                            <small class="label label-warning" style="font-size:15px">Total Renewed Certificate Issued</small>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+    @*<div class="jumbotron">
+            <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+            <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+        </div>*@
+</div>
+@section Scripts {
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            $("#clearbtn1").click(function () {
+                $("#appstatus").val('');
+                table.search(this.value).draw();
+                table.ajax.reload();
+            });
+
+
+
+            $("#appstatus").change(function () {
+                table.search(this.value).draw();
+                table.ajax.reload();
+            });
+
+
+
+            $("#all").click(function () {
+                table.search("All License").draw();
+            });
+
+            $(".companyname").autocomplete({
+                source: function (request, response) {
+                    debugger;
+                    $.ajax({
+                        url: '/Admin/GetCompanyNameAutoSearch',
+                        type: "GET",
+                        datatype: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            response($.map(data,
+                                function (val, item) {
+
+                                    return {
+
+                                        label: val.textvalue,
+                                        value: val.textvalue,
+                                        companyname: val.textvalue,
+
+
+                                    }
+
+                                }));
+
+                        }
+
+                    });
+                },
+
+                select: function (event, ui) {
+                    debugger;
+                    $(".companyname").val(ui.item.companyname);
+                    var textvalue = $(".companyname").val();
+                    table.search(this.value).draw();
+                    table.draw();
+                }
+            });
+            $("#searchdate").click(function () {
+                min1 = $(".min").val();
+                datemax1 = $(".maxdate").val();
+                table.draw();
+            });
+
+            var table = $("#licenselistreport").DataTable({
+                "processing": true,
+                "serverSide": true,
+                ajax: {
+                    url: "/Admin/GetLicenseReport",
+                    type: "POST",
+                    data: function (d) {
+                        d.mymin = $("#min").val();
+                        d.mymax = $("#maxdate").val();
+                    },
+                },
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                columns: [
+                    { data: "applicationId" }, { data: "applicationTypeId" }, { data: "companyEmail" }, { data: "status" }, { data: "agencyName" }, { data: "licenseIssuedDate" }, { data: "licenseExpiryDate" }]
+                    
+            });
+
+
+            $.getJSON("/Admin/GetLicenseChart", function (data) {
+                debugger;
+                var chart1 = Highcharts.chart({
+                    chart: {
+                        renderTo: 'container',
+                        plotBackgroundColor: null,
+                        plotBorderWidth: null,
+                        plotShadow: false,
+                        type: 'pie',
+                        options3d: {
+                            enabled: true,
+                            alpha: 45,
+                            beta: 0
+                        }
+                    },
+
+                    title: {
+                        text: 'Certificate Ratio'
+                    },
+                    tooltip: {
+                        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+                    },
+                    plotOptions: {
+                        pie: {
+                            allowPointSelect: true,
+                            cursor: 'pointer',
+                            depth: 35,
+                            dataLabels: {
+                                enabled: true,
+                                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                                style: {
+                                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                                }
+                            }
+                        }
+                    },
+                    series: [{
+                        name: 'Total Certificates',
+                        colorByPoint: true,
+                        data: [
+                            { name: 'Bargo Operators', y: data.bargo_Operators },
+                            { name: 'Cargo Consolidators/De-Consolidators', y: data.cargoConsolidators_DeConsolidators },
+                            { name: 'Chandlers', y: data.chandling },
+                            { name: 'Dry Port Operator', y: data.dryPortOperator },
+                            { name: 'Freight Forwarders and Clearing Agents', y: data.freightForwarders_ClearingAgents },
+                            { name: 'Haulers/Truckers', y: data.haulers_Truckers },
+                            { name: 'ICD', y: data.icd },
+                            { name: 'Logististics Service Provider', y: data.logististics_Service_Provider },
+                            { name: 'Stevedoring/Warehousing', y: data.stevedoring_Warehousing },
+                            { name: 'Seaport Terminal Operators', y: data.seaportTerminalOperator },
+                            { name: 'Off Dock Terminal Operators', y: data.offDockTerminalOperator },
+                            { name: 'Shipping Agency', y: data.shippingAgency },
+                            { name: 'ShippingCompany/Line', y: data.shippingCompany_Line },
+                            { name: 'Shippers Association', y: data.shippersAssociation },
+                            { name: 'Cargo Surveyor', y: data.cargoSurveyor },
+                            { name: 'Individual Category (Import & Exporter)', y: data.individualCategory },
+                            { name: 'Corperate Category', y: data.corperateCategory },
+                            { name: 'Other Port Service Providers', y: data.otherPortServiceProviders },
+                        ],
+                        exporting: true
+                    }]
+                });
+                var chart2 = Highcharts.chart({
+                    chart: {
+                        renderTo: 'container1',
+                        type: 'column',
+                        margin: 75,
+                        options3d: {
+                            enabled: true,
+                            alpha: 15,
+                            beta: 15,
+                            depth: 50,
+                            viewDistance: 25
+                        }
+                    },
+                    title: {
+                        text: ''
+                    },
+                    yAxis: {
+                        type: 'logarithmic',
+                        title: {
+                            text: ''
+                        }
+                    },
+                    xAxis: {
+                        labels: {
+                            rotation: -45,
+                        },
+                        categories: ['Bargo Operators', 'Cargo Consolidators/De-Consolidators', 'Individual Category (Import & Exporter)', 'Dry Port Operator', 'Freight Forwarders and Clearing Agents', 'Haulers/Truckers', 'Other Port Service Providers', 'Logististics Service Provider', 'Stevedoring/Warehousing', 'Seaport Terminal Operators', 'Off Dock Terminal Operators',
+                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandlers', 'Corperate Category', 'ICD']
+                    },
+                    plotOptions: {
+                        column: {
+                            depth: 25
+                        }
+                    },
+                    series: [{
+                        name: '',
+                        colorByPoint: true,
+                        data: [
+                            [data.bargo_Operators], [data.cargoConsolidators_DeConsolidators], [data.individualCategory], [data.dryPortOperator], [data.freightForwarders_ClearingAgents], [data.haulers_Truckers], [data.otherPortServiceProviders], [data.logististics_Service_Provider], [data.stevedoring_Warehousing], [data.stevedoring_Warehousing],
+                            [data.offDockTerminalOperator], [data.shippingAgency], [data.shippingCompany_Line], [data.shippersAssociation], [data.cargoSurveyor], [data.chandling], [data.corperateCategory], [data.icd]
+                        ]
+                    }]
+                });
+
+            });
+
+
+            
+        });
+
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

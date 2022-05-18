@@ -1,0 +1,208 @@
+﻿
+@using RSPP.Helpers;
+@using RSPP.Controllers;
+@using Microsoft.AspNetCore.Http;
+@{
+    GeneralClass generalClass = new GeneralClass();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSPP | @ViewData["Title"] </title>
+
+
+
+    <environment include="Development">
+        @*<link href="~/css/bootstrap.css" rel="stylesheet" />*@
+        <link rel="icon" type="image/png" sizes="16x16" href="~/images/coa.png">
+        <link href="~/ela/css/lib/bootstrap/bootstrap.min.css" rel="stylesheet" />
+        @*<link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />*@
+
+        <link href="~/css/site.css" rel="stylesheet" />
+        <link href="~/css/otherStyle.css" rel="stylesheet" />
+        @*<link rel="stylesheet" href="~/css/dataTables.bootstrap.css" />*@
+        <link href="~/css/bootstrap-datepicker.css" rel="stylesheet" />
+        <link href="~/css/select2.min.css" rel="stylesheet" />
+        @*<link rel="stylesheet" href="~/css/dataTables.min.css" />
+        <link rel="stylesheet" href="~/css/buttons.dataTables.min.css" />
+
+        <link rel="stylesheet" href="~/css/dataTables.checkboxes.css" />*@
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.11.2/css/jquery.dataTables.min.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" />
+        <link rel="stylesheet" href="~/css/jquery.datetimepicker.min.css" />
+        <link href="~/css/MainStyle.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/css/ClientStyle.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+        @*<link rel="stylesheet" href="https: //cdn.datatables.net/1.10.19/css/dataTables.semanticui.min.css" />*@
+
+    </environment>
+
+
+
+
+
+
+
+</head>
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark  fixed-top" style="box-shadow: 0 3px 5px black; background-color:#073c75">
+        <div class="container">
+            <a class="navbar-brand">
+                <img src="~/images/nsclogos.jpeg" width="140" height="55" class="d-inline-block align-top" alt="RSPP Image Logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07" aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarsExample07">
+
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="~/Company/Index"> Dashboard <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Applications</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown07">
+                            <a class="dropdown-item" href="~/Company/ApplicationForm">Apply</a>
+                            <a class="dropdown-item" href="~/Company/MyApplications">My Applications</a>
+                            <a class="dropdown-item" href="~/Company/MyLegacyApplications">My Legacy Applications</a>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">My Account <b class="badge badge-warning" id="NotifyCount"></b> </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown07">
+                            <a class="dropdown-item" href="~/Company/CompanyProfile">Company Profile</a>
+                            <a class="dropdown-item" href="~/Company/ChangePassword">Change Password</a>
+
+                        </div>
+                    </li>
+
+                    <li class="nav-item active">
+                        <a class="nav-link" href="~/Company/AllCompanyPermits"> My Certificates</a>
+                    </li>
+
+                    <li class="nav-item dropdown active">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown07" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Payments<b class="badge badge-warning" id=""></b> </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown07">
+                            <a class="dropdown-item" href="~/Company/MyPayments"><i class="fas fa-archive"></i> My Payments</a>
+                        </div>
+                    </li>
+
+                </ul>
+
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link text-warning" href="~/Company/CompanyProfile"> <i class="fa fa-user"> </i><b> @Context.Session.GetString(AccountController.sessionEmail).ToString()</b> <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item active">
+                        <a class="nav-link" href="~/Account/Logoff"> <i class="fa fa-power-off"> </i> Logout <span class="sr-only">(current)</span></a>
+                    </li>
+
+                </ul>
+
+            </div>
+        </div>
+    </nav>
+
+
+
+
+
+    <div class="container" style="box-shadow:0 0 5px #c5c5c5; padding: 0 15px 20px 15px; background:white;">
+        <div class="panel-body">
+            <br /><br /><p></p>
+            @RenderBody()
+
+            <br />
+            <br />
+        </div>
+    </div>
+
+    <br /><br />
+
+    <footer class="container text-center">
+
+        Copyright © @DateTime.Now.Year. Nigerian Shippers' Council
+    </footer>
+
+    <br /><br />
+
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+
+<environment include="Development">
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/semantic ui/dist/semantic.js"></script>
+    <script src="~/js/jquery.datetimepicker.full.min.js"></script>
+    <script src="~/js/bootstrap-datepicker.js"></script>
+    <script src="https://cdn.datatables.net/1.11.2/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+    <script src=" https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script src="~/js/jquery.ui.widget.js"></script>
+    <script src="~/js/jquery.iframe-transport.js"></script>
+    <script src="~/js/jquery.fileupload.js"></script>
+    <script src="~/js/bootbox.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script src="https://code.highcharts.com/highcharts-3d.js"></script>
+    <script src="~/js/select2.min.js"></script>
+</environment>
+
+<script type="text/javascript">
+
+    window.setInterval(function () {
+        $.post("/Session/CheckSession", function (response) {
+
+            if ($.trim(response) === "true") {
+
+                var location = window.location.origin + "/Home/Index";
+                window.location.href = location;
+            }
+        });
+    }, 12000);
+
+
+
+
+
+    function add_chatinline() { var hccid = 89311022; var nt = document.createElement("script"); nt.async = true; nt.src = "https://mylivechat.com/chatinline.aspx?hccid=" + hccid; var ct = document.getElementsByTagName("script")[0]; ct.parentNode.insertBefore(nt, ct); }
+    add_chatinline();
+</script>

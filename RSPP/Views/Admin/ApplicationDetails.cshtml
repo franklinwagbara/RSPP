@@ -1,0 +1,319 @@
+﻿@model RSPP.Models.DB.ApplicationRequestForm
+
+@{
+    ViewBag.Title = "Application Details";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+
+
+}
+
+
+<div class="content">
+    <h3 class="lefty text-primary">Application Information For Application with Reference Number: @Model.ApplicationId</h3>
+    <div class="righty">
+        <a href="@Url.Action("ViewApplication", new { applicationId = Model.ApplicationId })" class="btn btn-danger" style="float:right"><i class="icon-arrow-left"></i> Back </a>
+    </div>
+    @*<hr class="clear" />*@
+    <div class="row">
+        <input type="hidden" id="maplocation" name="maplocation" value="@Model.CompanyAddress" />
+    </div>
+
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Company Information</legend>
+        <table class="table table-striped table-condensed table-responsive table-bordered CompanyInfoDT" id="mytable">
+            <thead>
+                <tr>
+                    <th><strong>Application Reference No.</strong></th>
+                    <th><strong>Agency Name</strong> </th>
+                    <th><strong>Company Address</strong></th>
+                    <th><strong>Company Email</strong></th>
+                    <th><strong>Company Website</strong></th>
+                    <th><strong>Date of Establishment</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td>@Model.ApplicationId</td>
+                    <td>@Model.AgencyName</td>
+                    <td>@Model.CompanyAddress</td>
+                    <td>@Model.CompanyEmail</td>
+                    <td>@Model.CompanyWebsite</td>
+                    <td>@Model.DateofEstablishment</td>
+                </tr>
+
+            </tbody>
+        </table>
+
+
+    </fieldset><br /><br />
+
+
+
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border">Application Details</legend>
+
+        <table class="table table-striped table-condensed table-responsive table-bordered AppInfoDT" id="mytable">
+            <thead>
+                <tr>
+                    @if (ViewBag.MyAgencyId == 1)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>Services Provided in Port</strong></th>
+                        <th><strong>Any Other Relevant Info</strong> </th>
+                    }
+                    else if (ViewBag.MyAgencyId == 2)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>CRFFN Registration No.</strong></th>
+                        <th><strong>CRFFN Registraton Expiry Date</strong> </th>
+                        <th><strong>Custom License Expiry Date</strong></th>
+                        <th><strong>Custom License No.</strong> </th>
+                        <th><strong>Line of Business</strong></th>
+                        <th><strong>Other License</strong> </th>
+                        <th><strong>Other License Expiry Date</strong></th>
+                        <th><strong>Any Other Info</strong></th>
+                    }
+                    else if (ViewBag.MyAgencyId == 3)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>Cargo Type</strong></th>
+                        <th><strong>Line of Business</strong> </th>
+                        <th><strong>Name of Terminal</strong></th>
+                        <th><strong>Status of Terminal</strong> </th>
+                        <th><strong>Location of Terminal</strong> </th>
+                        <th><strong>Any Other Info</strong></th>
+                    }
+                    else if (ViewBag.MyAgencyId == 4)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>Cargo Type</strong></th>
+                        <th><strong>Line of Business</strong> </th>
+                        <th><strong>Vessel Lines Represented in Nigeria</strong></th>
+                        <th><strong>Any Other Info</strong></th>
+                    }
+                    else if (ViewBag.MyAgencyId == 5)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>Line of Business</strong> </th>
+                        <th><strong>Any Other Info</strong></th>
+                    }
+                    else if (ViewBag.MyAgencyId == 6)
+                    {
+                        <th><strong>Application Ref No.</strong> </th>
+                        <th><strong>Application Category</strong></th>
+                        <th><strong>NEPC RegNo</strong> </th>
+                        <th><strong>Any Other Info</strong></th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (ViewBag.MyAgencyId == 1)
+                {
+                    foreach (RSPP.Models.DB.GovernmentAgency g in ViewBag.Governmentagency)
+                    {
+                        <tr>
+                            <td>@g.ApplicationId</td>
+                            <td>@g.ServicesProvidedInPort</td>
+                            <td>@g.AnyOtherRelevantInfo</td>
+                        </tr>
+                    }
+                }
+                else if (ViewBag.MyAgencyId == 2)
+                {
+                    @foreach (RSPP.Models.DB.LogisticsServiceProvider l in ViewBag.LogisticsServiceProvider)
+                    {
+                        <tr>
+                            <td>@l.ApplicationId</td>
+                            <td>@l.CrffnRegistrationNum</td>
+                            <td>@l.CrffnRegistratonExpiryDate</td>
+                            <td>@l.CustomLicenseExpiryDate</td>
+                            <td>@l.CustomLicenseNum</td>
+                            <td>@l.LineOfBusiness</td>
+                            <td>@l.OtherLicense</td>
+                            <td>@l.OtherLicenseExpiryDate</td>
+                            <td>@l.AnyOtherInfo</td>
+                        </tr>
+                    }
+                }
+                else if (ViewBag.MyAgencyId == 3)
+                {
+                    @foreach (RSPP.Models.DB.PortOffDockTerminalOperator p in ViewBag.PortOffDockTerminalOperator)
+                    {
+
+                        <tr>
+                            <td>@p.ApplicationId</td>
+                            <td>@p.CargoType</td>
+                            <td>@p.LineOfBusiness</td>
+                            <td>@p.NameOfTerminal</td>
+                            <td>@p.StatusOfTerminal</td>
+                            <td>@p.LocationOfTerminal</td>
+                            <td>@p.AnyOtherInfo</td>
+                        </tr>
+
+                    }
+                }
+                else if (ViewBag.MyAgencyId == 4)
+                {
+                    @foreach (RSPP.Models.DB.ShippingAgency s in ViewBag.ShippingAgency)
+                    {
+                        <tr>
+                            <td>@s.ApplicationId</td>
+                            <td>@s.CargoType</td>
+                            <td>@s.LineOfBusiness</td>
+                            <td>@s.VesselLinesRepresentedInNigeria</td>
+                            <td>@s.AnyOtherInfo</td>
+                        </tr>
+
+
+                    }
+                }
+                else if (ViewBag.MyAgencyId == 5)
+                {
+                    @foreach (RSPP.Models.DB.OtherPortServiceProvider o in ViewBag.OtherPortServiceProvider)
+                    {
+                        <tr>
+                            <td>@o.ApplicationId</td>
+                            <td>@o.LineOfBusiness</td>
+                            <td>@o.LineOfBusiness</td>
+                        </tr>
+
+
+                    }
+                }
+
+                else if (ViewBag.MyAgencyId == 6)
+                {
+                    @foreach (RSPP.Models.DB.UserOfPortService o in ViewBag.UserOfPortService)
+                    {
+                        <tr>
+                            <td>@o.ApplicationId</td>
+                            <td>@o.Category</td>
+                            <td>@o.NepcRegNo</td>
+                            <td>@o.AnyOtherInfo</td>
+                        </tr>
+
+
+                    }
+                }
+
+
+            </tbody>
+        </table>
+
+    </fieldset>
+
+    <div class="form-group" id="maps_container" style="height:350px; width:100%;"></div>
+
+
+</div>
+
+@section scripts{
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2df9i_A809q2eQQizBb7UqSGXASsQHVQ&libraries=places"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $(".CompanyInfoDT").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+
+
+            $(".AppInfoDT").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+        });
+
+        function loadMap() {
+            var mapDiv = document.getElementById("maps_container");
+
+            var gpsCordinates = $("#GPS").val();
+            console.log('Gps Cordinates = ' + gpsCordinates);
+            var locationaddress = $("#maplocation").val();
+            console.log('LocationAddress = ' + locationaddress);
+
+
+            if (gpsCordinates != null || gpsCordinates != ' ') {
+
+                google.maps.visualRefresh = true;
+
+                var array = gpsCordinates.split(',')
+
+                var latitude = array[0];
+                console.log('latitude = ' + latitude);
+                var longitude = array[1];
+                console.log('longitude = ' + longitude);
+                var myCenter = new google.maps.LatLng(latitude, longitude);
+
+                var mapOptions = {
+                    center: myCenter,
+                    zoom: 14,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    panControl: true,
+                    zoomControl: true,
+                    mapTypeControl: true,
+                    scaleControl: true,
+                    streetViewControl: true,
+                    overviewMapControl: true,
+                    rotateControl: true,
+                    zoomControl: true,
+                    zoomControlOptions: {
+                        style: google.maps.ZoomControlStyle.SMALL
+                    },
+                    mapTypeControl: true,
+                    mapTypeControlOptions: {
+                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                        position: google.maps.ControlPosition.TOP_CENTER,
+                        mapTypeIds: [
+                            google.maps.MapTypeId.ROADMAP,
+                            google.maps.MapTypeId.TERRAIN,
+                            google.maps.MapTypeId.SATELLITE,
+                            google.maps.MapTypeId.HYBRID
+                        ]
+                    }
+                };
+
+                var map = new google.maps.Map(mapDiv, mapOptions);
+                var marker = new google.maps.Marker({ position: myCenter, animation: google.maps.Animation.BOUNCE });
+                marker.setMap(map);
+
+
+                var infowindow = new google.maps.InfoWindow({ content: locationaddress });
+                infowindow.open(map, marker);
+
+
+                google.maps.event.addListener(marker, 'click', function () {
+                    map.setZoom(13);
+                    map.setCenter(marker.getPosition());
+                });
+
+
+            }
+
+        }
+        document.addEventListener("DOMContentLoaded", function () {
+            loadMap();
+        });
+    </script>
+}

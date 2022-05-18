@@ -1,0 +1,415 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+@*<div class="row">*@
+@if (ViewBag.ErrorMessage == "SUCCESS")
+{
+
+    <div class="row" id="BackImage">
+
+        <div class="col-sm-4 text-left">
+            <br />
+            <h2>Welcome</h2>
+            <hr />
+            <b class="DashCompanyName">@ViewBag.CompanyName.ToUpper()</b>
+        </div>
+
+        <div class="col-sm-8">
+
+            <div class="row">
+
+                <div class="col-sm-3">
+                    <div class="FirstDashCount">
+                        <b>@ViewBag.ApplicationCount</b>
+                    </div>
+                    <div class="DashCount">
+                        <br />
+                        Application(s)
+                    </div>
+
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="FirstDashCount">
+                        <b>@ViewBag.ProcessedApplicationCount</b>
+                    </div>
+                    <div class="DashCount">
+                        <br />
+                        On Processing
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="FirstDashCount">
+                        <b>@ViewBag.TotalPermitCount</b>
+                    </div>
+                    <div class="DashCount">
+                        <br />
+                        Total Certificate(s)
+                    </div>
+                </div>
+
+                <div class="col-sm-3">
+                    <div class="FirstDashCount">
+                        <b>@ViewBag.PermitExpiringCount</b>
+                    </div>
+                    <div class="DashCount">
+                        <br />
+                        Expiring in 60 days
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+
+
+
+    <br />
+
+    <div style="margin-left:16%">
+        <div class="padd-s">
+            <div class="btn-group btn-group-lg btn-group-justified">
+                <a class="btn btn-success round" role="button" href="@Url.Action("ApplicationForm")"><i class="fas fa-book  fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Apply For Certificate</a>
+                <a class="btn btn-primary round" role="button" href="@Url.Action("CompanyProfile")"><i class="fas fa-building fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Company Profile</a>
+                <a class="btn btn-info round" role="button" href="@Url.Action("MyDocuments")"><i class="fas fa-folder-open fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Company Documents</a>
+                <a class="btn btn-warning round" role="button" href="@Url.Action("ALLCompanyPermits")"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;View Certificate</a>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+
+    <div class="modal fade" id="modalPopup">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+    <div id="coverScreen" class="LockOn" style="display: none;"></div>
+
+
+    if (ViewBag.Allcomments.Count > 0)
+    {
+        foreach (var ah in ViewBag.Allcomments)
+        {
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-danger alert-dismissable text-center" style="height:auto" role="alert">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span>Application With the Reference Number <b>@ah.ApplicationID</b>, Has Been Rejected. Reason For Rejection=> @ah.Comment.<br /><br />
+                        PLEASE COMPLETE YOUR APPLICATION BY CLICKING <a href="javascript:MoveToAction('ApplicationForm','@ah.ApplicationID')" class="btn btn-danger btn-xs round">Application Form</a>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+        }
+    }
+
+
+
+
+    if (ViewBag.AllApplicationStageDetails.Count > 0)
+    {
+        foreach (var item in ViewBag.AllApplicationStageDetails)
+
+        {
+            if ((item.CurrentStageId == 1))
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
+                        <i class="fas fa-book-reader fa-2x" aria-hidden="true"></i>
+                        KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('ApplicationForm','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE FORM AND UPLOAD/CHANGE REQUIRED LICENSE/APPROVAL DOCUMENTS
+                    </div>
+                </div>
+                <br />
+            }
+
+            if (item.CurrentStageId == 2)
+            {
+                <div class="col-md-12">
+                    <div class="alert btn-warning alert-dismissible center-block" role="alert" align="center">
+                        `
+                        <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
+                        PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('GenerateRRR','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO FINALIZE APPLICATION
+                    </div>
+                </div>
+                <br />
+            }
+
+            if (item.CurrentStageId == 3 && TempData["Acceptcomment"].ToString() != "Reject")
+            {
+                <div class="col-md-12">
+                    <div class="alert btn-warning alert-dismissible center-block" role="alert" align="center">
+                        <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
+                        KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('DocumentUpload','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE REQUIRED CERTIFICATE DOCUMENTS
+                    </div>
+                </div>
+                <br />
+            }
+
+            @*if (item.Value == 3 && ((TempData["Acceptcomment"].ToString() == "Reject")))
+                {
+                    <div class="col-md-12">
+                        <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
+                            <i class="fas fa-book-reader fa-2x" aria-hidden="true"></i>
+                            KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('DocumentUpload','@item.Key')" class="alert-link">@item.Key</a> TO COMPLETE THE REQUIRED CERTIFICATE DOCUMENTS
+                        </div>
+                    </div>
+                    <br />
+                }*@
+
+
+
+            if (item.CurrentStageId == 4)
+            {
+                <div class="col-md-12">
+                    <div class="alert btn-info alert-dismissible center-block" role="alert" align="center">
+                        <i class="fas fa-file-alt fa-2x" aria-hidden="true"></i>
+                        YOUR APPLICATION WITH THE REFERENCE NUMBER @item.ApplicationId IS BEING PROCCESSED AT THE MOMENT, YOU WILL BE NOTIFIED WHEN NECCESSAY.
+                    </div>
+                </div>
+                <br />
+            }
+
+
+        }
+    }
+    <br />
+    <br />
+    <div class="row xrow" style="">
+        <div class="col-md-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>Recent Notifications</h3>
+                </div>
+                <div class="col-md-12">
+                    <table class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Type</th>
+                                <th>Message</th>
+                                <th>Elapsed Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (RSPP.Models.CompanyMessage mm in ViewBag.AllMessages)
+                            {
+                                <tr>
+                                    <td>
+                                        <i class="glyphicon glyphicon-envelope unred"></i>
+                                    </td>
+                                    <td>
+                                        <span>@mm.MessageType</span>
+                                    </td>
+                                    <td>
+                                        @if (mm.MessageType == "Info")
+                                        {
+                                            @*<a href="#" onclick="javascript:showMessageDetail('@mm.ApplicationId','@mm.MessageId')">*@
+                                            <div class="text text-primary"> @mm.Message</div>
+                                            @*</a>*@
+                                        }
+                                        else
+                                        {
+                                            @*<a href="#" onclick="javascript:showMessageDetail('@mm.ApplicationId','@mm.MessageId')">*@
+                                            <div class="text text-danger">@mm.Message</div>
+
+                                            @*</a>*@
+                                        }
+                                    </td>
+                                    <td>
+                                        <span>@mm.Date</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>Type</th>
+                                <th>Message</th>
+                                <th>Elapsed Time</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                <div id="mobSwitch"></div>
+                <h4 class="pad-t">Need Help?</h4>
+                <div class="list-group">
+                    <a href="#" class="list-group-item active">
+                        Enquiry
+                    </a>
+                    @*<a href="https://ems.dpr.gov.ng/Tickets/New" target="_blank" class="flash list-group-item"><span style="color:seagreen">Complain/Enquiries</span></a>*@
+                    <a href="#" class="list-group-item">FAQs</a>
+                    <a href="#" class="list-group-item">Video Guide</a>
+                    <a href="#" class="list-group-item">Live Chat</a>
+                    <a href="#" class="list-group-item">Guide Lines</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+else
+{
+    <div class="col-md-12">
+        <div class="alert alert-danger alert-dismissible center-block" role="alert" id="welcomealert" align="center">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <i class="fa fa-exclamation-triangle fa-border" aria-hidden="true"></i>
+            <strong>@ViewBag.ErrorMessage</strong>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title text-center" id="notmodalheader"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-md-3">License Type</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="notLicenseType" name="notLicenseType" readonly style="border: 0px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Transaction Date</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="notTxnDate" name="notTxnDate" readonly style="border: 0px;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Message</label>
+                        <div class="col-md-9">
+                            <textarea class="form-control" rows="3" id="notMessage" name="notMessage" readonly style="border: 0px;">@ViewBag.Message</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div style="display:none" class="loadingImage">
+    <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+        <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+    </div>
+</div>
+
+
+<style>
+    .modal-dialog {
+        width: 500px;
+    }
+
+    .btn.round {
+        border-radius: 50px;
+    }
+</style>
+
+
+@section scripts{
+    <script type="text/javascript">
+       // $("#approvedlegacy").delay(30000).fadeOut(500);
+
+
+
+        function hideAndResetModal(modalID) {
+            $(modalID).modal('hide');
+            $(modalID).on('hidden.bs.modal', function () {
+                $(modalID).find('form').trigger('reset');
+            });
+        }
+
+        function myhref(web) {
+            window.location.replace = web;
+        }
+
+
+
+
+        function MoveToAction(ActionName, ApplicationID) {
+             debugger;
+            var r = confirm("Are you sure you Want To Continue?");
+            if (r == true) {
+
+                var url = '@Url.Action("replace")';
+                url = url.replace("replace", ActionName);
+                window.location.href = url + "?ApplicationId=" + ApplicationID;
+
+            }
+        }
+
+
+                    function showMessageDetail(applicationId, notificationid) {
+                        $(".loadingImage").show('fast');
+            var url = '@Url.Action("GetMessageDetail")';
+            $.get(url, { ApplicationId: applicationId, MessageId: notificationid })
+         .fail(function (data) {
+             alert("Network Error");
+         })
+        .done(function (data) {
+            if (data.Status == "success") {
+                $('#notmodalheader').text("Message Details");
+                $('#notLicenseType').val(data.LicenseDesc);
+                $('#notTxnDate').val(data.MessageDate);
+                $('#notMessage').val(data.Message);
+
+                $("#notificationModal").modal('show');
+                $(".loadingImage").hide('fast');
+            }
+            else {
+                console.debug("here");
+                console.debug(data.Status);
+                console.debug(data.Message);
+                console.debug(data.AppDescription);
+                alert(data.Message);
+                $(".loadingImage").hide('fast');
+            }
+        });
+        }
+
+
+    </script>
+}

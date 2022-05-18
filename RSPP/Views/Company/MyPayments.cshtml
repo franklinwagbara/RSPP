@@ -1,0 +1,100 @@
+﻿@model List<RSPP.Models.DB.PaymentLog>
+
+@{
+    int counter = 0;
+    ViewBag.Title = "MyPayments";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+
+<br />
+<br />
+<div class="row">
+    <br />
+    <div>
+        <h2 style="margin-left:10px" class="text-info">My Payments</h2>
+        <div class="clear"></div>
+    </div><br />
+</div>
+<br /><br />
+@if (ViewBag.MyPaymentsResponseMessage == "SUCCESS")
+{
+    <div class="row xrow">
+        <div class="col-md-12">
+            <table class="table dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>ApplicationId</th>
+                        <th>Narration</th>
+                        <th>Transaction Date</th>
+                        <th>RRR Number</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (RSPP.Models.DB.PaymentLog paymentlog in Model)
+                    {
+                    <tr>
+                        <td>@(counter += 1)</td>
+                        <td>@paymentlog.ApplicationId</td>
+                        <td>@paymentlog.TxnMessage</td>
+                        <td>@paymentlog.TransactionDate.Value.ToString("dd-MMM-yyyy HH:mm")</td>
+                        <td>@paymentlog.Rrreference</td>
+                        <td>@paymentlog.TxnAmount</td>
+                        @if (paymentlog.Status.Contains("INIT"))
+                        {
+                            <td><span class="badge badge-warning">Payment Pending</span></td>
+                        }
+                        else
+                        {
+                            if (paymentlog.Status.Contains("AUTH"))
+                            {
+                                <td><span class="badge badge-success">PAID</span></td>
+                            }
+                            else if (paymentlog.Status.Contains("FAIL") || paymentlog.Status.Contains("ERROR"))
+                            {
+                                <td><span class="badge badge-danger">paymentlog.Status</span></td>
+                            }
+                        }
+
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-md-12">
+        <div class="col-sm-12">
+            <div class="alert alert-warning alert-dismissible center-block" role="alert" id="welcomealert" align="center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <i class="fa fa-exclamation-triangle fa-2x" aria-hidden="true"></i>
+                <strong>@ViewBag.MyPaymentsResponseMessage</strong>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".dataTable").dataTable({
+                "aLengthMenu": [25, 50, 75, 100, 200],
+                'iDisplayLength': 25,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records per page",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+        });
+    </script>
+}

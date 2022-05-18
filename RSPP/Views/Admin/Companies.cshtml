@@ -1,0 +1,61 @@
+﻿@model List<RSPP.Models.DB.UserMaster>
+
+    @{
+        ViewBag.Title = "Companies";
+        Layout = "~/Views/Shared/_ElaLayout.cshtml";
+    }
+
+
+    <div class="content">
+        <h2 class="lefty text-info">All Registered Companies</h2>
+        <hr class="clear" />
+
+        <table class="table table-striped customDT">
+            <thead>
+                <tr>
+                    <th style="width: 197px;">Company Name</th>
+                    <th style="width: 100px;">Company Address</th>
+                    <th style="width: 200px;">Company Email</th>
+                    <th style="width: 200px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (RSPP.Models.DB.UserMaster up in Model)
+                {
+                    <tr>
+                        <td><a href="@Url.Action("CompanyProfile", new { ApplicationId ="", CompanyEmail = up.UserEmail})">@up.CompanyName</a> </td>
+                        <td>@up.CompanyAddress</td>
+                        <td>@up.UserEmail</td>
+                        <td>
+                            <a class="btn btn-xs btn-primary" href="@Url.Action("CompanyDocuments", new { compId = up.UserEmail })">Docs<i class="icon-doc"></i></a>
+                            <a class="btn btn-xs btn-info" href="@Url.Action("CompanyApplications", new { userID = up.UserEmail })">Apps<i class="icon-note"></i></a>
+                            <a class="btn btn-xs btn-success" href="@Url.Action("CompanyPermits", new { userId = up.UserEmail })">Certificates<i class="icon-login"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    @section scripts{
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $(".customDT").dataTable({
+                    "aLengthMenu": [25, 50, 75, 100, 200],
+                    'iDisplayLength': 25,
+                    columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                    "language": {
+                        "lengthMenu": "Display  _MENU_ records per page",
+                        "zeroRecords": "No record found",
+                        "info": "Showing page _PAGE_ of _PAGES_",
+                        "infoEmpty": "No Application on your Desk Currently",
+                        "infoFiltered": "(filtered from _MAX_ total records)"
+                    },
+                    "order": [[1, "desc"]]
+                });
+            });
+
+            
+        </script>
+    }

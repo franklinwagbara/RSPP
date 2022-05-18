@@ -1,0 +1,69 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link href="../css/bootstrap.css" rel="stylesheet" />
+    <link href="../css/font.css" rel="stylesheet" />
+    <link href="../css/font-awesome.min.css" rel="stylesheet" />
+
+    <style>
+        .container {
+            bottom: 0;
+            width: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            float: left;
+            min-height: 100%;
+            position: relative;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body style="background-image: url('../images/bg3.jpg');background-repeat: no-repeat;background-position: initial;background-size: cover;">
+  
+    <div class="container">
+        <br /><br /><br /><br /><br />
+        <div class="row">
+            <div class="col-lg-3" style="min-width:20px; min-height:20px;">
+                <img src="~/images/nsclogo.png" class="img-responsive" />@*img-responsive*@
+            </div>
+
+            <div class="col-lg-9">
+                <span style="font-size: 35px; font-family: Cambria; min-width:200px; text-shadow: -1px 0 green, 0 1px whitesmoke, 1px 0 white, 0 -1px whitesmoke">Nigerian Shippers' Council</span>
+                <br />
+                <span style="font-family: Cambria; min-width:200px; font-size: 35px; text-shadow: -1px 0 green, 0 1px whitesmoke, 1px 0 white, 0 -1px whitesmoke">Online Registration of Regulated Port Service Providers & Users</span>
+            </div>
+
+        </div><br />
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <a href="../Account/Login/" class="btn btn-block btn-md btn-success"><b>LogIn</b></a><br />
+                <a href="../Account/AccountRegister/" class="btn btn-block btn-md btn-warning"><b>Register</b></a>
+
+            </div>
+            @*<div class="col-md-1">
+
+            </div>*@
+        </div>
+
+        <div class="row" style="margin-top: 10%">
+            <div class="col-md-12">
+            <div class="alert alert-warning alert-dismissable text-center" style="height:auto" role="alert">
+                <marquee><b class="text-danger">NOTICE BELOW:</b></marquee><br />
+                <b>1. If you are new to this portal click <a href="/Account/AccountRegister"><span class="text-warning">Register</span></a>.</b><br />
+                <b>2. If you are already registered on the portal click <a href="/Account/Login"><span class="text-warning"> Login</span></a></b>
+            </div>
+        </div>
+        </div>
+    </div>
+</body>
+</html>

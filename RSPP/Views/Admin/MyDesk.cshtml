@@ -1,0 +1,85 @@
+﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+
+
+@{
+    int count = 0;
+    ViewBag.Title = "MyDesk";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-5">
+            <h2 class="">Applications On My Desk</h2>
+        </div>
+    </div>
+
+    <hr class="clear" />
+
+    <form action="#" method="post" id="frmPush">
+        @Html.AntiForgeryToken()
+        <table class="table table-responsive table-bordered table-condensed dataTable" id="pushTable">
+            <thead>
+                <tr>
+                    <th>S/N</th>
+                    <th>Application Id</th>
+                    <th>Application Type</th>
+                    <th>Company Email</th>
+                    <th>Company Address</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @foreach (RSPP.Models.DB.ApplicationRequestForm req in Model)
+            {
+        <tr>
+            <td>@(count += 1)</td>
+            <td>@req.ApplicationId</td>
+            <td>
+               @req.ApplicationTypeId
+            </td>
+            <td>@req.CompanyEmail</td>
+            <td>@req.CompanyAddress</td>
+            <td>@req.AddedDate</td>
+            <td class="txtright" style="padding-top:25px">
+                <div class="row">
+                    <div class="col-sm-7">
+                        <a href="@Url.Action("ViewApplication", new { applicationId = req.ApplicationId })" class="btn btn-xs btn-success">View Application</a>
+                    </div>
+                    <div class="col-sm-3">
+                        <a href="@Url.Action("TransitionHistory", new { applicationId = req.ApplicationId })" class="btn btn-xs btn-warning">History</a>
+                    </div>
+                </div>
+            </td>
+           
+        </tr>
+            }
+        </table>
+    </form>
+
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $(".dataTable").dataTable({
+                "aLengthMenu": [25, 50, 75, 100, 200],
+                'iDisplayLength': 25,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records per page",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Application on your Desk Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+        });
+   </script>
+}
+
+

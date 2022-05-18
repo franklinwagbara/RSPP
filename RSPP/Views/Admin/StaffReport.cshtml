@@ -1,0 +1,201 @@
+﻿@model IEnumerable<RSPP.Models.DB.UserMaster>
+
+@{
+    ViewBag.Title = "Staff Report";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+    <div class="pull-right" style="margin-top:2%">
+        <div class="row">
+            <div class="panel short-states" style="background-color:#eaeef3; margin-right:30px; margin-top:-50px">
+                <div class="panel-title">
+                </div>
+                <div class="panel-body">
+                    <div><span class="col-md-offset-1 text-danger" style="font-size:40px">@TempData["totalstaff"]</span></div>
+                    <big class="label label-danger" style="font-size:15px">Total Staff</big>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <select id="Userroles" name="Userroles" class="form-control roleuser"></select>
+        </div>
+        @*<div class="col-md-3">
+            <select id="zone" name="zone" class="form-control zonalLocation"></select>
+        </div>
+        <div class="col-md-3">
+            <select id="Userlocation" name="Userlocation" class="form-control UserLocation"></select>
+        </div>*@
+    </div>
+    <h2 class="lefty" style="margin-top:-20px">Staff Report</h2>
+    <hr class="clear" />
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped table-hover table-responsive table-bordered dataTable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Roles</th>
+                        <th width="10">Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        </div>
+        @*<hr style="border: 1px solid white" />
+        <div class="jumbotron">
+
+            <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+            <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
+        </div>*@
+    </div>
+
+    @section Scripts {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $("#Userroles").change(function () {
+                    table.search(this.value).draw();
+                    table.ajax.reload();
+                });
+
+                $(".roleuser").ready(function () {//get all user role populated in the dropdownlist
+                    var html = "";
+
+                    $(".roleuser").html("");
+
+                    $.getJSON("/Admin/GetUserRole",
+                        {},
+                        function (datas) {
+                            $.each(datas,
+                                function (key, val) {
+                                    html += "<option value=" + val.role + ">" + val.role + "</option>";
+                                });
+                            $(".roleuser").append("<option disabled selected>--Select Role--</option>");
+                            $(".roleuser").append("<option value='ALLRoles'>ALL</option>");
+                            $(".roleuser").append(html);
+                        });
+                });
+
+
+                
+
+                var table = $(".dataTable").DataTable({
+
+                    "processing": true,
+                    "serverSide": true,
+                    //"search": { "search": "Default_filter" },
+                    ajax: {
+                        url: "/Admin/GetStaffReport",
+                        type: "POST",
+                        async: true,
+                        "sDom": "rtipl",
+                        
+                    },
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    columns: [
+                        { data: "userEmail" }, { data: "fullname" }, { data: "userRole" },
+                        {
+                            data: "status",
+                            render: function (data, type, user) {
+                                return user.status === "ACTIVE" ? '<strong class="badge" style="background-color:green">' + user.status + '</strong>' : '<strong class="badge" style="background-color:red">' + user.status + '</strong>';
+                            }
+                        },
+                    ],
+
+
+                  });
+
+
+
+
+
+                var container = $('<div/>').insertAfter(table.table().container());
+
+                var chart = Highcharts.chart(container[0], {
+                    chart: {
+                        type: 'pie',
+                    },
+                    title: {
+                        text: 'Staff List',
+                    },
+
+                    series: [
+                        {
+                            data: chartData(table),
+                        },
+                    ],
+                });
+
+                // On each draw, update the data in the chart
+                table.on('draw', function () {
+                    chart.series[0].setData(chartData(table));
+                });
+
+
+
+                
+
+
+
+
+            });
+
+
+            function chartData(table) {
+                var counts = {};
+
+                // Count the number of entries for each position
+                table
+                    .column(1, { search: 'applied' })
+                    .data()
+                    .each(function (val) {
+                        if (counts[val]) {
+                            counts[val] += 1;
+                        } else {
+                            counts[val] = 1;
+                        }
+                    });
+
+                // And map it to the format highcharts uses
+                return $.map(counts, function (val, key) {
+                    return {
+                        name: key,
+                        y: val,
+                    };
+                });
+            }
+
+
+        </script>
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

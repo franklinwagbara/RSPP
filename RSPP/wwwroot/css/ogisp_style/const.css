@@ -1,0 +1,563 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+}
+
+.txtright {
+    text-align: right !important;
+}
+
+.txtleft {
+    text-align: left !important;
+}
+
+.txtcenter {
+    text-align: center !important;
+}
+
+.txtjustify {
+    text-align: justify !important;
+}
+
+.txtstrikethrough {
+    text-decoration: line-through;
+}
+
+.promoprice {
+    padding: 3px 10px;
+    border-radius: 25px;
+    color: #FFF;
+    background-color: #ff0000;
+}
+
+.wrap {
+    width: 90%;
+    margin: 0 auto;
+}
+
+.wrap-c {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.wrapper-c {
+    width: 970px;
+    margin: 0 auto;
+}
+
+.wrap-f {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.pad {
+    padding: 10px;
+}
+
+.padd {
+    padding: 20px;
+}
+
+.pad-t {
+    padding: 0 10px;
+}
+
+.padd-t {
+    padding: 0 20px;
+}
+
+.pad-s {
+    padding: 10px 0;
+}
+
+.padd-s {
+    padding: 20px 0;
+}
+
+.no-pad {
+    padding: 0 !important;
+}
+
+.no-pad-tb {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.no-pad-lr {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.no-pad-t {
+    padding-top: 0 !important;
+}
+
+.no-pad-b {
+    padding-bottom: 0 !important;
+}
+
+.no-pad-l {
+    padding-left: 0 !important;
+}
+
+.no-pad-r {
+    padding-right: 0 !important;
+}
+
+.lefty {
+    float: left !important;
+}
+
+.righty {
+    float: right !important;
+}
+
+.clear {
+    clear: both;
+}
+
+.no-marg {
+    margin: 0 !important;
+}
+
+.no-marg-tb {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.no-marg-lr {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.no-marg-t {
+    margin-top: 0 !important;
+}
+
+.no-marg-b {
+    margin-bottom: 0 !important;
+}
+
+.no-marg-l {
+    margin-left: 0 !important;
+}
+
+.no-marg-r {
+    margin-right: 0 !important;
+}
+
+.marg25 {
+    margin-top: 25px !important;
+}
+
+.marg50 {
+    margin-top: 50px !important;
+}
+
+.marg75 {
+    margin-top: 75px !important;
+}
+
+.marg100 {
+    margin-top: 100px !important;
+}
+
+.marg125 {
+    margin-top: 125px !important;
+}
+
+.marg150 {
+    margin-top: 150px !important;
+}
+
+.marg200 {
+    margin-top: 200px !important;
+}
+
+
+.reflect-y {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    -moz-transform: rotateY(180deg);
+}
+
+.reflect-x {
+    transform: rotateX(180deg);
+    -webkit-transform: rotateX(180deg);
+    -moz-transform: rotateX(180deg);
+}
+
+.fade25 {
+    opacity: 0.25;
+}
+
+.fade50 {
+    opacity: 0.50;
+}
+
+.face75 {
+    opacity: 0.75;
+}
+
+.xrow {
+    margin: 0px;
+    position: relative;
+}
+
+    .xrow::before, .xrow::after {
+        content: "";
+        display: table;
+    }
+
+    .xrow::after {
+        clear: both;
+    }
+
+/*+++++ Div x 4 cols +++++*/
+.col4_1x {
+    width: 23%;
+    margin: 10px 1%;
+    float: left;
+}
+
+.col4_2x {
+    width: 48%;
+    margin: 10px 1%;
+    float: left;
+}
+
+.col4_3x {
+    width: 73%;
+    margin: 10px 1%;
+    float: left;
+}
+
+.col4_4x {
+    width: 100%;
+    margin: 10px 0;
+    float: left;
+}
+/*+++++ Div x 2 cols +++++*/
+.half {
+    width: 48%;
+    margin: 10px 1%;
+    float: left;
+}
+
+    .half:last-child {
+        float: right;
+    }
+/*+++++ Div x 3 cols +++++*/
+.col3_1x {
+    width: 32%;
+    float: left;
+    margin: 10px 1%;
+}
+
+    .col3_1x.span2 {
+        width: 66%;
+        margin: 10px 1%;
+    }
+
+        .col3_1x:first-child, .col3_1x.span2:first-child {
+            margin-left: 0;
+        }
+
+        .col3_1x:last-child, .col3_1x.span2:last-child {
+            margin-right: 0;
+        }
+
+    .col3_1x:nth-child(3n+3) {
+        margin-right: 0;
+    }
+
+    .col3_1x:nth-child(3n-2) {
+        margin-left: 0;
+    }
+
+/*====== ALERTS =======*/
+/*.alertbox {
+    border: 3px solid #529533;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px auto;
+    padding-left: 35px;
+    color: #008000;
+    background: #DFF2BF url('images/ok.png') no-repeat 5px center;
+}
+
+    .alertbox.err {
+        background: #FDE4E1 url('images/error.png') no-repeat 5px center;
+        color: #CC000A;
+        border-color: #FBD3C6;
+    }
+
+    .alertbox.wrn {
+        background: #FEEFB3 url('images/warning.png') no-repeat 5px center;
+        color: #9F6000;
+        border-color: #FDDD5B;
+    }*/
+
+/*====== End of ALERT =======*/
+
+/*====== Switch Button ======*/
+.switch {
+    height: 1%;
+    margin: 0 0 20px;
+}
+
+    .switch a {
+        display: inline-block;
+        background: #419641;
+        position: relative;
+        height: 40px;
+        /*width: 41px;*/
+        padding: 0 43px 0 20px;
+        margin-right: 19px;
+        font-size: 20px;
+        line-height: 40px;
+        color: #fff !important;
+        text-decoration: none !important;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border-radius: 20px;
+    }
+
+        .switch a:after {
+            content: '';
+            position: absolute;
+            right: 5px;
+            top: 3px;
+            height: 33px;
+            width: 33px;
+            background: #fff;
+            -webkit-border-radius: 16px;
+            -moz-border-radius: 16px;
+            border-radius: 16px;
+        }
+
+        .switch a.nop {
+            padding: 0 20px 0 43px;
+            background: #c12e2a;
+            text-align: right;
+        }
+
+            .switch a.nop:after {
+                right: auto;
+                left: 5px;
+            }
+
+
+.smBtn {
+    width: 15px;
+    height: 20px;
+}
+
+/* ==== DROP MENU ==== */
+.mobMenu {
+    float: right;
+    margin-top: 30px;
+    margin-right: 10px;
+    position: relative;
+    z-index: 1000;
+}
+
+.navBtn {
+    font-size: 20px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.1);
+    float: right;
+    color: black;
+}
+
+    .navBtn:hover, .navBtn.selected {
+        background-color: rgba(6, 59, 100, 0.85);
+        color: #FFF;
+        transition: all 0.2s ease-in-out;
+    }
+
+.navDropdown {
+    background-color: rgba(6, 59, 100, 0.85);
+    padding: 3px 0 10px 0;
+    position: absolute;
+    float: right;
+    right: 0;
+    width: 150px;
+    margin-top: 8px;
+    box-shadow: 0 3px 2px 0px #000;
+    border-radius: 0 0 5px 5px;
+    display: none;
+}
+
+    .navDropdown:after {
+        /*Arrow Head*/
+        border: solid;
+        border-color: rgba(6, 59, 100, 0.85) transparent;
+        border-width: 0px 8px 8px 8px;
+        top: -8px;
+        content: "";
+        right: 11px;
+        position: absolute;
+        z-index: 99;
+    }
+
+    .navDropdown ul {
+        list-style: none;
+    }
+
+    .navDropdown li {
+    }
+
+        .navDropdown li a {
+            color: #eee;
+            text-decoration: none;
+            display: block;
+            padding: 5px 10px;
+        }
+
+            .navDropdown li a:hover {
+                background-color: rgba(0, 0, 0, 0.75);
+                color: #ee5010;
+            }
+
+
+
+/* ===== VISIBILITY ===== */
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+.visible-phone {
+    display: none !important;
+}
+
+.visible-tablet {
+    display: none !important;
+}
+
+.hidden-desktop {
+    display: none !important;
+}
+
+.visible-desktop {
+    display: inherit !important;
+}
+
+
+
+
+
+
+/*=== SET LAYOUT ON DIFF DEVICES ===*/
+
+/*=== Large Desktops ===*/
+/*  -------------------------
+    |                       |
+    |                       |
+    |                       |
+    |                       |
+    -------------------------   */
+@media (min-width: 1200px) {
+}
+
+/* Portrait tablet to landscape and desktop */
+/*  ---------------------       -------------
+    |                   |       |           |
+    |                   |       |           |
+    |                   |       |           |
+    ---------------------       |           |
+                                -------------
+    */
+
+@media (min-width: 768px) and (max-width: 979px) {
+    .hidden-desktop {
+        display: inherit !important;
+    }
+
+    .visible-desktop {
+        display: none !important;
+    }
+
+    .visible-tablet {
+        display: inherit !important;
+    }
+
+    .hidden-tablet {
+        display: none !important;
+    }
+}
+
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+    .hidden-desktop {
+        display: inherit !important;
+    }
+
+    .visible-desktop {
+        display: none !important;
+    }
+
+    .visible-phone {
+        display: inherit !important;
+    }
+
+    .hidden-phone {
+        display: none !important;
+    }
+
+    .wrap, .wrap-c, .wrapper-c, .wrap-f {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .col4_1x, .col4_2x {
+        width: 48%;
+        margin: 10px 1%;
+        float: left;
+    }
+
+    .half, .col4_3x, .col4_4x {
+        width: 100%;
+        margin: 10px 0;
+        float: left;
+    }
+
+    /*+++++ Div x 3 cols +++++*/
+    .col3_1x {
+        width: 32%;
+        float: left;
+        margin: 10px 1%;
+    }
+
+        .col3_1x.span2 {
+            width: 66%;
+            margin: 10px 1%;
+        }
+
+            .col3_1x:first-child, .col3_1x.span2:first-child {
+                margin-left: 0;
+            }
+
+            .col3_1x:last-child, .col3_1x.span2:last-child {
+                margin-right: 0;
+            }
+
+        .col3_1x:nth-child(3n+3) {
+            margin-right: 0;
+        }
+
+        .col3_1x:nth-child(3n-2) {
+            margin-left: 0;
+        }
+}
+
+/* Landscape phones and down */
+@media (max-width: 480px) {
+    .col3_1x, .col3_1x.span2, .half, .col4_1x, .col4_2x, .col4_3x, .col4_4x {
+        width: 100%;
+        margin: 10px 0;
+        float: left;
+    }
+}

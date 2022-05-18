@@ -1,0 +1,146 @@
+﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="col-md-12">
+            <div class="alert alert-danger alert-mini alert-dismissible center-block" role="alert" id="welcomealert" align="center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <i class="fa fa-exclamation-triangle fa-border fa-spin" aria-hidden="true"></i>
+                @TempData["Message"]
+            </div>
+        </div>
+    } 
+    
+    <fieldset class="scheduler-border">
+        <legend class="scheduler-border alert alert-success">Application Assignment</legend>
+
+        <div class="row col-md-12">
+            <div class="col-md-8" style="float:left;">
+                <table class="table table-responsive table-bordered mydataTable" id="pushTable">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Reference Number</th>
+                            <th>Agency Name</th>
+                            <th>Application Type</th>
+                            <th>Company Email</th>
+                            <th>Current Desk</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="col-md-4" style="float:right; background-color:#fffbfb; margin-top:45px;">
+                <div><label>Last Assigned User</label></div>
+                <div class="form-group">
+                    <div class="col-md-9">
+                        <input type="hidden" id="arrayitem" name="arrayitem" />
+                        <input type="hidden" id="olduseremail" name="olduseremail" />
+                        <input type="hidden" value="@ViewBag.Rolestaff" id="role" name="role" />
+                        <div class="input-group">
+                            <input type="text" id="lastassigned" name="lastassigned" value="@ViewBag.UserId" class="form-control" readonly="readonly" />
+                            <div class="input-group-addon">
+                                <i class="fa fa-recycle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div><label>New Assigned User</label></div>
+                <div class="form-group">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <select id="newassigned" name="newassigned" class="form-control newassigned"></select>
+                            <div class="input-group-addon">
+                                <span style="display:none" id="loadingimg"><img src="~/images/spinimg.gif" height="20" width="20" /></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div><label>Comment</label></div>
+                <div class="form-group">
+                    <div class="col-md-9">
+                        <textarea id="adcomment" type="text" name="adcomment" class="form-control" style="resize:none"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-7">
+                        <div class="col-sm-offset-1"><input type="submit" value="Assign" id="assign" class="btn btn-primary btn-block" /></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </fieldset>
+    <script language="javascript">
+
+        $("#assign").hide('fast');
+        var email = $("#lastassigned").val();
+        var userrole = $("#role").val();
+        $.post("/Admin/GetNewAssignedUser", { myrole: userrole, myoldemail: email }, function (datas) {
+            debugger;
+            var html = "";
+            $("#newassigned").html("");
+            $(".newassigned").append("<option disabled selected>--Assign To--</option>");
+            $.each(datas,
+                function (key, val) {
+                    html += "<option value=" + val.newuser + ">" + val.newuser + "</option>";
+                    if (val.newuser === "" || val.newuser === null) { $("#loadingimg").show('fast'); } else { $("#loadingimg").hide('fast'); }
+                });
+            $(".newassigned").append(html);
+        });
+        var table = $(".mydataTable").DataTable({
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            ajax: {
+                url: "/Admin/TaskDelegationList",
+                type: "POST",
+                async: true,
+                data: function (d) {
+                    d.mystaffemail = $("#lastassigned").val();
+                },
+                "sDom": "rtipl",
+                "deferRender": true,
+                "deferLoading": 5,
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]]
+            },
+            buttons: [
+                'csv', 'excel', 'pdf', 'print'
+            ],
+            columns: [
+                { data: "applicationId" }, { data: "applicationId" }, { data: "agencyName" }, { data: "applicationTypeId" }, { data: "companyEmail" }, { data: "lastAssignedUser" }
+            ],
+
+
+            "columnDefs": [
+                {
+                    'targets': 0,
+                    'checkboxes': {
+                        'selectRow': true
+                    },
+                }
+            ],
+            'select': {
+                'style': 'multi'
+            },
+            'order': [[1, 'asc']]
+        });
+        $('.mydataTable tbody, thead').on('click', 'input[type="checkbox"]', function (e) {
+            debugger;
+            var data = table.row($(this).parents('tr')).data();
+
+            if (data !== null) {
+                $("#assign").show('fast');
+            }
+        });
+        $("#assign").click(function (e) {
+            var rows_selected = table.column(0).checkboxes.selected();
+            // Iterate over all selected checkboxes
+            $.each(rows_selected, function (index, rowId) {
+                $('#arrayitem').val(rows_selected.join(","));
+            });
+        });
+
+    </script>

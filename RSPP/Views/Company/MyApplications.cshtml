@@ -1,0 +1,189 @@
+﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+@{
+    ViewBag.Title = "My Applications";
+    Layout = "~/Views/Shared/_ClientLayout.cshtml";
+}
+
+<br /><br />
+<div class="row">
+    <br />
+    <div>
+        <h2 style="margin-left:10px" class="text-info">My Applications</h2>
+        <div class="clear"></div>
+    </div><br />
+</div>
+<br />
+<div class="modal fade" id="modalPopup">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+<div style="display:none" id="loadingImage">
+    <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+        <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+    </div>
+</div>
+
+<div class="row xrow">
+    <div class="col-md-12">
+
+
+        <table class="table table-bordered table-condensed" id="myapptable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Reference Number</th>
+                    <th>Company Email</th>
+                    <th>Application Category</th>
+                    <th>Date Applied</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{ViewBag.Counter = 0;}
+                
+                   @foreach (RSPP.Models.DB.ApplicationRequestForm appmaster in Model)
+                    {
+                        <tr>
+                            <td>@(ViewBag.Counter += 1)</td>
+                            <td>@appmaster.ApplicationId</td>
+                            <td>@appmaster.CompanyEmail</td>
+                            <td>@appmaster.AgencyName</td>
+                            <td>@appmaster.AddedDate</td>
+                            <td>
+                                @if (appmaster.CurrentStageId == 1 && appmaster.Status != "Rejected")
+                                {
+                                    <a class="btn btn-primary btn-xs round" href="#" onclick="javascript:MoveToAction('ApplicationForm','@appmaster.ApplicationId')">Application Form/Document Upload</a>
+                                }
+                                else if (appmaster.CurrentStageId == 2 && appmaster.Status != "Rejected")
+                                {
+                                    <a class="btn btn-warning btn-xs round" href="#" onclick="javascript:MoveToAction('ChargeSummary','@appmaster.ApplicationId')">Make Payment</a>
+                                    @*<a class="btn btn-info btn-xs" href="#" onclick="javascript:MoveToConfirmPayment('@appmaster.ApplicationId')">Confirm Payment</a>*@
+
+                                }
+
+                                else if (appmaster.CurrentStageId == 3 && appmaster.Status != "Rejected")
+                                {
+                                    <a class="btn btn-warning btn-xs round" href="#" onclick="javascript:MoveToAction('DocumentUpload','@appmaster.ApplicationId')">Upload Document</a>
+
+                                }
+                                else if (appmaster.Status == "Rejected" && appmaster.CurrentStageId == 1)
+                                {
+                                    <a class="btn btn-danger btn-xs round" href="#" onclick="javascript:MoveToAction('ApplicationForm','@appmaster.ApplicationId')">Resubmit Application</a>
+
+                                }
+
+                                else if (appmaster.Status == "Approved")
+                                {
+                                    <strong class="badge badge-success btn btn-sm"><b>Approved</b></strong>
+                                }
+                                else if (appmaster.Status == "Payment Completed")
+                                {
+                                    <strong class="badge badge-success btn btn-sm"><b>Payment Completed</b></strong>
+
+                                }
+                                else if (appmaster.Status == "Payment Failed")
+                                {
+                                    <strong class="badge badge-danger btn btn-sm"><b>Payment Failed</b></strong>
+
+                                }
+                                else
+                                {
+                                    <strong class="badge badge-warning btn btn-sm"><b>Processing</b></strong>
+                                }
+                            </td>
+
+                            <td>
+                                @if (appmaster.Status != "Rejected" && appmaster.CurrentStageId < 3)
+                                {
+                                    <a class="btn btn-danger btn-xs round" href="#" onclick="javascript:MoveToDeleteAction('@appmaster.ApplicationId')">
+                                        <span class="glyphicon glyphicon-trash"></span> Delete
+                                    </a>
+                                }
+
+                            </td>
+
+
+                        </tr>
+                   
+                }
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+
+
+@section scripts{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("#myapptable").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+        });
+
+
+        function MoveToDeleteAction(ApplicationID) {
+
+                var action = confirm("Are you sure you want to delete application with the reference number " + ApplicationID + "?");
+                if (action === true) {
+                    $.post("/Company/DeleteApplication", { AppID: ApplicationID }, function (data) {
+                        debugger;
+                        var d = data;
+                        if (d === "success") {
+                            alert("Application with the reference number " + ApplicationID + " was successfully deleted.");
+                            window.location.href = "/Company/MyApplications";
+                        } else {
+                            alert("Unable to delete application with the reference number " + ApplicationID);
+
+                        }
+
+                    });
+
+                }
+                else {
+                    return false;
+                }
+
+
+        }
+
+
+
+        function MoveToAction(ActionName, ApplicationID) {
+
+            var r = confirm("Do You Really Want To Continue?");
+            if (r == true) {
+                var url = '@Url.Action("replace")';
+                url = url.replace("replace", ActionName);
+
+                window.location.href = url + "?ApplicationId=" + ApplicationID;
+
+            }
+        }
+
+
+    </script>
+
+}

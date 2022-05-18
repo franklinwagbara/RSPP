@@ -1,0 +1,456 @@
+﻿@model RSPP.Models.DB.UserMaster
+@{
+    ViewBag.Title = "Company Profile";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+
+
+}
+<div class="content">
+
+    <div class="row" style="margin-top:-24px">
+        <br />
+        <div>
+            <h1 style="margin-left:10px" class="text-info">Company Details</h1>
+            <div class="clear"></div>
+        </div><br />
+    </div>
+    <div role="tabpanel">
+
+        <ul class="nav nav-tabs" role="tablist" style="margin-left: 10px;">
+            <li role="presentation" id="liProfile" class=""><a href="#Profile" aria-controls="Profile" role="tab" data-toggle="tab">Company Profile</a></li>
+            <li role="presentation" id="liAddress" class=""><a href="#Address" aria-controls="Address" role="tab" data-toggle="tab">Company Address</a></li>
+            <li role="presentation" id="liDocument" class=""><a href="#Document" aria-controls="Document" role="tab" data-toggle="tab">Company Document</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane" id="Profile">
+
+                <form action="@Url.Action("UpdateCompanyRecord")" enctype="multipart/form-data" method="post" id="profileform">
+                    <input type="hidden" name="actionType" id="actionType" value="UPDATE_PROFILE" />
+
+                    @Html.AntiForgeryToken()
+
+
+
+                    <div class="row xrow og_form"><br /><br />
+                        <div class="pad company">
+                            @*<h3>Company Information</h3>
+                            <hr />*@
+                            <div class="col-md-12">
+                                @*<p>Fields with <span class="req">*</span> are required</p>*@
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label class="control-label">Company Email</label>
+                                    &nbsp;<span class="req">*</span>
+                                    <div class="">
+                                        @if (ViewBag.LoginRole == "SUPPORT")
+                                        {
+                                            @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control" })
+                                        }
+                                        else
+                                        {@Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @readonly = "readonly" })}
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group">
+                                    <label class="control-label">Company Name</label>
+                                    &nbsp;<span class="req">*</span>
+                                    <div class="">
+                                        <div class="input-group">
+                                            @if (ViewBag.LoginRole == "SUPPORT")
+                                            {
+                                                @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
+                                            }
+                                            else
+                                            { @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "readonly" })}
+
+
+                                            <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label class="control-label">Contact Phone Number</label>
+                                    &nbsp;<span class="req">*</span>
+                                    <div class="">
+                                        @if (ViewBag.LoginRole == "SUPPORT")
+                                        {
+                                            @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
+                                        }
+                                        else
+                                        { @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control", @readonly = "readonly" })}
+
+
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+                        </div>
+                        <hr class="clear" />
+                        @if (ViewBag.LoginRole == "SUPPORT")
+                        {
+                            <div class="form-group">
+                                <div class="txtcenter">
+                                    <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </form>
+            </div>
+
+
+            <div role="tabpanel" enctype="multipart/form-data" class="tab-pane" id="Address">
+                <form action="@Url.Action("UpdateCompanyRecord")" enctype="multipart/form-data" method="post" id="addressform">
+
+                    @*<form id="addressform">*@
+                    @*action="@Url.Action("UpdateCompanyRecord", "Company", "")" enctype="multipart/form-data" method="post"*@
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.CompanyAddress)
+                    <input type="hidden" name="actionType" id="actionType" value="ADDRESS" />
+                    <br /><br />
+                    <div class="row xrow og_form">
+                        <div class="pad">
+                            @*<h3>Address</h3>
+        <hr />
+        <div class="col-md-12">
+            <p>Fields with <span class="req">*</span> are required</p>
+        </div>*@
+
+                            <div class="col-md-12 company">
+                                <div class="form-group">
+                                    <label class="control-label">Company Address</label>&nbsp;<span class="req">*</span>
+                                    <div class="">
+                                        @if (ViewBag.LoginRole == "SUPPORT")
+                                        {
+                                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control" })
+
+                                        }
+                                        else
+                                        {@Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
+                                    }
+                                    </div>
+                                    <div style="display:none">
+                                        <label class="control-label col-md-2">GPS Cordinates</label>
+                                        <div class="col-md-4">
+                                            <input id="GPS" name="GPS" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="clear"></div>
+                        </div>
+                        <hr class="clear" />
+                        <div class="clear"></div>
+                        @if (ViewBag.LoginRole == "SUPPORT")
+                        {
+                            <div class="form-group">
+                                <div class="txtcenter">
+                                    <input type="submit" value="Update Address" id="updateAddress" class="btn btn-success" style="width: 200px;" tabindex="14" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </form>
+            </div>
+
+            <div role="tabpanel" class="tab-pane" id="Document">
+
+                <form action="@Url.Action("DocumentLibrary", new { CompanyId=Model.UserEmail})" enctype="multipart/form-data" method="post" id="documentform">
+                    <div class="row xrow">
+                        <div class="col-sm-11">
+                            <div class="">
+                                <table class="table dataTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 50%;">Document Type</th>
+                                            <th style="width: 10%;">Document Image</th>
+                                            @*<th style="width: 15%;">Date Added</th>
+                                            <th style="width: 15%;">Date Modified</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach (RSPP.Models.DB.UploadedDocuments d in ViewBag.AllCompanyDocument)
+                                        {
+
+                                            <tr>
+                                                <td>
+                                                    @d.DocumentName
+
+                                                </td>
+
+                                                <td>
+                                                    @if (d.DocumentName.Contains(".pdf"))
+                                                    {
+
+                                                        <a href="javascript:FileView('@d.DocumentSource')">
+                                                            <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block;"/>
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a href="javascript:FileView('@d.DocumentSource')" data-name="@d.DocumentName">
+                                                            <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block"/>
+                                                        </a>
+
+                                                    }
+                                                </td>
+                                                @*}
+                                                    else
+                                                    {
+                                                        <td>
+
+                                                            <a href='@(d.DocumentSource)' target="_blank" data-name="@d.DocumentName">
+                                                                <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                                                     style="max-height: 40px; max-width: 40px; display: inline-block" alt="@d.DocumentName" />
+                                                            </a>
+                                                        </td>
+                                                    }*@
+
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div id="modalMapDialog" style="display: none">
+        <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+    </div>
+    <br />
+    <br />
+</div>
+@section scripts{
+    <script src="@Url.Content("~/Scripts/jquery.ui.widget.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery.iframe-transport.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/select2.min.js")" type="text/javascript"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2df9i_A809q2eQQizBb7UqSGXASsQHVQ&libraries=places"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui.min.js")" type="text/javascript"></script>
+    <link href="@Url.Content("~/Content/jquery-ui.css")" rel="stylesheet" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".dataTable").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records per page",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Document Currently Displayed",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+
+            google.maps.event.addDomListener(window, 'load', function () {
+                debugger;
+                var options = {
+                    componentRestrictions: { country: "ng" }
+                };
+
+                var places = new google.maps.places.Autocomplete(document.getElementById('CompanyAddress'), options);
+                places = new google.maps.places.Autocomplete(document.getElementById('PostalAddress'), options);
+                google.maps.event.addListener(places, 'place_changed', function () {
+                    debugger;
+                    var place = places.getPlace();
+                    var address = place.formatted_address;
+                    var latitude = place.geometry.location.lat();
+                    var longitude = place.geometry.location.lng();
+                    var mesg = "Location Address Is : " + address;
+                    mesg += "\nLocation Latitude Is : " + latitude;
+                    mesg += "\nLocation Longitude Is: " + longitude;
+                    showMap(address, latitude, longitude);
+                });
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function showMap(locationaddress, latitude, longitude) {
+            debugger;
+            var markers = [];
+
+            $("#modalMapDialog").dialog({
+                modal: true,
+                title: "Address Location on Map",
+                width: 550,
+                hright: 400,
+                buttons: {
+                    Close: function () {
+                        $(this).dialog('close');
+                    },
+                    Okay: function () {
+                        //$('#secondDiv').show();
+                        $("#GPS").val(latitude + ',' + longitude);
+                        $(this).dialog('close');
+                    }
+                },
+                open: function () {
+                    debugger;
+                    google.maps.visualRefresh = true;
+                    var myCenter = new google.maps.LatLng(latitude, longitude);
+                    var mapCanvas = document.getElementById("MapContainer");
+                    var mapOptions = {
+                        center: myCenter,
+                        zoom: 14,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        panControl: true,
+                        zoomControl: true,
+                        mapTypeControl: true,
+                        scaleControl: true,
+                        streetViewControl: true,
+                        overviewMapControl: true,
+                        rotateControl: true,
+                        zoomControl: true,
+                        zoomControlOptions: {
+                            style: google.maps.ZoomControlStyle.SMALL
+                        },
+                        mapTypeControl: true,
+                        mapTypeControlOptions: {
+                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                            position: google.maps.ControlPosition.TOP_CENTER,
+                            mapTypeIds: [
+                                google.maps.MapTypeId.ROADMAP,
+                                google.maps.MapTypeId.TERRAIN,
+                                google.maps.MapTypeId.SATELLITE,
+                                google.maps.MapTypeId.HYBRID
+                            ]
+                        }
+                    };
+
+                    var map = new google.maps.Map(mapCanvas, mapOptions);
+                    var marker = new google.maps.Marker({ position: myCenter, animation: google.maps.Animation.BOUNCE });
+                    marker.setMap(map);
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: locationaddress
+                    });
+                    infowindow.open(map, marker);
+
+                    // Zoom to 9 when clicking on marker
+                    google.maps.event.addListener(marker, 'click', function () {
+                        map.setZoom(13);
+                        map.setCenter(marker.getPosition());
+                    });
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+
+
+
+        $(function () {
+            if (''.length > 0) {
+                $("ul.nav-tabs > li").addClass("disabled").find("a").attr("disabled", "disabled");
+                if ('Directors'.length > 0) {
+                    //Remove all active views 1st
+
+                    $(".tab-content div").each(function () {
+                        $(this).removeClass("active");
+                    });
+
+                    $("ul.nav-tabs li").each(function () {
+                        $(this).removeClass("active");
+                    });
+
+                    var view = 'div#Directors';
+                    var lnk = '#li' + 'Directors';
+                    $(lnk).addClass("active").removeClass("disabled").find("a").removeAttr("disabled");
+                    $(view).addClass("active");
+
+                    switch ('Directors') {
+                        case "Profile":
+                            break;
+                        case "Address":
+                            $("#liProfile").addClass("tab-done").removeClass("disabled").find("a").removeClass("disabled").append(' <i class="fa fa-check-circle"></i>');
+                            break;
+                        case "Document":
+                            break;
+                        case "KeyStaffs":
+                            $("#liProfile").addClass("tab-done").removeClass("disabled").find("a").removeClass("disabled").append(' <i class="fa fa-check-circle"></i>');
+                            $("#liAddress").addClass("tab-done").removeClass("disabled").find("a").removeClass("disabled").append(' <i class="fa fa-check-circle"></i>');
+                            $("#liDocument").addClass("tab-done").removeClass("disabled").find("a").removeClass("disabled").append(' <i class="fa fa-check-circle"></i>');
+                            $("#liDirectors").addClass("tab-done").removeClass("disabled").find("a").removeClass("disabled").append(' <i class="fa fa-check-circle"></i>');
+                            break;
+                        default:
+
+                    }
+                }
+                else {
+                    $("div#Profile").addClass("active");
+                    $("#liProfile").addClass("active").removeClass("disabled").find("a").removeAttr("disabled");
+                }
+            }
+            else {
+                $("div#Profile").addClass("active");
+                $("#liProfile").addClass("active").removeClass("disabled").find("a").removeAttr("disabled");
+            }
+
+            $("ul.nav-tabs > li > a[disabled='disabled']").click(function (e) {
+                e.preventDefault();
+                if ($(this).parent("li").hasClass("tab-done")) {
+                    //Do nothing
+                }
+                else {
+                    $("#modalPopup").on('show.bs.modal', function () {
+                        var modal = $(this);
+                        modal.find('.modal-title').text('Alert');
+                        modal.find('.modal-body').text('Please Complete this step before proceeding. Use the button(s) below to Proceed.');
+                        modal.find('.modal-footer').html('<button class="btn btn-default" data-dismiss="modal">Close</button>');
+                    });
+                    $("#modalPopup").modal('show');
+
+                    return false;
+                }
+            });
+
+            $(".imgSilent").click(function (e) {
+                e.preventDefault();
+                var url = $(this).data("url");
+
+                $(".modal-content").html(Loading());
+                $.get(url, function (data) {
+                    $(".modal-content").html(data);
+                });
+            });
+        });
+
+
+
+
+        function FileView(docname) {
+            debugger;
+            var url = window.location.origin + "/UploadedFiles/" + docname;
+            window.open(url, '_blank');
+        }
+
+
+
+    </script>
+
+}

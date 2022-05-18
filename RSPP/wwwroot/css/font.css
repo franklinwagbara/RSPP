@@ -1,0 +1,11 @@
+@font-face {
+	font-family: 'SEGOEUIL';
+	src: url('Fonts/SEGOEUIL.eot');
+	src: local('SEGOEUIL'), url('Fonts/SEGOEUIL.woff') format('woff'), url('Fonts/SEGOEUIL.ttf') format('truetype');
+}
+/* use this class to attach this font to any element i.e. <p class="fontsforweb_fontid_1409">Text with this font applied</p> */
+.fontsforweb_fontid_1409 {
+	font-family: 'SEGOEUIL' !important;
+}
+
+/* Font downloaded from FontsForWeb.com */

@@ -1,0 +1,229 @@
+﻿@model List<RSPP.Models.DB.Role>
+
+@{
+    ViewBag.Title = "WorkFlow";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+
+
+
+    @using (Html.BeginForm("AddRole", "Admin", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal fade addroledmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Add Role Record</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-sm-12">
+                                        <label>Role Name</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <input type="text" id="txtrolename" required name="txtrolename" style="text-transform:uppercase" class="form-control" />
+                                            </div>
+                                        </div>
+
+                                        <label>Role Description</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <input type="text" id="txtroledescription" required name="txtroledescription" style="text-transform:uppercase" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="margin-left:200px"> <button class="btn btn-success" id="addrolerecord" type="button"><i class="fa fa-plus"></i> Add Role</button></span>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+
+    @using (Html.BeginForm("DeleteRole", "Admin", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal fade deleterecordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Are you sure you want to delete this role?</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-sm-12">
+                                        <label>Role Name</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <input type="text" id="txtdeleterolename" required readonly name="txtdeleterolename" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="margin-left:200px"> <button class="btn btn-danger" id="deleterolerecord" type="button"><i class="fa fa-save"></i> Delete</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+        <div class="row">
+            <div class="col-md-12" style="background-color:white">
+
+                <fieldset class="scheduler-border">
+                    <legend class="scheduler-border">Role Information</legend>
+                    <button class="btn btn-xs btn-info" style="float:right" data-toggle="modal" data-target=".addroledmodal"><i class="fa fa-plus"></i> Add Role</button>
+                    <br />
+                    <table class="table table-striped table-condensed table-responsive table-bordered customDT" id="mytable">
+                        <thead>
+                            <tr>
+                                <th><strong>Role Name</strong> </th>
+                                <th><strong>Role Description</strong></th>
+                                <th style="width:2px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var n in Model)
+                            {
+                                <tr>
+                                    <td>@n.RoleId</td>
+                                    <td>@n.Description</td>
+                                    <td><button class="btn btn-danger btn-xs" onclick="DeleteRoleJs('@n.RoleId')" id="deletebtn"><i class="fa fa-trash"></i> Delete</button></td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+
+        <div style="display:none" class="loadingImage">
+            <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+            </div>
+        </div>
+
+        <div id="modalMapDialog" style="display: none">
+            <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+        </div>
+
+    </div>
+
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+
+            $(function () {
+
+                $("#deleterolerecord").click(function () {
+                    $(".deleterecordmodal").modal("hide");
+                    debugger;
+                    var deleterolename = $("#txtdeleterolename").val();
+                        $(".loadingImage").show('fast');
+                    $.post("/Admin/DeleteRole", { "Updateroleid": deleterolename}, function (res) {
+                            if (res === "success") {
+                                alert("Role was successfully deleted");
+                                $(".deleterecordmodal").modal("hide");
+                                $(".loadingImage").hide('fast');
+                                history.go(0);
+                            }
+                            else {
+                                alert("Something went wrong");
+                                $(".loadingImage").hide('fast');
+                            }
+                        });
+                        $(".loadingImage").hide('fast');
+
+                });
+
+
+                $("#addrolerecord").click(function () {
+                    if ($("#formid").valid()) {
+                        var msg = confirm("Are you sure you want to Add this record?");
+                        var rolename = $("#txtrolename").val();
+                        var roledescription = $("#txtroledescription").val();
+                        if (msg === true) {
+                            $(".loadingImage").show('fast');
+                            $.post("/Admin/AddRole", { "Roleid": rolename, "Roledescription": roledescription}, function (res) {
+                                if (res === "success") {
+                                    alert("New record was added successfully");
+                                    $(".deleterecordmodal").modal("hide");
+                                    $(".loadingImage").hide('fast');
+                                    history.go(0);
+                                } else if (res === "exist") {
+                                    alert("Record already exist");
+                                    $(".loadingImage").hide('fast');
+                                }
+                                else {
+                                    alert("Something went wrong");
+                                    $(".loadingImage").hide('fast');
+                                }
+                            });
+                            $(".loadingImage").hide('fast');
+                        }
+                        else {
+                            return false;
+                        }
+
+                    }
+
+                });
+
+                $("#mytable").dataTable({
+                    "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                    'iDisplayLength': 10,
+                    columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                    "language": {
+                        "lengthMenu": "Display  _MENU_ records",
+                        "zeroRecords": "No record found",
+                        "info": "Showing page _PAGE_ of _PAGES_",
+                        "infoEmpty": "No Record to Display Currently",
+                        "infoFiltered": "(filtered from _MAX_ total records)"
+                    },
+                    "order": [[1, "desc"]]
+                });
+            });
+
+        function DeleteRoleJs(Roleid) {
+                debugger;
+               $(".loadingImage").show('fast');
+               $("#txtdeleterolename").val(Roleid);
+               $(".deleterecordmodal").modal('show');
+               $(".loadingImage").hide('fast');
+            };
+
+
+
+
+
+    </script>
+}
+
+

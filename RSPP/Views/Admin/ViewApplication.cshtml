@@ -1,0 +1,762 @@
+﻿@model RSPP.Models.DB.ApplicationRequestForm
+@{
+    //ViewBag.Title = "View Application";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+    bool showPart = true;
+    
+}
+<div class="content">
+    <h3 class="lefty">Application Reference No: @ViewBag.ApplicationId </h3>
+    @*<div style="float:right">
+        <a href='javascript:history.go(-1)' class="btn btn-default"> Back</a>
+    </div>*@
+    <hr class="clear" />
+    <div class="row">
+        @if (ViewBag.ErrorMessage != "SUCCESS")
+        {
+            <div class="col-md-12">
+                <div class="alert alert-danger alert-dismissible center-block" role="alert" id="welcomealert" align="center">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <i class="fa fa-exclamation-triangle fa-2x fa-border fa-spin " aria-hidden="true"></i>
+                    @ViewBag.ErrorMessage
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-9" id="showPart">
+                <div class="mypanel-2leaf-h">
+                    <div class="left-side">
+                        <div class="padd">
+                            <dl class="dl-horizontal lt">
+                                <dt>Company Email</dt>
+                                <dd><a href="/Admin/CompanyProfile?CompanyEmail=@ViewBag.AppRequest.CompanyEmail"><span class="text-info">@ViewBag.AppRequest.CompanyEmail</span></a></dd>
+
+                                <dt>Application Type</dt>
+                                <dd>@ViewBag.appRequest.ApplicationTypeId</dd>
+                                <dt>Application Category</dt>
+                                <dd>@ViewBag.appRequest.AgencyName</dd>
+                                <dt>Application Date</dt>
+                                <dd>@ViewBag.appRequest.AddedDate.ToString("dd-MMM-yyyy HH:mm")</dd>
+                                <dt>Arrears</dt>
+                                <dd class="">₦ @ViewBag.Arrears</dd>
+                                <dt>Total Amount Paid</dt>
+                                <dd class="">₦ @ViewBag.TotalAmount</dd>
+                                <dt>Current Stage</dt>
+                                <dd>
+                                    <div class="alert alert-mini alert-info">
+                                        <strong>@ViewBag.Status</strong>
+                                    </div>
+                                </dd>
+                                <dt>Status</dt>
+                                <dd>
+                                    @{
+                                        if (ViewBag.Applicationstatus != null)
+                                        {
+                                            if (ViewBag.Applicationstatus == "Processing")
+                                            {
+                                                <div class="alert alert-mini alert-warning">
+                                                    <strong>@ViewBag.Applicationstatus</strong>
+                                                </div>
+                                            }
+                                            else if (ViewBag.Applicationstatus == "Rejected")
+                                            {
+                                                <div class="alert alert-mini alert-danger">
+                                                    <strong>@ViewBag.Applicationstatus</strong>
+                                                </div>
+                                            }
+                                            else if (ViewBag.Applicationstatus == "Approved")
+                                            {
+                                                <div class="alert alert-mini alert-success">
+                                                    <strong>@ViewBag.Applicationstatus</strong>
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                </dd>
+                                <dt>
+                                    Doc Verification Links
+                                </dt>
+                                <dd>
+                                    <div class="list-group">
+                                        <a href="https://tcc.firs.gov.ng/tccvalidationnew" class="list-group-item text-primary" target="_blank"><span class="text-primary">Tax Clearance Certificate</span><i class="og-icon og-pdf righty"></i></a>
+                                        <a href="https://search.cac.gov.ng/home" class="list-group-item" target="_blank"><span class="text-primary">Corporate Affair Commission</span><i class="og-icon og-pdf righty"></i></a>
+                                        <a href="https://nepc.gov.ng/verify-exporter/" class="list-group-item text-primary" target="_blank"><span class="text-primary">Nigeria Exporter Verification Portal</span><i class="og-icon og-pdf righty"></i></a>
+                                    </div>
+                                </dd>
+
+
+                                <dt>
+                                    Uploaded Documents
+                                </dt>
+                                <dd>
+                                    <div class="list-group">
+                                        @foreach (RSPP.Models.DB.UploadedDocuments doc in ViewBag.CompanyUploadedDocument)
+                                        {
+                                            <a href="javascript:FileView('@doc.DocumentSource')" class="list-group-item">@doc.DocumentName<i class="og-icon og-pdf righty"></i></a>
+                                        }
+                                    </div>
+                                </dd>
+
+
+
+                            </dl>
+                        </div>
+                    </div>
+
+
+                    <div class="right-side">
+                        <div class="">
+
+                            <table class="" style="width: 100%; text-align:left; margin-left:2%">
+                                <tr>
+                                    <td valign="top"><b>Application Information</b></td>
+                                    <td>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" style="text-align:left">
+                                                <a href="@Url.Action("ApplicationDetails","Admin", new { applicationId = ViewBag.ApplicationId })"> Application Form</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top"><b>Received From</b></td>
+                                    <td>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" style="text-align:left">
+                                                @ViewBag.ReceivedFrom
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top"><b>Received Date</b></td>
+                                    <td>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" style="text-align:left">
+                                                @ViewBag.ReceivedDate
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                               
+                                <tr>
+                                    <td valign="top"><b>Current Desk</b></td>
+                                    <td>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" style="text-align:left">
+                                                @ViewBag.CurrentDesk
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="top"><b>Remark</b></td>
+                                    <td>
+                                        <ul class="list-group">
+                                            <li class="list-group-item" style="background-color:forestgreen; color:white; text-align:left">
+                                                @ViewBag.LastMessage
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <hr class="marg50" />
+                        <div>
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <p class="panel-title text-white">Application History (Last 5)</p>
+                                </div>
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td>#</td>
+                                        <td>Date</td>
+                                        <td>Comment</td>
+                                    </tr>
+                                    @{int i = 1;}
+                                    @foreach (RSPP.Models.DB.ActionHistory n in ViewBag.ActionHistoryList)
+                                    {
+                                        <tr>
+                                            <td>@(i++)</td>
+                                            <td>@n.ActionDate</td>
+                                            <td>@n.Message</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="3">
+                                            <a href="@Url.Action("TransitionHistory", new { applicationId = ViewBag.ApplicationId })" class="btn btn-warning btn-block round">See All History</a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            @*@if (ViewBag.ExtraPayment == null)
+                                            {
+                                                <div style="height:5px; color:green"></div>
+                                                <button class="btn btn-primary btn-block round" data-toggle="modal" data-target=".Extrapaymentmodal" style="font-family:Cambria; font-weight:bold"><i class="fa fa-eye"></i> Extra Payment</button>
+                                            }
+                                            else
+                                            {
+                                                <div class="btn btn-block btn-info"><i class="fa fa-hand-o-down"></i> Extra Payment Details</div>
+                                            }*@
+                                        </td>
+                                    </tr>
+
+                                    @if (ViewBag.ExtraPayment != null)
+                                    {
+                                        if (ViewBag.ExtraPayment.Status == "Pending" || ViewBag.ExtraPayment.Status == "FAIL")
+                                        {
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Application Ref No</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.ApplicationID</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Sanction Type</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.SanctionType</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold"> Amount</span> :<span style="font-size:18px; color:green; font-weight:bold"> @ViewBag.ExtraPayment.TxnAmount</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Status</span> : <span style="font-size:18px; color:green; font-weight:bold"> <i class="fa fa-trash" style="color:red"></i> Pending </span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Description</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.Description</span></td></tr>
+                                        }
+                                        else
+                                        {
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Application Ref No</span> :<span style="font-size:18px; color:green; font-weight:bold"> @ViewBag.ExtraPayment.ApplicationID</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">RRR Ref No</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.RRReference</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Sanction Type</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.SanctionType</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Amount</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.TxnAmount </span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Status</span> :<span style="font-size:18px; color:green; font-weight:bold"><i class="fa fa-check" style="color:green"></i> Paid</span></td></tr>
+                                            <tr><td colspan="3"><span style="font-size:20px; color:red; font-weight:bold">Description</span> : <span style="font-size:18px; color:green; font-weight:bold">@ViewBag.ExtraPayment.Description </span></td></tr>
+                                        }
+                                    }
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="pad">
+                    <h3>Control Panel</h3>
+                    @if (ViewBag.LoggedInUserRole == "OFFICER")
+                    {
+
+                        if (ViewBag.AppRequest.CurrentStageId == 4)//14
+                        {
+                            <div>
+                                <a class="btn btn-success btn-block" href="javascript:showAcceptDeclineBox('@ViewBag.ApplicationId','Accept','Accept Applicant Application')"><i class="fa fa-check fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Recommend</a>
+                            </div>
+                            <br />
+                            <div>
+                                <a class="btn btn-danger btn-block" href="javascript:showAcceptDeclineBox('@ViewBag.ApplicationId','Reject','Reject Applicant Application')"><i class="fa fa-thumbs-down fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Reject To Applicant</a>
+                            </div>
+                        }
+
+                    }
+
+                    else if (ViewBag.LoggedInUserRole == "SUPERVISOR")
+                    {
+
+                        if (ViewBag.AppRequest.CurrentStageId == 5)
+                        {
+
+                            @*<h3>Actions</h3>*@
+                            <div>
+                                <a class="btn btn-success btn-block" href="javascript:showAcceptDeclineBox('@ViewBag.ApplicationId','Accept','Accept Applicant Application')"><i class="fa fa-check fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Recommend</a>
+                            </div>
+                            <br />
+                            <div>
+                                <a class="btn btn-danger btn-block" href="javascript:showAcceptDeclineBox('@ViewBag.ApplicationId','Reject','Reject Applicant Application to Officer')"><i class="fa fa-thumbs-down fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Reject To Officer</a>
+                            </div>
+
+                        }
+                    }
+
+
+                    else if (ViewBag.LoggedInUserRole == "REGISTRAR")
+                    {
+
+                        if (ViewBag.AppRequest.CurrentStageId == 6)
+                        {
+
+                            @*<h3>Actions</h3>*@
+                            <div>
+                                <a class="btn btn-success btn-block" href="javascript:GenerateLicense('@ViewBag.ApplicationId','Accept','Issue Applicant Certificate')"><i class="fa fa-check fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Issue Certificate</a>
+                            </div>
+                            <br />
+                            <div>
+                                <a class="btn btn-danger btn-block" href="javascript:showAcceptDeclineBox('@ViewBag.ApplicationId','Reject','Reject Applicant Application to Supervisor')"><i class="fa fa-thumbs-down fa-border" aria-hidden="true"></i>&nbsp;&nbsp;Reject To Supervisor</a>
+                            </div>
+
+                        }
+                    }
+
+
+                </div>
+            </div>
+        }
+    </div>
+    <div style="display:none" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+</div>
+
+<div class="modal fade adminPopup" id="modalPopup">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h3 class="modal-title"></h3>
+            </div>
+            <div id="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@using (Html.BeginForm("AddExtraPayment", "Admin", FormMethod.Post))
+{
+    <div class="modal fade Extrapaymentmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+        <div class="modal-dialog" style="display:inline-block; vertical-align:middle; margin:0 auto 0 -5%; width:400px; height:500px; margin-top:10px" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Extra Payment for (@ViewBag.ApplicationId)</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="paymentmade">
+                            <div class="row">
+                                <div class="col-sm-10">
+                                    <input type="hidden" id="myappid" name="myappid" value="@ViewBag.ApplicationId" />
+                                    <input type="hidden" id="status" name="status" value="Pending" />
+                                    <label style="font-family:Cambria; font-weight:bold">Payment Type</label>
+                                    <select class="form-control" id="sanctiontype" name="sanctiontype" required="" style="width:30%">
+                                        <option value=""></option>
+                                        <option value="Sanction">Sanction</option>
+                                        <option value="Incomplete Fee">Incomplete Fee</option>
+                                    </select><br />
+                                    <label style="font-family:Cambria; font-weight:bold">Amount</label>
+                                    <input class="form-control" id="sanctionamount" type="number" name="sanctionamount" required="" style="width:30%" /><br />
+                                    <label style="font-family:Cambria; font-weight:bold">Description</label>
+                                    <textarea cols="3" rows="3" class="form-control" id="sanctiondescription" name="sanctiondescription" required="" style="width:30%"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="col-sm-offset-4">
+                            <div class="col-sm-4">
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                            <div class="col-sm-3">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div id="adminModal" class="modal fade adminModal" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title text-center">
+        @ViewBag.Title
+    </h4>
+</div>
+<div class="modal fade approvalModal" id="approvalModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="display:inline-block; vertical-align:middle; margin:0 auto 0 -15%; width:600px; height:500px; margin-top:10px" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title text-center apprvheader" id="apprvheader"></h4>
+            </div>
+            <div class="modal-body">
+                @*<form action="@Url.Action("ApplicationAcceptDecline")" method="post" class="form-horizontal">*@
+                <div class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ApplicationId" id="ApplicationId" value="@ViewBag.ApplicationId" />
+                    
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Application Ref.</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control" id="apprvAppId" name="apprvAppId" readonly style="border: 0px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Application Type</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control apprvAppType" id="apprvAppType" name="apprvAppType" readonly style="border: 0px;">
+                        </div>
+                    </div>
+                    <div class="inspectiondiv">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Inspection Date & Time</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control inspectiondate" value="@ViewBag.AppointmentDateTime" id="inspectiondate" name="inspectiondate" readonly style="border: 0px;">
+                            </div>
+                        </div>
+                       
+                    </div>
+                    <div class="commentDivRej">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Comment</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control comment" rows="3" id="comment" style="resize:none" name="comment"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="commentDivAcce">
+                        <input type="hidden" class="form-control comment" name="comment" id="comment" style="resize:none" required="" value="Documents Accepted" />
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" aria-label="Close" data-dismiss="modal">Close</button>
+                        <button type="button" value="Accept" id="apprvAcceptBtn" class="btn btn-success approvalBtn apprvAcceptBtn">Accept</button>
+                        <button type="button" value="Reject" id="apprvRejectBtn" class="btn btn-danger approvalBtn apprvRejectBtn">Reject</button>
+
+
+                    </div>
+                </div>
+                @*</form>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade ApproveLicenseModal" id="ApproveLicenseModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="display:inline-block; vertical-align:middle; margin:0 auto 0 -15%; width:600px; height:500px; margin-top:10px" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title text-center apprvheader" id="apprvheader"></h4>
+            </div>
+            <div class="modal-body">
+                <form action="@Url.Action("ApproveLicense")" method="post" class="form-horizontal">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="ApplicationId" id="ApplicationId" class="ApplicationId" value="@ViewBag.ApplicationId" />
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Application Ref.</label>
+                        <div class="col-md-9">
+                            <input type="text" class="form-control apprvAppId" id="apprvAppId" name="apprvAppId" readonly style="border: 0px;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3">Application Type</label>
+                        <div class="col-md-9">
+                            <input type="hidden" class="actions" />
+                            <input type="text" class="form-control apprvAppType" id="apprvAppType" name="apprvAppType" readonly style="border: 0px;">
+                        </div>
+                    </div>
+
+                    <div class="commentDivRej">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">Comment</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control" rows="3" id="comment" name="comment" style="resize:none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="commentDivAcce">
+                        <input type="hidden" class="comment" name="comment" id="comment" required="" style="resize:none" value="Documents Accepted" />
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" value="Accept" id="apprvAcceptBtn" class="btn btn-success ApproveMe apprvAcceptBtn">Approve</button>
+                        <button type="button" value="Reject" id="apprvRejectBtn" class="btn btn-danger ApproveMe apprvRejectBtn">Reject</button>
+                        @*<button type="button" value="Deny" id="apprvDenyBtn" class="btn btn-info ApproveMe apprvDenyBtn">Deny</button>*@
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    @if (!showPart)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+                debugger;
+                $("#showPart").addClass("col-md-12");
+            });
+        </script>
+    }
+   
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+
+        $('.approvalBtn').click(function () {
+            debugger;
+            var action = $(".actions").val();
+            $(".loadingImage").show('fast');
+            $(".approvalModal").modal('hide');
+            if ((action == "Reject" && $.trim($('.comment').val()) == "")) {
+                $(".loadingImage").hide('fast');
+                alert("Kindly state Reason for Rejection");
+                $(".comment").focus();
+            }
+            else {
+
+                //var selectedtext = $("#text").text();;
+                //var selectedvalue = $("#textvalue").text();
+                //var comments = "";
+               var comments = $(".comment").val();
+                //var docval = "";
+                //if (selectedtext === "" || selectedtext === null)
+                //{
+                //    comments = $(".comment").val();
+                //}
+                //else {
+                //    comments = $(".comment").val() + " => " + selectedtext;
+                //   // docval = selectedvalue; DocId: docval 
+                //}
+                $.post('@Url.Action("ApplicationAcceptDecline")', { applicationId: $(".ApplicationId").val(), myaction: action, mycomment: comments}, function (data) {
+                        console.log('before console');
+                        var status = data.status;
+                        console.log(status);
+
+                        hideAndResetModals('.approvalModal');
+                        debugger;
+                    if (status == 'success') {
+                        $(".loadingImage").hide('fast');
+                        alert(data.message);
+                        window.location.href = "/Admin/MyDesk";
+                            //bootbox.alert({
+                            //    message: data.message,
+                            //    size: 'small',
+                            //    className: 'bb-alternate-modal',
+                            //    callback: function () {
+                            //        window.location.href = "/Admin/MyDesk";
+                            //    }
+                            //});
+
+                        }
+                        else {
+                        alert(data.message);
+                        $(".loadingImage").hide('fast');
+
+                        }
+                 });
+            }
+        });
+
+
+
+        $('.ApproveMe').click(function () {//final approval
+            $(".loadingImage").show('fast');
+            $(".ApproveLicenseModal").modal('hide');
+           var comment = $(".comment").val();
+            var action = $(".actions").val();
+             if ((action == "Reject") && $.trim($('.comment').val()) == "") {
+                 $(".loadingImage").hide('fast');
+                            alert("Kindly state Reason for Application Rejection");
+                            $(".comment").focus();
+                  }
+             else {
+                $.get('@Url.Action("ApproveLicense")', { applicationId: $(".ApplicationId").val(), myaction: action, mycomment: comment }, function (data) {
+                     debugger;
+                                    console.log('before console');
+                                    var status = data.status;
+                                    console.log(status);
+                                    hideAndResetModals('.ApproveLicenseModal');
+                                    debugger;
+                    if (status == 'success') {
+                        $(".loadingImage").hide('fast');
+                        alert(data.message);
+                        window.location.href = "/Admin/MyDesk";
+                                        //bootbox.alert({
+                                        //    message: data.message,
+                                        //    size: 'sm',
+                                        //    className: 'bb-alternate-modal',
+                                        //    callback: function () {
+                                        //        window.location.href = "/Admin/MyDesk";
+                                        //    }
+                                        //});
+
+                                    }
+                                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide('fast');
+                                    }
+                                });
+                            }
+        });
+
+
+        function hideAndResetModals(modalID) {
+            $(modalID).modal('hide');
+            //clearValidation(modalID);
+            $(modalID).on('hidden.bs.modal', function () {
+                $(modalID).find('form').trigger('reset');
+            });
+        }
+
+
+    });
+
+
+        function FileView(docname) {
+            var url = window.location.origin + "/UploadedFiles/" + docname;
+            window.open(url, '_blank');
+        }
+
+
+
+    </script>
+
+    <script type="text/javascript">
+
+        function loadModal() {
+            $('#myModal').modal({ show: true });
+        }
+        function moveToIndex() {
+            window.location.replace = '@Url.Action("MyDesk")';
+        }
+
+
+        function MoveToFieldOffice(ApplicationId) {
+            var url2 = '@Url.Action("TransferToOpscon")';
+            $.get(url2, { applicationId: ApplicationId }, function (data) {
+                var status2 = data.Status;
+                if (status2 == 'success') {
+                    alert(data.Message);
+                    window.location.href = "/Admin/MyDesk";
+                }
+                else {
+                    alert(data.Message);
+                }
+            });
+        }
+        function showAcceptDeclineBox(applicationId, useraction, reason) {
+            debugger;
+             var checkextrapayment = '@ViewBag.ExtraPayment';
+            var paymentstatus = '@ViewBag.PaymentStatus';
+           if (checkextrapayment !== null || checkextrapayment !== "") { var amount = '@ViewBag.Amount'; }
+             $('.apprvheader').text(reason);
+             $(".actions").val(useraction);
+            $('#apprvAppId').val('@Model.ApplicationId');
+            $('.apprvAppType').val('@Model.ApplicationTypeId');
+            $("#comment").val("");
+            
+            
+            if (useraction === "Reject") {
+                $('.apprvLegacyLSAcceptBtn').hide();
+                $('.apprvLegacyIRejectBtn').hide();
+                $('.apprvLegacyIAcceptBtn').hide();
+                $('.apprvLegacyLSRejectBtn').hide();
+                $('.apprvLegacyLSIRejectBtn').hide();
+                $('.commentDivRej').show();
+                $('.apprvRejectBtn').show();
+                $('.apprvInternalReject').hide();
+                $('.apprvAcceptBtn').hide();
+                $('.apprvInspectionBtn').hide();
+                $('.RejectInspectionBtn').hide();
+                $('.inspectiondiv').hide();
+                //$(".alldocument").show("fast");
+                //$('.apprvDenyBtn').hide();
+            }
+            else if (useraction === "Accept") {
+                $('.apprvLegacyLSAcceptBtn').hide();
+                $('.apprvLegacyIRejectBtn').hide();
+                $('.apprvLegacyIAcceptBtn').hide();
+                $('.apprvLegacyLSRejectBtn').hide();
+                $('.apprvLegacyLSIRejectBtn').hide();
+                $('.commentDivRej').show();
+                $('.apprvRejectBtn').hide();
+                $('.apprvInspectionBtn').hide();
+                //$('.apprvDenyBtn').hide();
+                $('.apprvInternalReject').hide();
+                $('.inspectiondiv').hide();
+                //$(".alldocument").hide("fast");
+                $('.RejectInspectionBtn').hide();
+                $('.apprvAcceptBtn').show();
+            }
+
+            if (checkextrapayment === null || paymentstatus === "AUTH" || checkextrapayment === "") {
+                $(".approvalModal").modal('show');
+            }
+            else {
+                var answer = confirm("Extra Payment of " + amount + " Naira Has Been Attached to This Application. Do You Want to Proceed?");
+                if (answer === true) {
+                    $(".approvalModal").modal('show');
+                }
+            }
+        }
+
+       
+
+        function GenerateLicense(applicationId, useraction, reason) {
+            debugger;
+            var checkextrapayment = '@ViewBag.ExtraPayment';
+            var paymentstatus = '@ViewBag.PaymentStatus';
+
+                if (checkextrapayment !== null || paymentstatus === "AUTH" || checkextrapayment !== "") { var amount = '@ViewBag.Amount'; }
+                $(".actions").val(useraction);
+                $('.apprvheader').text(reason);
+                $('.apprvAppId').val('@Model.ApplicationId');
+                $('.apprvAppType').val('@Model.ApplicationTypeId');
+                $("#comment").val("");
+
+                if (useraction == "Reject") {
+                    $('.commentDivRej').show();
+                    $('.apprvRejectBtn').show();
+                    //$(".alldocument").show("fast");
+                    $('.apprvAcceptBtn').hide();
+                    $('.apprvDenyBtn').hide();
+                }
+                else if (useraction == "Accept") {
+                    $('.commentDivRej').show();
+                    //$(".alldocument").hide("fast");
+                    $('.apprvRejectBtn').hide();
+                    $('.apprvDenyBtn').hide();
+                    $('.apprvAcceptBtn').show();
+                }
+                if (checkextrapayment === null || paymentstatus === "AUTH" || checkextrapayment === "") {
+                    $(".ApproveLicenseModal").modal('show');
+                }
+                else {
+                    alert("Extra Payment of " + amount + " Naira Has Been Attached to This Application. Do You Want to Proceed?");
+                    //var answer = if (answer === true) {
+                    //    $(".ApproveLicenseModal").modal('show');
+                    //}
+                }
+              };
+
+
+       
+
+    </script>
+}

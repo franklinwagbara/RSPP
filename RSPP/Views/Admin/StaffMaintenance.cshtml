@@ -1,0 +1,804 @@
+﻿@model RSPP.Models.UserMasterModel
+
+@{
+    ViewBag.Title = "Add Staff";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+
+
+            {
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            @using (Html.BeginForm("NewUser", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "newstaff" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal fade addstaffmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog modal-sm" style="vertical-align: middle; display:block; width:40%;  margin:0 auto 0 -20%; overflow-y:hidden; overflow-x:hidden;" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Register New User</h4>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="form-horizontal">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label style="font-weight:bold">User Email</label>
+                                            <div class="form-group">
+                                                <div class="col-sm-10">
+                                                    <input id="locationid" name="locationid" type="hidden" />
+                                                    <input id="roleuser" name="roleuser" type="hidden" />
+                                                    @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @required = "required", @autocomplete = "off", @type = "email" })
+                                                    @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+
+                                                </div>
+                                            </div>
+
+                                            <label style="font-weight:bold">FullName</label>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    <input type="text" id="staffFullName" required="required" name="staffFullName" autocomplete="off" class="form-control" />
+                                                </div>
+                                            </div><br />
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    <button class="btn btn-success btn-block" id="addnewuser" style="width:200px" type="button"><i class="fa fa-save"></i> Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+
+                                            <label style="font-weight:bold">User Role</label>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    <select id="Userroles" name="Userroles" class="form-control roleuser" required="required" style="width:220px"></select>
+                                                    @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-sm-4">
+
+                                                <div style="border:groove; height:120px; width:120px">
+                                                    <img id="signatureimg" src="" alt="Signature image" class="center-cropped signatureimg" /><br />
+
+                                                </div>
+
+                                                <label for="fileUpload" class="custom-file-upload" style="width:170px">
+                                                    <i class="fa fa-upload"></i> Upload Signature
+                                                </label>
+
+                                                <input id="fileUpload" class="imgInp" name="myfiles" type="file" required="required" accept="image/gif, image/png, image/jpeg" style="display: none; width:120px" />
+
+                                                @*<div class="custom-file">
+                                                <input type="file" id="fileUpload" class="fileUpload">
+                                            </div>*@
+
+                                            </div>
+
+
+
+                                        </div>
+
+
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post, new { id = "deleteUser" }))
+            {
+                <div class="modal fade DeleteUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:20%; margin:0 auto 0 -10%" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to Delete this User?</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-horizontal">
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm-8">
+                                                <label style="font-weight:bold">User Email</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control useremail" id="useremail" readonly="readonly" name="useremail" />
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        <button type="button" class="btn btn-danger" id="DeleteUsers">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @using (Html.BeginForm("ActivateUser", "Admin", FormMethod.Post, new { id = "activateUser" }))
+            {
+                <div class="modal fade ActivateUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%; margin-top:100px" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to Activate this User?</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-horizontal">
+                                    <div class="container">
+                                        <div class="row">
+
+                                            <div class="col-sm-12">
+
+                                                <label style="margin-left:17px">User FullName</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-5">
+                                                        <input type="hidden" id="UserLocationActivate" name="UserLocationActivate" />
+                                                        <input type="hidden" id="userID" name="userID" />
+                                                        <input type="text" id="userfullName" name="userfullName" class="form-control" readonly="readonly" />
+
+                                                    </div>
+                                                </div>
+                                                <label style="margin-left:17px">Reason to Activate User</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-5">
+                                                        <textarea cols="5" rows="5" id="activate" name="activate" required="" class="form-control" style="resize:none"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        <button type="button" class="btn btn-success" id="ActiveUsers">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @using (Html.BeginForm("DeactivateUser", "Admin", FormMethod.Post, new { id = "deactivateUser" }))
+            {
+                <div class="modal fade DeactivateUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Are you Sure You Want to Deactivate this User?</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-horizontal">
+                                    <div class="container">
+                                        <div class="row">
+
+                                            <div class="col-sm-12">
+                                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                                <label style="font-weight:bold">User FullName</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-5">
+                                                        <input type="hidden" id="userid" name="userid" />
+                                                        <input type="hidden" id="userlocationDeactivate" name="userlocationDeactivate" />
+                                                        <input type="text" id="fullName" name="fullName" readonly="readonly" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" id="UserLocationid" name="UserLocationid" class="UserLocationid" />
+                                                <label style="font-weight:bold">Reason to Deactivate User</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-5">
+                                                        <textarea cols="5" id="DeactivateComment" rows="5" name="DeactivateComment" required="" class="form-control" style="resize:none"></textarea>
+
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-md-6">
+                                                        <button type="button" class="btn btn-success" id="DeactiveUsers">Save</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            }
+            @using (Html.BeginForm("EditStaff", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "editStaff" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="modal fade EditUsermodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog modal-sm" style="vertical-align: middle; display:block; width:40%;  margin:0 auto 0 -20%; overflow-y:hidden; overflow-x:hidden;" role="document">
+
+                        @*<div class="modal-dialog modal" style="display:inline-block; margin:0 auto 0 -25%; overflow-y:hidden; overflow-x:hidden; width:50%" role="document">*@
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i> Edit User</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="form-horizontal">
+                                    <div class="container">
+                                        <div class="row">
+
+                                            <div class="col-sm-4">
+                                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                                                <input type="hidden" class="Fullname" id="Fullname" name="Fullname" />
+                                                <input type="hidden" id="UserLocationid" name="UserLocationid" class="UserLocationid" />
+                                                <label style="font-weight:bold">FirstName</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control", @required = "required" })
+                                                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <label style="font-weight:bold">LastName</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control", @required = "required" })
+                                                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div><br />
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        <button type="button" class="btn btn-success" id="EditUsers">Save Update</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label style="font-weight:bold">User Role</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        <select id="Userrole" name="Userrole" class="form-control roleuser" required="required" style="width:280px"></select>
+                                                    </div>
+                                                </div>
+                                                <label style="font-weight:bold">User Email</label>
+                                                <div class="form-group">
+                                                    <div class="col-md-10">
+                                                        @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control EditUserEmail", @readonly = "readonly", @required = "required" })
+                                                        @Html.ValidationMessageFor(model => model.UserEmail, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <div style="border:groove; height:120px; width:120px">
+                                                            <img id="signatureimg" src="" alt="Signature image" class="center-cropped signatureimg" /><br />
+
+                                                        </div>
+
+                                                        <label for="EditpostedFile" class="custom-file-upload">
+                                                            <i class="fa fa-upload"></i> Change Signature
+                                                        </label>
+                                                        <input id="EditpostedFile" class="imgInp" name="editFiles" type="file" required="required" style="display: none; width:300px" />
+                                                    </div>
+                                                </div>
+
+                                               
+                                            </div>
+                                            <br />
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel">
+                        <header class="panel-heading panel-border">
+                            <h3 class="text-primary"> Staff List </h3>
+                            <span class="tools pull-right">
+                                <button class="btn btn-lg btn-primary" data-toggle="modal" data-target=".addstaffmodal"><span class="glyphicon glyphicon-plus"></span> Add Staff</button>
+                            </span>
+                        </header>
+
+                        @if (TempData["success"] != null)
+                        {
+                            <div id="success" class="alert alert-success alert-dismissable" role="alert">
+
+                                <span class="glyphicon glyphicon-ok"></span> @TempData["success"]
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+                        @if (TempData["message"] != null)
+                        {
+                            <div id="message" class="alert alert-danger alert-dismissable" role="alert">
+
+                                <span class="glyphicon glyphicon-ok"></span> @TempData["message"]
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+                        @if (TempData["AlreadyExist"] != null)
+                        {
+                            <div class="alert alert-danger alert-dismissable" role="alert">
+
+                                <span class="glyphicon glyphicon-ban-circle"></span> @TempData["AlreadyExist"]
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        }
+                        @*<div class="panel-body">*@
+                        <table class="table table-striped staff" id="staff" style="font-size:small">
+                            <thead>
+                                <tr>
+                                    <th><strong>Staff Email</strong>
+                                    <th><strong>FullName</strong> </th>
+                                    <th><strong>User Role</strong> </th>
+                                    <th><strong>Status</strong> </th>
+                                    <th style="width:5%"></th>
+                                    <th style="width:5%"></th>
+                                    <th style="width:5%"></th>
+                                    @*<th style="width:5%"></th>*@
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        @*</div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:none" id="loadingImage" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            debugger;
+            $(".imgInp").change(function () {
+                debugger
+                readURL(this);
+            });
+
+            var table = $(".staff").DataTable({
+                "processing": true,
+                "serverSide": true,
+                ajax: {
+                    url: "/Admin/GetAllUser",
+                    type: "POST",
+                },
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                columns: [
+                    {
+                        data: "userEmail"
+                    },
+                    {
+                        data: "fullname"
+
+                    },
+                    {
+                        data: "userRole"
+                    },
+
+                    {
+                        data: "status",
+                        render: function (data, type, user) {
+                            if (user.status === "ACTIVE") {
+                                return '<strong class="badge" style="background-color:green"><i class="fa fa-check"></span> Active</strong>';
+                            } else {
+                                return '<strong class="badge" style="background-color:red"><i class="fa fa-ban"></i> DeActivated</strong>';
+                            }
+                        }
+
+                    },
+
+                ],
+
+                "columnDefs": [
+                    {
+                        "targets": 4,
+                        "data": null,
+
+                        "render": function (data, type, row) {
+                            if (row.status === "ACTIVE") {
+                                return '<div id="deactive" class="btn btn-xs btn-info"><i class="fa fa-ban""></i> Deactivate</div>';
+                            }
+                            else {
+                                return '<span id="active" class="btn btn-xs btn-primary"><i class="fa fa-check"></i> Activate</span>';
+
+                            }
+                        }
+                    },
+
+
+                    {
+                        "targets": 5,
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<button id="EditUsers" class="btn btn-xs btn-primary EditUsers"><i class="fa fa-edit"></i>  Edit</button>';
+
+                        }
+                    },
+
+
+
+                    {
+                        "targets": 6,
+                        "data": null,
+                        "defaultContent":
+                            '<p id="DeleteUsers" class="btn btn-xs btn-danger DeleteUsers"><i class="fa fa-trash"></i>  Delete</p>'
+                    },
+
+                    //{
+                    //    "targets": 7,
+                    //    "data": "SignatureImage",
+                    //    "visible": false,
+                    //    "searchable": false,
+                    //},
+                ]
+
+            });
+            $('#staff').on('click',
+                'p',
+                function () {
+                    $(".DeleteUser").modal('show');
+                    $(".EditUsermodal").modal('hide');
+                    $(".DeactivateUser").modal('hide');
+                    $(".ActivateUser").modal('hide');
+                    var data = table.row($(this).parents('tr')).data();
+                    $(".useremail").val(data.userEmail);
+
+                });
+            $('#staff').on('click',
+                'button',
+                function () {
+
+                    debugger;
+                    $(".EditUsermodal").modal('show');
+                    $(".DeactivateUser").modal('hide');
+                    $(".ActivateUser").modal('hide');
+                    var data = table.row($(this).parents('tr')).data();
+
+                    $(".EditUserEmail").val(data.userEmail);
+                    var full = $(".Fullname").val(data.fullname);
+                    var fullname = [];
+                    fullname = full.val().split(' ')
+                    $("#FirstName").val(fullname[0]);
+                    $("#LastName").val(fullname[1]);
+                    $(".roleuser option:selected").text(data.userRoles);
+                    var str = data.signatureImage;
+                    if (str !== null) {
+                        var signturesplit = str.split("~");
+                        $('.signatureimg').attr('src', signturesplit[1]);
+                    } else {
+                        $('.signatureimg').attr('src', "");
+                    }
+                });
+
+
+
+            $('#staff').on('click',
+                'div',
+                function () {
+                    $(".DeactivateUser").modal('show');
+                    $(".EditUsermodal").modal('hide');
+                    $(".ActivateUser").modal('hide');
+                    var data = table.row($(this).parents('tr')).data();
+                    $("#fullName").val(data.fullname);
+                    $("#userid").val(data.userEmail);
+
+                });
+            $('#staff').on('click',
+                'span',
+                function () {
+                    $(".ActivateUser").modal('show');
+                    $(".EditUsermodal").modal('hide');
+                    $(".DeactivateUser").modal('hide');
+                    var data = table.row($(this).parents('tr')).data();
+                    $("#userfullName").val(data.fullname);
+                    $("#userID").val(data.userEmail);
+                });
+
+            $(".roleuser").ready(function () {//get all user role populated in the dropdownlist
+                var html = "";
+                debugger;
+                $(".roleuser").html("");
+
+                $.getJSON("/Admin/GetUserRole",
+                    {},
+                    function (datas) {
+                        //$(".roleuser").append("<option disabled selected>--Select Role--</option>");
+                        html += "<option>"+"</option>";
+                        $.each(datas,
+                            function (key, val) {
+                                html += "<option value=" + val.role + ">" + val.role + "</option>";
+                            });
+                        $(".roleuser").append(html);
+                    });
+            });
+
+
+
+
+
+            //$("#UserEmail").autocomplete({
+            //    source: function (request, response) {
+            //        $.ajax({
+            //            url: '/Admin/UserIdAutosearch',
+            //            type: "GET",
+            //            datatype: "json",
+            //            data: {
+            //                term: request.term
+            //            },
+            //            success: function (data) {
+            //                response($.map(data,
+            //                    function (val, item) {
+            //                        return {
+            //                            label: val.userEmail,
+            //                            value: val.userEmail,
+            //                            staffFullName: val.firstName,
+            //                        }
+
+            //                    }));
+
+            //            }
+
+            //        });
+            //    },
+
+            //    select: function (event, ui) {
+            //        debugger;
+            //        $("#staffFullName").val(ui.item.staffFullName);
+            //        var userid = $("#UserId").val();
+
+            //    }
+            //});
+
+
+
+            $("#addnewuser").click(function () {
+                debugger;
+                if ($("#UserEmail").val() !== "" && $("#staffFullName").val() !== "" && $("#Userroles option:selected").text() !== "") {
+                    var files = $('#fileUpload').prop("files");
+                    var url = "/Admin/NewUser";
+                    var formData = new FormData();
+                    formData.append("MyUploader", files[0]);
+                    formData.append("UserEmail", $("#UserEmail").val());
+                    formData.append("staffFullName", $("#staffFullName").val());
+                    formData.append("Userroles", $("#Userroles option:selected").text());
+                    $(".loadingImage").show();
+                    jQuery.ajax({
+                        type: 'POST',
+                        url: url,
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader("XSRF-TOKEN",
+                                $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        success: function (repo) {
+                            if (repo.status == "success") {
+                                $(".loadingImage").hide();
+                                alert(repo.message);
+                                history.go(0);
+                            } else {
+                                $(".loadingImage").hide();
+                                alert(repo.message);
+                            }
+                        },
+                        error: function () {
+                            $(".loadingImage").hide();
+                            alert(repo.message);
+                        }
+                    });
+                } else { alert("All inputs are required except signature image");}
+            });
+
+
+            $("#DeleteUsers").click(function () {
+                $.post($("#deleteUser").attr('action'), $("#deleteUser").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+
+
+
+
+            $("#EditUsers").click(function () {
+                debugger;
+                var files = $("#EditpostedFile").prop("files");
+                var url = "/Admin/EditStaff";
+                var formData = new FormData();
+                formData.append("MyFileUploader", files[0]);
+                formData.append("FirstName", $("#FirstName").val());
+                formData.append("LastName", $("#LastName").val()); 
+                formData.append("EditUserEmail", $(".EditUserEmail").val());
+                formData.append("Userrole", $("#Userrole option:selected").text());
+                $(".loadingImage").show();
+                jQuery.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function (repo) {
+                        if (repo.status == "success") {
+                            $(".loadingImage").hide();
+                            alert(repo.message);
+                            history.go(0);
+                        } else {
+                            $(".loadingImage").hide();
+                            alert(repo.message);
+                        }
+                    },
+                    error: function () {
+                        $(".loadingImage").hide();
+                        alert(repo.message);
+                    }
+                });
+                //$.post($("#editStaff").attr('action'), $("#editStaff").serialize()).done(function (data) {
+
+                //    var status = data.status;
+                //    $(".loadingImage").show();
+
+                //    if (status === "failed") {
+                //        $(".loadingImage").hide();
+                //        alert(data.message);
+                //    }
+                //    else {
+                //        alert(data.message);
+                //        $(".loadingImage").hide();
+                //        history.go(0);
+                //    }
+
+                //}).fail(function (data) {
+                //    $(".loadingImage").hide();
+                //    alert('Network Communication Error, Restore Connection and Try again');
+                //}).always(function (data) {
+                //    $(".loadingImage").hide();
+                //});
+            });
+
+
+
+
+
+
+            $("#ActiveUsers").click(function () {
+                $.post($("#activateUser").attr('action'), $("#activateUser").serialize()).done(function (data) {
+
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+
+
+
+            $("#DeactiveUsers").click(function () {
+                $.post($("#deactivateUser").attr('action'), $("#deactivateUser").serialize()).done(function (data) {
+                    debugger;
+                    var status = data.status;
+                    $(".loadingImage").show();
+
+                    if (status === "failed") {
+                        $(".loadingImage").hide();
+                        alert(data.message);
+                    }
+                    else {
+                        alert(data.message);
+                        $(".loadingImage").hide();
+                        history.go(0);
+                    }
+
+                }).fail(function (data) {
+                    $(".loadingImage").hide();
+                    alert('Network Communication Error, Restore Connection and Try again');
+                }).always(function (data) {
+                    $(".loadingImage").hide();
+                });
+            });
+
+
+
+        });
+        function readURL(input) {
+            debugger;
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('.signatureimg').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

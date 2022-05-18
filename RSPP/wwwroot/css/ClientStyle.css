@@ -1,0 +1,125 @@
+﻿.loading, .loading > td, .loading > th, div.loading, .nav li.loading.active > a, .pagination li.loading, .pagination > li.active.loading > a, .pager > li.loading > a {
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+    background-size: 40px 40px;
+    animation: 2s linear 0s normal none infinite progress-bar-stripes;
+    -webkit-animation: progress-bar-stripes 2s linear infinite;
+}
+
+.btn.btn-default.loading, input[type="text"].loading, select.loading, textarea.loading, .well.loading, .list-group-item.loading, .pagination > li.active.loading > a, .pager > li.loading > a {
+    background-image: linear-gradient(45deg, rgba(235, 235, 235, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(235, 235, 235, 0.15) 50%, rgba(235, 235, 235, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+}
+
+.loader {
+    position: relative;
+}
+
+    .loader::after {
+        background-color: rgba(44, 104, 198, 0.92);
+        content: 'Please wait, Getting Contents...';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+.Uploadloader {
+    position: relative;
+}
+
+
+
+    .Uploadloader::after {
+        background-color: rgba(90, 134, 152, 0.9);
+        content: 'Please wait, Uploading...';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+.Submitloader {
+    position: relative;
+}
+
+    .Submitloader::after {
+        background-color: rgba(4, 114, 6, 0.55);
+        content: 'Please wait, Submitting...';
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+
+
+.DashCount {
+    opacity: 0.7;
+    float: left;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    width: initial;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(104, 37, 37, 0.33);
+    color: white;
+    min-height: 70px;
+    width: inherit;
+    font-weight: bolder;
+    display: inline-block;
+}
+
+
+.FirstDashCount {
+    min-height: 150px;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgb(48, 47, 47);
+    background-color: rgba(34, 58, 79, 0.17);
+    color: #f1f0f0;
+    opacity: 1;
+    text-align: center;
+    vertical-align: middle;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+    .FirstDashCount > b {
+        font-size: 90px;
+    }
+
+
+.DashCompanyName {
+    text-align: center;
+    vertical-align: middle;
+    font-size: 30px;
+    color: #f4db79;
+}
+
+
+#BackImage {
+    background: url('/images/bgblue11.jpg');
+    height: 100%;
+    padding: 50px 30px 50px 30px;
+    color: whitesmoke;
+    background-repeat: no-repeat;
+    background-size: 100%
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1370px;
+    }
+}

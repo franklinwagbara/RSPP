@@ -1,0 +1,95 @@
+﻿@model RSPP.Models.DB.ApplicationRequestForm
+
+@{
+    /**/
+
+    ViewBag.Title = "Non Printed License";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+    
+    <div class="row" style="margin-top:-24px">
+        <br />
+        <div>
+            <h1 style="margin-left:10px" class="text-info">Non Printed Certificates</h1>
+            <div class="clear"></div>
+        </div><br />
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped printedlicense" id="printedlicense" style="font-size:small">
+                <thead>
+                    <tr>
+
+                        <th><strong>Application Ref</strong>
+                        <th><strong>Certificate Reference</strong>
+                        <th><strong>Company Email</strong> </th>
+                        <th><strong>Company Address</strong></th>
+                        <th><strong>Application Type</strong> </th>
+                        <th><strong>Category</strong> </th>
+                        <th style="width:8px"></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+        </div>
+    </div>
+    <div style="display:none" id="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+</div>
+@section Scripts {
+   
+    <script type="text/javascript">
+       
+        $(document).ready(function () {
+            var table = $(".printedlicense").DataTable({
+                "processing": true,
+                "serverSide": true,
+                ajax: {
+                    url: "/Admin/GetNonPrintedLicense",
+                    type: "POST",
+
+                },
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                columns: [
+                   
+                    { data: "applicationId" },
+                    { data: "licenseReference" },
+                    { data: "companyEmail" },
+                    { data: "companyAddress" },
+                    { data: "applicationTypeId" },
+                    { data: "agencyName" },
+                    {
+                        "render": function (data, type, row) {
+                           
+                            return "<button class='btn-xs btn-success' onclick=\"ViewPermit('" + row['applicationId']+ "')\"> Download </button>";
+                           
+                        }
+                    }
+                   
+                ],
+                "columnDefs": [
+                    {
+                        "targets": 6,
+                    }
+                ]
+            });
+
+        });
+
+        function ViewPermit(appdetails) {
+            window.open('/Admin/Certificate/' + appdetails, '_blank');            
+        }
+    </script>
+}
+
+

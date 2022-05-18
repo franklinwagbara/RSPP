@@ -1,0 +1,925 @@
+﻿@model RSPP.Models.MyApplicationRequestForm
+@{
+    ViewData["Title"] = "Legacy Application Form";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<br />
+<div class="content">
+    <!--<div class="row" style="height: 10%">-->
+    @*<div class="pageTitle bg1" style="background: url('/images/bgblue11.jpg'); width: 100%; background-repeat:no-repeat; background-size:cover ">*@
+    <!--<h2>Legacy Application Form</h2>
+    <div class="clear"></div>-->
+    @*</div>*@
+    <!--</div>-->
+
+    <div class="padd-t form-horizontal" style="width:90%">
+
+        @using (Html.BeginForm("LegacyApplicationForm", "Admin", FormMethod.Post, new { id = "formid", role = "form", @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.ApplicationTypeId, new { @class = "ApplicationTypeId" })
+            @Html.HiddenFor(model => model.Status)
+            @Html.HiddenFor(model => model.AgencyName)
+            @Html.HiddenFor(model => model.AgencyId)
+            <input type="hidden" id="lineofbusinessid" name="lineofbusinessid" />
+            <fieldset style="border:0.1px solid; border-color:forestgreen; padding-right:100px">
+                <legend style="border:0.1px solid; border-color:forestgreen; padding-left:5px">Legacy Application Form</legend>
+
+                <div class="form-group">
+
+                    <div class="row form-group">
+                        <label class="control-label col-md-2">Application Category<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            <select class="form-control agency" required="required" id="txtagency" name="txtagency"></select>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-md-2">Application Type<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            <select class="form-control AppType" required="required" id="AppType" name="AppType">
+                                <option></option>
+                                <option>NEW</option>
+                                <option>RENEW</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="control-label col-md-2">Expired Certificate Number<sup style="color:red; font-weight:bold">*</sup> </label>
+                        <div class="col-md-4">
+                            <input class="form-control" id="LicenseReference" name="LicenseReference" />
+                        </div>
+                    </div>
+
+
+                    <div class="row form-group">
+
+                        <label class="control-label col-md-2">Certificate Issued Date<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.LicenseIssuedDate, new { @class = "form-control", autocomplete = "off", required = "required" })
+                        </div>
+                        <label class="control-label col-md-2">Certificate Expiry Date<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.LicenseExpiryDate, new { @class = "form-control", autocomplete = "off", required = "required" })
+                        </div>
+                    </div>
+
+
+
+                    <div class="row form-group">
+
+                        <label class="control-label col-md-2">Company Address<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control CompanyAddress", autocomplete = "off", required = "required" })
+                        </div>
+                        <label class="control-label col-md-2 hideDoE">Date of Establishment<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.DateofEstablishment, new { @class = "form-control hideDoE", autocomplete = "off", required = "required", @readonly = "readonly" })
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="row form-group">
+                        <label class="control-label col-md-2">Postal Address<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.PostalAddress, new { @class = "form-control", required = "required" })
+                        </div>
+
+
+                        <label class="control-label col-md-2">Phone Number<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control PhoneNum", autocomplete = "off", required = "required" })
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="row form-group">
+                        <label class="control-label col-md-2">Company Email<sup style="color:red; font-weight:bold">*</sup></label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.CompanyEmail, new { @class = "form-control", required = "required", autocomplete = "off", @type = "email" })
+                        </div>
+
+
+                        <label class="control-label col-md-2">Company Website</label>
+                        <div class="col-md-4">
+                            @Html.TextBoxFor(model => model.CompanyWebsite, new { @class = "form-control CompanyWebsite", autocomplete = "off" })
+                        </div>
+                    </div>
+
+
+
+
+                    <div id="Agencyid1" style="display:none">
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Services Provided In Port<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="ServicesProvidedInPort" name="ServicesProvidedInPort" cols="3" rows="3"></textarea>
+                            </div>
+
+
+                            <label class="control-label col-md-2">Any Other Relevant Info</label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="AnyOtherRelevantInfo" name="AnyOtherRelevantInfo" cols="3" rows="3"></textarea>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="Agencyid2" style="display:none">
+
+
+                        <div id="displayLogisticsLOBTxtbox" style="display:none">
+                            <div class="row form-group">
+                                <label class="control-label col-md-4">Line Of Business<sup style="color:red; font-weight:bold">*</sup></label>
+                                <div class="col-md-10">
+                                    <input class="form-control" id="LogisticsLineOfBusiness" style="margin-left:230px; margin-top:-30px; width:100%" name="LogisticsLineOfBusiness" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Customs License Expiry Date<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" readonly id="CustomLicenseExpiryDate" autocomplete="off" name="CustomLicenseExpiryDate" />
+                            </div>
+                            <label class="control-label col-md-2 hidecustomcertificatenum">Customs License Number</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control hidecustomcertificatenum" id="CustomLicenseNum" autocomplete="off" name="CustomLicenseNum" />
+                            </div>
+                        </div>
+
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">CRFFN Registration Expiry Date<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" readonly id="CrffnRegistratonExpiryDate" name="CrffnRegistratonExpiryDate" />
+                            </div>
+                            <label class="control-label col-md-2 CRFFNRgeNum">CRFFN Registration Number<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control CRFFNRgeNum" id="CrffnRegistrationNum" autocomplete="off" name="CrffnRegistrationNum" />
+                            </div>
+                        </div>
+
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Other License/Certification Number</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="OtherLicense" autocomplete="off" name="OtherLicense" />
+                            </div>
+
+
+                            <label class="control-label col-md-2">Other License/Certification Expiry Date</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="OtherLicenseExpiryDate" readonly name="OtherLicenseExpiryDate" />
+
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2 hideassociation">Name of Association<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                @Html.TextBoxFor(model => model.NameOfAssociation, new { @class = "form-control hideassociation", autocomplete = "off", required = "required" })
+
+                            </div>
+
+                            <label class="control-label col-md-2">CAC Registration Number<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                @Html.TextBoxFor(model => model.CacregNum, new { @class = "form-control", autocomplete = "off", required = "required" })
+                            </div>
+
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Any Other Relevant Info</label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="LogisticsAnyOtherRelevantInfo" name="LogisticsAnyOtherRelevantInfo" cols="3" rows="3"></textarea>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div id="Agencyid3" style="display:none; padding-left:30px">
+                        <div class="row form-group" style="font-size:12px" id="portoffdockradiobtnhide">
+
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Status of Terminal:</b>
+                                <input type="radio" class="StatusTerminals" id="PortTerminalStatus" name="PortTerminalStatusOfTerminal" value="Concession"> Concession
+                                <input type="radio" class="StatusTerminals" id="OffDockTerminalStatus" name="PortTerminalStatusOfTerminal" value="PPP"> PPP
+                                <input type="radio" class="StatusTerminals" id="ClearingAgentsStatus" name="PortTerminalStatusOfTerminal" value="Lease Agreement"> Lease Agreement
+                                <input type="radio" class="StatusTerminals" id="OtherStatusTerminal" name="PortTerminalStatusOfTerminal" value="StatusTerminalOthers"> Others
+                                <textarea type="text" class="form-control" style="display:none" id="StatusOfTerminal" name="StatusOfTerminal"></textarea>
+                            </div>
+
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Cargo Type:</b>
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeBulk" name="PortTerminalCargoType" value="Bulk"> Bulk
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeContainer" name="PortTerminalCargoType" value="Container"> Container
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeDry" name="PortTerminalCargoType" value="Dry"> Dry
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeRoRo" name="PortTerminalCargoType" value="Ro-Ro"> Ro-Ro
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeWet" name="PortTerminalCargoType" value="Wet"> Wet
+                                <input type="radio" class="CargoTypeTerminals" id="CargoTypeOthers" name="PortTerminalCargoType" value="CargoTypeOthers"> Others
+                                <textarea type="text" class="form-control" style="display:none" id="portoffdockCargoType" name="portoffdockCargoType"></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="row form-group" style="font-size:12px; display:none" id="portoffdockhide">
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Line Of Business</b>
+                                <input type="text" class="form-control" id="portoffdockLineOfBusiness" name="portoffdockLineOfBusiness" />
+
+                            </div>
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Status of Terminal</b>
+                                <input type="text" class="form-control StatusOfTerminal" id="StatusOfTerminal" name="StatusOfTerminal" />
+
+                            </div>
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Cargo Type</b>
+                                <input type="text" class="form-control portoffdockCargoType" id="portoffdockCargoType" name="portoffdockCargoType" />
+
+                            </div>
+                        </div>
+
+                        <div style="width:95%; padding-left:40px">
+                            <table class="table table-bordered table-striped" id="mytable">
+
+                                <thead>
+                                    <tr>
+                                        <th> Terminal Name<sup style="color:red; font-weight:bold">*</sup></th>
+                                        <th>
+                                            Terminal Location<sup style="color:red; font-weight:bold">*</sup> <span style="float:right" class="btn btn-success btn-sm" id="btnAddMoreTerminal" onclick="AddTerminal()"> <i class="fa fa-plus"> </i> Add More Terminal </span>
+                                        </th>
+                                        <th style="width:5px"></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="AppendTerminals" style="width:100%">
+
+                                    <tr>
+                                        <td>
+                                            <input type="text" required class="form-control" placeholder="Enter Terminal Name" id="txtTerminalName[]" name="txtTerminalName[]" />
+                                        </td>
+
+                                        <td>
+                                            <input type="text" required class="form-control txtTerminalLocation" id="txtTerminalLocation[]" name="txtTerminalLocation[]" />
+                                        </td>
+                                    </tr>
+
+
+
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-1">Any Other Relevant Info</label>
+                            <div class="col-md-11">
+                                <textarea class="form-control" id="portoffdockAnyOtherInfo" name="portoffdockAnyOtherInfo" cols="2" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="Agencyid4" style="display:none">
+                        <div class="row form-group" id="shippingradiobtnhide">
+                            <label class="control-label col-md-2"></label>
+
+                            <div class="col-md-4">
+                                <b><sup style="color:red; font-weight:bold">*</sup>Cargo Type</b>
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeBulk" name="ShippingAgencyCargoType" value="Bulk"> Bulk
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeContainer" name="ShippingAgencyCargoType" value="Container"> Container
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeDry" name="ShippingAgencyCargoType" value="Dry"> Dry
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeRoRo" name="ShippingAgencyCargoType" value="Ro-Ro"> Ro-Ro
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeWet" name="ShippingAgencyCargoType" value="Wet"> Wet
+                                <input type="radio" class="ShippingCargoType" id="ShippingCargoTypeOthers" name="ShippingAgencyCargoType" value="ShippingCargoTypeOthers"> Others
+                            </div>
+                        </div>
+
+
+
+                        <div class="row form-group" style="display:none" id="shippingtxtboxhide">
+                            <label class="control-label col-md-2">Line Of Business<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="ShippingagencyLineOfBusiness" name="ShippingagencyLineOfBusiness" />
+                            </div>
+
+
+                            <label class="control-label col-md-2">Cargo Type<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="ShippingagencyCargoType" name="ShippingagencyCargoType" />
+                            </div>
+                        </div>
+
+                        <div class="row form-group" style="display:none" id="NpaNimasatxtboxhide">
+                            <label class="control-label col-md-2">NPA Registration No.<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="nparegnum" name="nparegnum" />
+                            </div>
+
+
+                            <label class="control-label col-md-2">NIMASA Registration No.<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="nimasaregnum" name="nimasaregnum" />
+                            </div>
+                        </div>
+
+
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Vessel/Lines Represented in Nigeria<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="VesselLinesRepresentedInNigeria" name="VesselLinesRepresentedInNigeria" cols="3" rows="3"></textarea>
+                            </div>
+
+                            <label class="control-label col-md-2">Any Other Relevant Info<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="ShippingagencyAnyOtherInfo" name="ShippingagencyAnyOtherInfo" cols="3" rows="3"></textarea>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="Agencyid5" style="display:none">
+                        <div class="row form-group">
+                            <label class="control-label col-md-2">Line of Business<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="otherportLineOfBusiness" name="otherportLineOfBusiness" cols="3" rows="3"></textarea>
+                            </div>
+
+                            <label class="control-label col-md-2">Any Other Relevant Info</label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="otherportAnyOtherInfo" name="otherportAnyOtherInfo" cols="3" rows="3"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div id="Agencyid6" style="display:none">
+                        <div class="row form-group">
+
+                            <label class="control-label col-md-2 userporttxtboxhide" style="display:none">Line Of Business<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4 userporttxtboxhide" id="userporttxtboxhide" style="display:none">
+                                <input class="form-control col-md-12" id="userportLineOfBusiness" name="userportLineOfBusiness" />
+                            </div>
+                            <label class="control-label col-md-2">Any Other Relevant Info</label>
+                            <div class="col-md-4">
+                                <textarea class="form-control" id="userportAnyOtherInfo" name="userportAnyOtherInfo" cols="3" rows="3"></textarea>
+                            </div>
+                            <label class="control-label col-md-2 nepcregnumhide" style="display:none">NEPC Registration number<sup style="color:red; font-weight:bold">*</sup></label>
+                            <div class="col-md-4 nepcregnumhide" style="display:none">
+                                <input class="form-control" id="nepcregnum" name="nepcregnum" placeholder="For Exporters Only" />
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+
+                    <br />
+                    <div class="text-center">
+                        <div class="col-xs-12 col-md-offset-12 text-md-center">
+                            <button type="submit" class="btn btn-success btn-default round" id="addbtn">Submit and Continue</button>
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+
+        }
+    </div>
+    <div style="display:none" id="loadingImage" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+    <div id="modalMapDialog" style="display: none">
+        <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+    </div>
+</div>
+
+    @section scripts{
+        <script src="~/js/jquery-3.3.1.js"></script>
+        <script src="~/js/jquery.validate.min.js"></script>
+        <script src="~/js/bootstrap.min.js"></script>
+
+        <script src="~/js/jquery.ui.widget.js"></script>
+        <script src="~/js/jquery.iframe-transport.js"></script>
+        <script src="~/js/select2.min.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2df9i_A809q2eQQizBb7UqSGXASsQHVQ&libraries=places"></script>
+        <script src="~/js/jquery-ui.min.js"></script>
+
+
+
+        <script type="text/javascript">
+        function getContextPath() {
+            return window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
+        }
+
+        function getPlace() {
+            google.maps.event.addDomListener(window, 'load', function () {
+                var options = {
+                    componentRestrictions: { country: "ng" }
+                };
+                debugger;
+                var places = null;
+                var input = document.getElementsByClassName('txtTerminalLocation');
+                for (i = 0; i < input.length; i++) {
+                    places = new google.maps.places.Autocomplete(input[i], options);
+                }
+                var places = new google.maps.places.Autocomplete(document.getElementById('PostalAddress'), options);
+                places = new google.maps.places.Autocomplete(document.getElementById('CompanyAddress'), options);
+                google.maps.event.addListener(places, 'place_changed', function () {
+                    var place = places.getPlace();
+                    var address = place.formatted_address;
+                    var latitude = place.geometry.location.lat();
+                    var longitude = place.geometry.location.lng();
+                    var mesg = "Location Address Is : " + address;
+                    mesg += "\nLocation Latitude Is : " + latitude;
+                    mesg += "\nLocation Longitude Is: " + longitude;
+                    showMap(address, latitude, longitude);
+                });
+            });
+        }
+
+
+        function showMap(locationaddress, latitude, longitude) {
+            var markers = [];
+
+            $("#modalMapDialog").dialog({
+                modal: true,
+                title: "Address Location on Map",
+                width: 550,
+                hright: 400,
+                buttons: {
+                    Close: function () {
+                        $(this).dialog('close');
+                    },
+                    Okay: function () {
+                        //$('#secondDiv').show();
+                        $("#GPS").val(latitude + ',' + longitude);
+                        $(this).dialog('close');
+                    }
+                },
+                open: function () {
+
+                    google.maps.visualRefresh = true;
+                    var myCenter = new google.maps.LatLng(latitude, longitude);
+                    var mapCanvas = document.getElementById("MapContainer");
+                    var mapOptions = {
+                        center: myCenter,
+                        zoom: 14,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP,
+                        panControl: true,
+                        zoomControl: true,
+                        mapTypeControl: true,
+                        scaleControl: true,
+                        streetViewControl: true,
+                        overviewMapControl: true,
+                        rotateControl: true,
+                        zoomControl: true,
+                        zoomControlOptions: {
+                            style: google.maps.ZoomControlStyle.SMALL
+                        },
+                        mapTypeControl: true,
+                        mapTypeControlOptions: {
+                            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+                            position: google.maps.ControlPosition.TOP_CENTER,
+                            mapTypeIds: [
+                                google.maps.MapTypeId.ROADMAP,
+                                google.maps.MapTypeId.TERRAIN,
+                                google.maps.MapTypeId.SATELLITE,
+                                google.maps.MapTypeId.HYBRID
+                            ]
+                        }
+                    };
+
+                    var map = new google.maps.Map(mapCanvas, mapOptions);
+                    var marker = new google.maps.Marker({ position: myCenter, animation: google.maps.Animation.BOUNCE });
+                    marker.setMap(map);
+
+                    var infowindow = new google.maps.InfoWindow({
+                        content: locationaddress
+                    });
+                    infowindow.open(map, marker);
+
+                    // Zoom to 9 when clicking on marker
+                    google.maps.event.addListener(marker, 'click', function () {
+                        map.setZoom(13);
+                        map.setCenter(marker.getPosition());
+                    });
+                }
+            });
+        }
+
+        var Terminals_i = 50;
+
+        function AddTerminal() {
+            debugger
+            Terminals_i++;
+
+            var html = "<tr style='width:100%' id='Remove" + Terminals_i + "'>  <td> <input type='text' placeholder='Enter Terminal Name' required class='form-control' id='txtTerminalName[]' name='txtTerminalName[]' /> </td>";
+            html += "<td> <input type='text' class='form-control txtTerminalLocation' id='txtTerminalLocation[]'required name='txtTerminalLocation[]' /> </td>";
+            html += " <td> <button class='btn btn-danger btn-xs' onclick='RemoveTerminal();'> <span class='glyphicon glyphicon-trash'> </span>  Delete</button> </td> </tr>";
+            $("#AppendTerminals tr:last").after(html);
+
+            var options = {
+                componentRestrictions: { country: "ng" }
+            };
+            debugger;
+            var places = null;
+            var input = document.getElementsByClassName('txtTerminalLocation');
+            for (i = 0; i < input.length; i++) {
+                places = new google.maps.places.Autocomplete(input[i], options);
+            }
+            google.maps.event.addListener(places, 'place_changed', function () {
+                var place = places.getPlace();
+                var address = place.formatted_address;
+                var latitude = place.geometry.location.lat();
+                var longitude = place.geometry.location.lng();
+                var mesg = "Location Address Is : " + address;
+                mesg += "\nLocation Latitude Is : " + latitude;
+                mesg += "\nLocation Longitude Is: " + longitude;
+                showMap(address, latitude, longitude);
+            });
+
+
+        }
+        function RemoveTerminal() {
+            $("#Remove" + Terminals_i).remove();
+            Terminals_i--;
+        }
+
+
+
+
+
+        $(document).ready(function () {
+
+            getPlace();
+            $("#CompanyEmail").val('@ViewBag.AgencyEmail');
+
+            $(".AppType").change(function () {
+                debugger;
+                var selectedvalue = $(".AppType option:selected").text();
+
+                if (selectedvalue === "RENEW") {
+                    $(".ApplicationTypeId").val('RENEW');
+                    $("#hidecertnum").show();
+                    $("#txtcertnum").attr("required", true);
+                } else if (selectedvalue === "NEW") {
+                    $(".ApplicationTypeId").val('NEW');
+                    $("#hidecertnum").hide();
+                    $("#txtcertnum").attr("required", false);
+                }
+            });
+
+            $('.agency').select2({
+                placeholder: "Select",
+                width: '100%'
+            });
+
+
+            $(".agency").ready(function () {
+                var html = "";
+                $(".agency").html("");
+
+                $.getJSON("/Company/GetAllCategory",
+                    {},
+                    function (datas) {
+                        debugger;
+                        $(".agency").append("<option></option>");
+                        $.each(datas, function (key, val) {
+                            html += "<option value=" + val.lineOfBusinessId + ">" + val.lineOfBusinessName + "</option>";
+                        });
+                        $(".agency").append(html);
+                    });
+            });
+
+
+
+
+
+            var categoryid = 0;
+
+
+            $(".agency").on("change", function () {
+                debugger;
+                categoryid = Number($("#txtagency option:selected").val());
+                var categoryname = $("#txtagency option:selected").text();
+
+                $.getJSON("/Admin/GetFees", {MyCategoryid: categoryid }, function (data) {
+                    debugger;
+                    $("#AgencyName").val(categoryname);
+                    $("#AgencyId").val(data.formid);
+                    $("#fees").val(data.feeamount);
+                    $("#lineofbusinessid").val(categoryid);
+                    //$(".hideDoE").show();
+                    $(".hidecustomcertificatenum").show();
+                    $(".CRFFNRgeNum").show();
+
+                    if (data.formid === 1) {
+                    $("#Agencyid1").show();
+
+                    $("#Agencyid2").hide();
+                    $("#Agencyid3").hide();
+                    $("#Agencyid4").hide();
+                    $("#Agencyid5").hide();
+                        $("#Agencyid6").hide();
+                        $(".nepcregnumhide").hide();
+                    $("#ServicesProvidedInPort").attr("required", true);
+
+                    $("#CustomLicenseNum").attr("required", false);
+                    $("#CustomLicenseExpiryDate").attr("required", false);
+                    $("#CrffnRegistrationNum").attr("required", false);
+                    $("#CrffnRegistratonExpiryDate").attr("required", false);
+                    $("#VesselLinesRepresentedInNigeria").attr("required", false);
+                    $("#otherportLineOfBusiness").attr("required", false);
+                    $("#userportAnyOtherInfo").attr("required", false);
+
+                    } else if (data.formid === 2) {
+                    $("#Agencyid1").hide();
+                    $("#Agencyid2").show();
+                    $("#Agencyid3").hide();
+                    $("#Agencyid4").hide();
+                    $("#Agencyid5").hide();
+                        $("#Agencyid6").hide();
+                        $(".nepcregnumhide").hide();
+                    $("#LogisticsLineOfBusiness").val(categoryname);
+                    $("#CustomLicenseNum").attr("required", true);
+                    $("#CustomLicenseExpiryDate").attr("required", true);
+                    $("#CrffnRegistrationNum").attr("required", true);
+                    $("#CrffnRegistratonExpiryDate").attr("required", true);
+                    $("#userportAnyOtherInfo").attr("required", false);
+                    $("#ServicesProvidedInPort").attr("required", false);
+                    $("#VesselLinesRepresentedInNigeria").attr("required", false);
+                        $("#otherportLineOfBusiness").attr("required", false);
+                        if (categoryid === 2) {
+                            //$(".hideDoE").hide();
+                            $("#DateofEstablishment").attr("required", false);
+                        }
+                        else if (categoryid === 5 || categoryid === 6) {
+                            $(".CRFFNRgeNum").hide();
+                            $("#CrffnRegistrationNum").attr("required", false);
+                        }
+                       else if (categoryid === 3) {
+                            $(".hidecustomcertificatenum").hide();
+                            $("#CustomLicenseNum").attr("required", false);
+                        }
+
+                }
+
+                    else if (data.formid === 3) {
+                    $("#Agencyid1").hide();
+                    $("#Agencyid2").hide();
+                    $("#Agencyid3").show();
+                    $("#Agencyid4").hide();
+                    $("#Agencyid5").hide();
+                        $("#Agencyid6").hide();
+                        $(".nepcregnumhide").hide();
+                        $("#portoffdockLineOfBusiness").val(categoryname);
+                        if (categoryid === 8) {
+                            //$(".hideDoE").hide();
+                            $("#DateofEstablishment").attr("required", false);
+                        }
+
+                 }
+
+                    else if (data.formid === 4) {
+                    $("#Agencyid1").hide();
+                    $("#Agencyid2").hide();
+                    $("#Agencyid3").hide();
+                    $("#Agencyid4").show();
+                    $("#Agencyid5").hide();
+                        $("#Agencyid6").hide();
+                        $(".nepcregnumhide").hide();
+                    $("#ShippingagencyLineOfBusiness").val(categoryname);
+                    $("#VesselLinesRepresentedInNigeria").attr("required", true);
+                    $("#userportAnyOtherInfo").attr("required", false);
+                    $("#CustomLicenseNum").attr("required", false);
+                    $("#CustomLicenseExpiryDate").attr("required", false);
+                    $("#CrffnRegistrationNum").attr("required", false);
+                    $("#CrffnRegistratonExpiryDate").attr("required", false);
+                    $("#ServicesProvidedInPort").attr("required", false);
+                        $("#otherportLineOfBusiness").attr("required", false);
+                        $("#NpaNimasatxtboxhide").show();
+                        $("#nparegnum").attr("required", true);
+                        $("#nimasaregnum").attr("required", true);
+
+
+                }
+                    else if (data.formid === 5) {
+
+                    $("#Agencyid1").hide();
+                    $("#Agencyid2").hide();
+                    $("#Agencyid3").hide();
+                    $("#Agencyid4").hide();
+                    $("#Agencyid5").show();
+                    $(".nepcregnumhide").hide();
+                    $("#Agencyid6").hide();
+                    $("#otherportLineOfBusiness").attr("required", true);
+                    $("#userportAnyOtherInfo").attr("required", false);
+                    $("#VesselLinesRepresentedInNigeria").attr("required", false);
+                    $("#CustomLicenseNum").attr("required", false);
+                    $("#CustomLicenseExpiryDate").attr("required", false);
+                    $("#CrffnRegistrationNum").attr("required", false);
+                    $("#CrffnRegistratonExpiryDate").attr("required", false);
+                    $("#ServicesProvidedInPort").attr("required", false);
+
+                }
+
+                    else if (data.formid === 6) {
+
+                    $("#Agencyid1").hide();
+                    $("#Agencyid2").hide();
+                    $("#Agencyid3").hide();
+                    $("#Agencyid4").hide();
+                    $("#Agencyid5").hide();
+                    $("#Agencyid6").show();
+                    $("#userportLineOfBusiness").val(categoryname);
+                    $("#otherportLineOfBusiness").attr("required", false);
+                    $("#VesselLinesRepresentedInNigeria").attr("required", false);
+                    $("#CustomLicenseNum").attr("required", false);
+                    $("#CustomLicenseExpiryDate").attr("required", false);
+                    $("#CrffnRegistrationNum").attr("required", false);
+                    $("#CrffnRegistratonExpiryDate").attr("required", false);
+                        $("#ServicesProvidedInPort").attr("required", false);
+                        if (categoryid === 14) {
+                            $(".nepcregnumhide").show();
+                        }
+
+                }
+
+            });
+            });
+
+
+            $("#CustomLicenseExpiryDate, #CrffnRegistratonExpiryDate, #OtherLicenseExpiryDate").datepicker({
+                "onSelect": function (date) {
+                }, changeMonth: true, changeYear: true, dateFormat: "d M yy"
+            });
+
+
+
+
+            $(".StatusTerminals").on("change", function () {
+                debugger;
+                var StatusTerminal = $(".StatusTerminals:checked").val();
+                var StatusTerminallist = [];
+
+                if (StatusTerminal === "StatusTerminalOthers") {
+                    $("#StatusOfTerminal").show();
+                    $("#StatusOfTerminal").attr("required", true);
+                } else {
+                    $("#StatusOfTerminal").hide();
+                    $.each($(".StatusTerminals:checked"), function () {
+                        StatusTerminallist.push($(this).val());
+                    });
+                    $("#StatusOfTerminal").val(StatusTerminallist.join(", "));
+                }
+
+
+            });
+
+            $(".CargoTypeTerminals").on("change", function () {
+                debugger;
+                var CargoTypeTerminallist = [];
+                var CargoTypeTerminal = $(".CargoTypeTerminals:checked").val();
+                if (CargoTypeTerminal === "CargoTypeOthers") {
+                    $("#portoffdockCargoType").show();
+                    $("#portoffdockCargoType").attr("required", true);
+                } else {
+
+                    $("#portoffdockCargoType").hide();
+                    $.each($(".CargoTypeTerminals:checked"), function () {
+                        CargoTypeTerminallist.push($(this).val());
+                    });
+                    $("#portoffdockCargoType").val(CargoTypeTerminallist.join(", "));
+                }
+
+            });
+
+            $(".ShippingCargoType").on("change", function () {
+                debugger;
+                var ShippingCargoTypelist = [];
+                var ShippingCargoType = $(".ShippingCargoType:checked").val();
+                if (ShippingCargoType === "ShippingCargoTypeOthers") {
+                    $("#ShippingagencyCargoType").show();
+                    $("#ShippingagencyCargoType").attr("required", true);
+                } else {
+                    $("#ShippingagencyCargoType").hide();
+                    $.each($(".ShippingCargoType:checked"), function () {
+                        ShippingCargoTypelist.push($(this).val());
+                    });
+                    $("#ShippingagencyCargoType").val(ShippingCargoTypelist.join(", "));
+                }
+            });
+
+            $('#addbtn').click(function (e) {
+                e.preventDefault();
+                var agencyID = Number($("#AgencyId").val());
+                debugger;
+                 if (agencyID === 3) {
+                    var StatusOfTerminal = $("#StatusOfTerminal").val();
+                    var portoffdockCargoType = $("#portoffdockCargoType").val();
+                    if (StatusOfTerminal === "") {
+                        alert("Please check/select Status of Terminal");
+                        return false;
+                    } else if (portoffdockCargoType === "") {
+                        alert("Please check/select Cargo Type");
+                        return false;
+                    }
+
+                }
+                else if (agencyID === 4) {
+                    var ShippingagencyCargoType = $("#ShippingagencyCargoType").val();
+                    if (ShippingagencyCargoType === "") {
+                        alert("Please check/select Cargo Type");
+                        return false;
+                    }
+                }
+
+
+                if ($("#formid").valid()) {
+                    var r = confirm("Are you sure you want to Proceed ?");
+                    if (r == true) {
+                        $(".loadingImage").show();
+                        debugger;
+                        var Terminals = [];
+
+                        var TerminalName = document.getElementsByName('txtTerminalName[]');
+                        var TerminalLocation = document.getElementsByName('txtTerminalLocation[]');
+
+                        for (var i = 0; i < TerminalName.length; i++) {
+                            debugger;
+                            Terminals.push({
+                                "TerminalName": TerminalName[i].value.trim(),
+                                "TerminalLocation": TerminalLocation[i].value.trim(),
+                            });
+
+                        }
+
+                        $.post($("#formid").attr('action'), $("#formid").serialize() + '&' + $.param({ "MyTerminals": Terminals })).done(function (data) {
+                            debugger;
+
+                            var status = data.status;
+                            $(".loadingImage").show();
+
+                            if (status === "failed") {
+                                $(".loadingImage").hide();
+                                alert("System Error Occured, Please try again Later");
+                            }
+                            else if(status === "success") {
+                                $(".loadingImage").hide();
+                                alert("Record was successfully saved");
+                                history.go(0);
+                            } else if ("alreadyexist") {
+                                $(".loadingImage").hide();
+                                alert("The entered Certificate Reference Number already exist.");
+                            }
+                            else {
+                                $(".loadingImage").hide();
+                                alert("Something went wrong. Please try again later");
+                            }
+
+                        }).fail(function (data) {
+                            $(".loadingImage").hide();
+                            alert('Network Communication Error, Restore Connection and Try again');
+                        }).always(function (data) {
+                            $(".loadingImage").hide();
+                        });
+                    }
+                }
+            });
+
+
+            $('#DateofEstablishment, #LicenseIssuedDate, #LicenseExpiryDate').datepicker({
+                format: 'dd/mm/yyyy',
+                autoclose: true
+            });
+
+
+        });
+
+
+
+
+        </script>
+
+
+    }
