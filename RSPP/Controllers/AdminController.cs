@@ -160,7 +160,8 @@ namespace RSPP.Controllers
                 {
                     //var splitfullname = Request.Form["staffFullName"].ToString();
                     var name = staffFullName.ToString().Split(' ');
-                    if(name.Count() <= 1) {
+                    if (name.Count() <= 1)
+                    {
                         status = "fullnamerequired";
                         message = "Please enter full name";
                         return Json(new { Status = status, Message = message });
@@ -351,7 +352,7 @@ namespace RSPP.Controllers
 
             var details = (from a in _context.LineOfBusiness where a.LineOfBusinessId == MyCategoryid select a).FirstOrDefault();
 
-            return Json(new {formid = details.FormTypeId });
+            return Json(new { formid = details.FormTypeId });
         }
 
 
@@ -408,9 +409,27 @@ namespace RSPP.Controllers
 
         public ActionResult AllApplications()
         {
-            List<ApplicationRequestForm> apps = null;
+            List<MyApplicationRequestForm> apps = null;
 
-            apps = (from a in _context.ApplicationRequestForm where a.IsLegacy == "NO" select a).ToList();
+            apps = (from a in _context.ApplicationRequestForm
+                    join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
+                    join p in _context.PaymentLog on a.ApplicationId equals p.ApplicationId
+                    join w in _context.WorkFlowState on a.CurrentStageId equals w.StateId
+                    where a.IsLegacy == "NO"
+                    orderby a.AddedDate descending
+                    select new MyApplicationRequestForm
+                    {
+                        ApplicationId = a.ApplicationId,
+                        CompanyEmail = a.CompanyEmail,
+                        AmountPaid = p.TxnAmount,
+                        CompanyName = u.CompanyName,
+                        AgencyName = a.AgencyName,
+                        Status = a.Status,
+                        CurrentStage = w.StateName,
+                        AppProgress = w.Progress,
+                        CurrentStageId = a.CurrentStageId,
+                        AddedDate = a.AddedDate
+                    }).ToList();
 
             return View(apps);
         }
@@ -420,7 +439,7 @@ namespace RSPP.Controllers
         {
             List<ApplicationRequestForm> apps = null;
 
-            apps = (from a in _context.ApplicationRequestForm where a.IsLegacy == "YES" select a).ToList();
+            apps = (from a in _context.ApplicationRequestForm where a.IsLegacy == "YES" orderby a.AddedDate descending select a).ToList();
 
             return View(apps);
         }
@@ -875,6 +894,7 @@ namespace RSPP.Controllers
         public ActionResult CompanyPermits(string userId)
         {
             var companypermit = (from a in _context.ApplicationRequestForm where a.CompanyEmail == userId && a.LicenseReference != null select a).ToList();
+            ViewBag.CompanyEmail = userId;
             return View(companypermit);
         }
 
@@ -1960,10 +1980,11 @@ namespace RSPP.Controllers
             ViewBag.IndividualCategory = Convert.ToDecimal(paymentlist.IndividualCategory).ToString("N");
             ViewBag.CorperateCategory = Convert.ToDecimal(paymentlist.CorperateCategory).ToString("N");
             ViewBag.OtherPortServiceProviders = Convert.ToDecimal(paymentlist.OtherPortServiceProviders).ToString("N");
-            ViewBag.GrandTotal = Math.Round(Convert.ToDecimal(ViewBag.BargeOperators) + Convert.ToDecimal(ViewBag.CargoConsolidatorsDeConsolidators) + Convert.ToDecimal(ViewBag.Chandling) + Convert.ToDecimal(ViewBag.DryPortOperator) + Convert.ToDecimal(ViewBag.FreightForwardersClearingAgents) + Convert.ToDecimal(ViewBag.HaulersTruckers) + Convert.ToDecimal(ViewBag.ICD)
+             var GrandTotal = Math.Round(Convert.ToDecimal(ViewBag.BargeOperators) + Convert.ToDecimal(ViewBag.CargoConsolidatorsDeConsolidators) + Convert.ToDecimal(ViewBag.Chandling) + Convert.ToDecimal(ViewBag.DryPortOperator) + Convert.ToDecimal(ViewBag.FreightForwardersClearingAgents) + Convert.ToDecimal(ViewBag.HaulersTruckers) + Convert.ToDecimal(ViewBag.ICD)
                 + Convert.ToDecimal(ViewBag.LogististicsServiceProvider) + Convert.ToDecimal(ViewBag.StevedoringWarehousing) + Convert.ToDecimal(ViewBag.SeaportTerminalOperator) + Convert.ToDecimal(ViewBag.OffDockTerminalOperator) + Convert.ToDecimal(ViewBag.ShippersAssociation)
-                + Convert.ToDecimal(ViewBag.CargoSurveyor) + Convert.ToDecimal(ViewBag.IndividualCategory) + Convert.ToDecimal(ViewBag.CorperateCategory) + Convert.ToDecimal(ViewBag.OtherPortServiceProviders), 2).ToString("N");
-
+                + Convert.ToDecimal(ViewBag.CargoSurveyor) + Convert.ToDecimal(ViewBag.IndividualCategory) + Convert.ToDecimal(ViewBag.CorperateCategory) + Convert.ToDecimal(ViewBag.OtherPortServiceProviders), 2);
+            ViewBag.GrandTotal = GrandTotal.ToString("N");
+            ViewBag.GrandTotalInWords = generalClass.NumberToWords(Convert.ToInt64(GrandTotal));
             return View();
         }
 
@@ -2038,11 +2059,6 @@ namespace RSPP.Controllers
                              CompanyEmail = r.CompanyEmail
 
                          });
-
-
-
-
-
 
 
             if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
@@ -2399,9 +2415,82 @@ namespace RSPP.Controllers
         }
 
 
+        public ActionResult DocumentConfig()
+        {
+
+            List<DocumentList> doclist = null;
+            doclist = (from d in _context.Documents
+                       select new DocumentList
+                       {
+                           CompulsoryDocument = d.IsMandatory == "Y" ? "YES" : "NO",
+                           DocumentName = d.DocumentName,
+                           DocId = d.DocId,
+                           CategoryName = (from l in _context.LineOfBusiness where l.LineOfBusinessId == d.LineOfBusinessId select l.LineOfBusinessName).FirstOrDefault()
+                       }).ToList();
+            return View(doclist);
+        }
 
 
+        [HttpPost]
+        public JsonResult AddDocument(string docname, List<string> DocCategory, string Doccompulsory)
+        {
+            string status = string.Empty;
+            string message = string.Empty;
+            try
+            {
+                var docs = new Documents();
+                if (DocCategory.Count > 0)
+                {
+                    foreach (var item in DocCategory)
+                    {
+                        docs.DocId = 0;
+                        docs.DocumentName = docname;
+                        docs.IsMandatory = Doccompulsory;
+                        docs.LineOfBusinessId = Convert.ToInt32(item);
+                        _context.Documents.Add(docs);
+                        _context.SaveChanges();
+                    }
 
+                }
+                status = "success";
+                message = "document was successfully added";
+            }
+            catch (Exception ex)
+            {
+                status = "failed";
+                message = "Unable to add document. Please try again later " + ex.InnerException;
+            }
+            return Json(new { Status = status, Message = message });
+        }
+
+        public JsonResult GetAllCategory()
+        {
+            var Category = (from l in _context.LineOfBusiness select new { l.LineOfBusinessId, l.LineOfBusinessName }).ToList();
+            return Json(Category);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteDocument(int docid)
+        {
+            string status = string.Empty;
+            string message = string.Empty;
+
+            try
+            {
+                var deletedoc = (from d in _context.Documents where d.DocId == docid select d).FirstOrDefault();
+                _context.Remove(deletedoc);
+                _context.SaveChanges();
+                status = "success";
+                message = "Document was successfully deleted";
+            }
+            catch (Exception ex)
+            {
+                status = "failed";
+                message = "Unable to deleted document. Please try again later " + ex.InnerException;
+            }
+
+            return Json(new { Status = status, Message = message });
+        }
 
         public ActionResult UpdateFacilityInfo()
         {

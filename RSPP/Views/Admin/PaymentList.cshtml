@@ -339,12 +339,7 @@
 
                                 <div class="col-md-3">
                                     <div class="input-group">
-                                        <select id="appstatus" name="appstatus" class="form-control">
-                                            <option disabled selected>--Search By Application Status--</option>
-                                            <option value="Processing">PROCESSING</option>
-                                            <option value="Approved">APPROVED</option>
-                                            <option value="Rejected">REJECTED</option>
-                                        </select>
+                                        <select id="appstatus" name="appstatus" class="form-control"> </select>                                       
                                         <div class="input-group-addon" style="background-color:red">
                                             <button id="clearbtn1" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none; color:white">Clear</button>
                                         </div>
@@ -363,7 +358,7 @@
                                             <th><strong>Remita Ref</strong> </th>
                                             <th><strong>Application Type</strong> </th>
                                             <th><strong>Payment Status</strong> </th>
-                                            <th><strong>Agency Name</strong> </th>
+                                            <th><strong>Category Name</strong> </th>
                                             <th><strong>Company Email</strong> </th>
                                             <th><strong>Total Amount</strong> </th>
                                             <th><strong>Transaction Date</strong> </th>
@@ -378,7 +373,7 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
-                                            <th></th>
+                                            <th>₦@ViewBag.GrandTotal</th>
                                             <th></th>
                                         </tr>
                                     </tfoot>
@@ -399,7 +394,7 @@
                     <table>
                         <tr class="cell-">
                             <td>
-                                <div style="color:darkred; font-weight:bold">₦</div>
+                                <div style="color:darkred; font-weight:bold">@*@ViewBag.GrandTotal (@ViewBag.GrandTotalInWords)*@</div>
                             </td>
 
                             <td>
@@ -421,6 +416,23 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+
+
+            $("#appstatus").ready(function () {
+                var html = "";
+                $("#appstatus").html("");
+
+                $.getJSON("/Admin/GetAllCategory",
+                    {},
+                    function (datas) {
+                        debugger;
+                        $("#appstatus").append("<option></option>");
+                        $.each(datas, function (key, val) {
+                            html += "<option value=" + val.lineOfBusinessName + ">" + val.lineOfBusinessName + "</option>";
+                        });
+                        $("#appstatus").append(html);
+                    });
+            });
 
 
             $("#clearbtn1").click(function () {
@@ -462,7 +474,7 @@
 
                 },
                 "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-                dom: 'Bfrtip',
+                dom: 'Blfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],
@@ -518,7 +530,7 @@
                     // Update footer
                     debugger;
                     $(api.column(6).footer()).html(
-                        'Total= ' + '₦' + pageTotal,
+                        'Per Page = ' + '₦' + pageTotal,
                         $("#totalsum").text(pageTotal),
                         $("#amtinword").text("(" + numberToWords(Number(pageTotal)) + ")"),
                     );
@@ -532,7 +544,9 @@
                 "aLengthMenu": [10, 25, 50, 75, 100, 200],
                 'iDisplayLength': 20,
                 columnDefs: [{ orderable: false, "targets": [0, -1] }],
-                dom: 'Bfrtip',
+                //dom: 'Bfrtip',
+                //sDom: 'Blrtip',
+                dom: 'Blfrtip',
                 buttons: [
                     'copy', 'csv', 'excel', 'pdf', 'print'
                 ],

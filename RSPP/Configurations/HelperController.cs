@@ -681,7 +681,7 @@ namespace RSPP.Configurations
 
             try
             {
-                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46 && app.CompanyEmail == userMaster.UserEmail select new { a, app }).ToList();
+                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46 && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate descending select new { a, app }).ToList();
 
                 if (actionhistory.Count > 0)
                 {
@@ -1729,9 +1729,9 @@ namespace RSPP.Configurations
                                    CargoConsolidators_DeConsolidators = (Nullable<long>)(from abu in _context.PaymentLog where a.AgencyName == "Cargo Consolidators/De-Consolidators" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    Chandling = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Chandlers" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    DryPortOperator = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Dry Port Operator" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
-                                   Freightforwarders_Clearingagents = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Freight forwarders and Clearing agents" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
+                                   Freightforwarders_Clearingagents = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Freight forwarders and Clearing Agents" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    Haulers_Truckers = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Haulers/Truckers" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
-                                   ICD = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "ICD" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
+                                   ICD = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Inland Container Depot (ICD)" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    LogisticsServiceprovider = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Logistics Service Providers" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    Stevedoring_Warehousing = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Stevedoring/Warehousing" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    SeaportTerminalOperator = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Seaport Terminal Operator" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
@@ -1742,7 +1742,7 @@ namespace RSPP.Configurations
                                    CargoSurveyors = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Cargo Surveyors" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    IndividualCategory = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Individual Category (Importer & Exporter)" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                    CorporateCategory = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Corporate Category (Manufacturers, Oil Companies & Others)" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
-                                   OtherPortServiceProviders = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Other Port Service Providers" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
+                                   OtherPortServiceProviders = (Nullable<long>)(from abi in _context.PaymentLog where a.AgencyName == "Other Port Service Providers/Users" && l.Status == "AUTH" select l.TxnAmount).FirstOrDefault(),
                                }).ToList().GroupBy(x => x.ApplicationId).Select(x => x.LastOrDefault()).ToList();
 
             paymentchart.Bargo_Operators = paymentlist.ToList().Sum(x => x.BargoOperators);
@@ -1776,7 +1776,7 @@ namespace RSPP.Configurations
             paymentchart.DryPortOperator = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Dry Port Operator" && a.LicenseReference != null select a).ToList().Count();
             paymentchart.FreightForwarders_ClearingAgents = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Freight forwarders and Clearing agents" && a.LicenseReference != null select a).ToList().Count();
             paymentchart.Haulers_Truckers = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Haulers/Truckers" && a.LicenseReference != null select a).ToList().Count();
-            paymentchart.ICD = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "ICD" && a.LicenseReference != null select a).ToList().Count();
+            paymentchart.ICD = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Inland Container Depot (ICD)" && a.LicenseReference != null select a).ToList().Count();
             paymentchart.Logististics_Service_Provider = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Logistics Service Providers" && a.LicenseReference != null select a).ToList().Count();
             paymentchart.Stevedoring_Warehousing = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Stevedoring/Warehousing" && a.LicenseReference != null select a).ToList().Count();
             paymentchart.SeaportTerminalOperator = (Nullable<long>)(from a in _context.ApplicationRequestForm where a.AgencyName == "Seaport Terminal Operator" && a.LicenseReference != null select a).ToList().Count();

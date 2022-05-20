@@ -12,7 +12,7 @@
         @Html.AntiForgeryToken()
 
         <div class="modal fade updaterecordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
-            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:24%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -51,7 +51,11 @@
                                     <label>Application Type</label>
                                     <div class="form-group">
                                         <div class="col-md-10">
-                                            <input type="text" id="ApplicationType" name="ApplicationType" class="form-control" />
+                                            <select class="form-control" id="ApplicationType" name="ApplicationType" required>
+                                                <option></option>
+                                                <option value="NEW">NEW</option>
+                                                <option value="RENEW">RENEW</option>
+                                            </select>
                                         </div>
                                     </div>
 
@@ -262,12 +266,10 @@
                     var AgencyName = $("#AgencyName").val();
                     var ApplicationId = $("#ApplicationId").val();
                     var CompanyEmail = $("#CompanyEmail").val();
-                    var ApplicationType = $("#ApplicationType").val();
+                    var ApplicationType = $("#ApplicationType option:selected").val();
                     var CompanyAddress = $("#CompanyAddress").val();
                     var currentStageId = $("#CurrentStageId").val();
                     var LastAssignedUser = $("#LastAssignedUser").val();
-
-
 
 
                     if (msg === true) {

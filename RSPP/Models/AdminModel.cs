@@ -240,9 +240,23 @@ namespace RSPP.Models
         public string NepcRegNo { get; set; }
         public string Nparegnum { get; set; }
         public string Nimasaregnum { get; set; }
+        public string CompanyName { get; set; }
+        public decimal? AmountPaid { get; set; }
+        public string CurrentStage { get; set; }
+        public string AppProgress { get; set; }
+
     }
 
+    public class DocumentList
+    {
+        public int DocId { get; set; }
+        public string DocumentName { get; set; }
+        public string CategoryName { get; set; }
+        public string CompulsoryDocument { get; set; }
 
+    }
+
+   
     public class OutofOfficeDto
     {
         public string Password { get; set; }

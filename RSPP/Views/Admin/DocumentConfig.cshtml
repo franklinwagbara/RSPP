@@ -1,0 +1,279 @@
+﻿@model List<RSPP.Models.DocumentList>
+
+@{
+    ViewBag.Title = "WorkFlow";
+    Layout = "~/Views/Shared/_ElaLayout.cshtml";
+}
+
+<div class="content">
+
+
+
+    @using (Html.BeginForm("AddDocument", "Admin", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal fade adddocdmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-success" id="exampleModalLabel">
+                            <i class="fa fa-hand-o-down"></i> Add Documents
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-sm-12">
+                                        <label>Document Name</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <input type="text" id="txtdocname" required name="txtdocname" class="form-control" />
+                                            </div>
+                                        </div>
+
+                                        <label>Document For</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <select id="txtdoccategory" name="txtdoccategory" class="form-control txtdoccategory" multiple="multiple"></select>
+                                            </div>
+                                        </div>
+
+                                        <label>Compulsory Document</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <select id="txtdoccompulsory" name="txtdoccompulsory" class="form-control">
+                                                    <option></option>
+                                                    <option value="Y">YES</option>
+                                                    <option value="N">NO</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="margin-left:200px"> <button class="btn btn-success" id="adddoc" type="button"><i class="fa fa-plus"></i> Add Document</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+
+    @using (Html.BeginForm("DeleteDocument", "Admin", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="modal fade deleterecordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+            <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:30%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title text-danger" id="exampleModalLabel">
+                            <i class="fa fa-hand-o-down"></i> Are you sure you want to delete this document?
+                        </h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="col-sm-12">
+                                        <label>Document Name</label>
+                                        <div class="form-group">
+                                            <div class="col-md-10">
+                                                <input id="txtDocid" name="txtDocid" style="display:none"/>
+                                                <input type="text" id="txtdeletedocname" readonly name="txtdeletedocname" class="form-control" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span style="margin-left:200px"> <button class="btn btn-danger" id="deletedoc" type="button"><i class="fa fa-save"></i> Delete</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+
+    <div class="row">
+        <div class="col-md-12" style="background-color:white">
+
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Role Information</legend>
+                <button class="btn btn-xs btn-info" style="float:right" data-toggle="modal" data-target=".adddocdmodal"><i class="fa fa-plus"></i> Add Role</button>
+                <br />
+                <table class="table table-striped table-condensed table-responsive table-bordered customDT" id="mytable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <strong>Document Name</strong>
+                            </th>
+                            <th>
+                                <strong>Document For</strong>
+                            </th>
+                            <th>
+                                <strong>Compulsory Document</strong>
+                            </th>
+                            <th style="width:2px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var n in Model)
+                        {
+                            <tr>
+                                <td>@n.DocumentName</td>
+                                <td>@n.CategoryName</td>
+                                <td>@n.CompulsoryDocument</td>
+                                <td>
+                                    <button class="btn btn-danger btn-xs" onclick='DeleteDocJs("@n.DocId", "@n.DocumentName")' id="deletebtn"><i class="fa fa-trash"></i> Delete</button>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+
+    <div style="display:none" class="loadingImage">
+        <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+            <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+        </div>
+    </div>
+
+    <div id="modalMapDialog" style="display: none">
+        <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
+    </div>
+
+</div>
+
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            $(".txtdoccategory").select2({
+                placeholder: "Select one or multiple Category",
+                width: "100%"
+            });
+
+            $("#txtdoccategory").ready(function () {
+                var html = "";
+                $("#txtdoccategory").html("");
+
+                $.getJSON("/Admin/GetAllCategory",
+                    {},
+                    function (datas) {
+                        debugger;
+                        $("#txtdoccategory").append("<option></option>");
+                        $.each(datas, function (key, val) {
+                            html += "<option value=" + val.lineOfBusinessId + ">" + val.lineOfBusinessName + "</option>";
+                        });
+                        $("#txtdoccategory").append(html);
+                    });
+            });
+
+
+
+            $("#deletedoc").click(function () {
+                $(".deleterecordmodal").modal("hide");
+                debugger;
+                var deletedoc = $("#txtDocid").val();
+                $(".loadingImage").show('fast');
+                $.post("/Admin/DeleteDocument", { docid: deletedoc }, function (res) {
+                    if (res.status === "success") {
+                        alert(res.message);
+                        $(".deleterecordmodal").modal("hide");
+                        $(".loadingImage").hide('fast');
+                        history.go(0);
+                    }
+                    else {
+                        alert(res.message);
+                        $(".loadingImage").hide('fast');
+                    }
+                });
+                $(".loadingImage").hide('fast');
+
+            });
+
+           
+
+            $("#adddoc").click(function () {
+                if ($("#formid").valid()) {
+                    var msg = confirm("Are you sure you want to add document?");
+                    var docname = $("#txtdocname").val();
+                    var doccategory = $("#txtdoccategory").val();
+                    var doccompulsory = $("#txtdoccompulsory").val();
+                    if (msg === true) {
+                        $(".loadingImage").show('fast');
+                        $.post("/Admin/AddDocument", { "docname": docname, "DocCategory": doccategory, "Doccompulsory": doccompulsory  }, function (res) {
+                            if (res.status === "success") {
+                                alert(res.message);
+                                $(".adddocdmodal").modal("hide");
+                                $(".loadingImage").hide('fast');
+                                history.go(0);
+                            } 
+                            else {
+                                alert(res.message);
+                                $(".loadingImage").hide('fast');
+                            }
+                        });
+                        $(".loadingImage").hide('fast');
+                    }
+                    else {
+                        return false;
+                    }
+
+                }
+
+            });
+
+            $("#mytable").dataTable({
+                "aLengthMenu": [10, 25, 50, 75, 100, 200],
+                'iDisplayLength': 10,
+                columnDefs: [{ orderable: false, "targets": [0, -1] }],
+                "language": {
+                    "lengthMenu": "Display  _MENU_ records",
+                    "zeroRecords": "No record found",
+                    "info": "Showing page _PAGE_ of _PAGES_",
+                    "infoEmpty": "No Record to Display Currently",
+                    "infoFiltered": "(filtered from _MAX_ total records)"
+                },
+                "order": [[1, "desc"]]
+            });
+        });
+
+        function DeleteDocJs(Docid, Docname) {
+            debugger;
+            $(".loadingImage").show('fast');
+            $("#txtDocid").val(Docid);
+            $("#txtdeletedocname").val(Docname);
+
+            $(".deleterecordmodal").modal('show');
+            $(".loadingImage").hide('fast');
+        };
+
+
+
+
+
+    </script>
+}
+
+

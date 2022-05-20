@@ -144,7 +144,7 @@
                                                         <div class="panel-title">
                                                         </div>
                                                         <div class="panel-body">
-                                                            <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Chandling"))</span></div>
+                                                            <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Chandlers"))</span></div>
                                                             <small class="label label-warning" style="font-size:15px">Total Chandling Applications</small>
                                                         </div>
                                                     </div>
@@ -169,7 +169,7 @@
                                                         <div class="panel-title">
                                                         </div>
                                                         <div class="panel-body">
-                                                            <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Freight forwarders and Clearing agents"))</span></div>
+                                                            <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Freight forwarders and Clearing Agents"))</span></div>
                                                             <small class="label label-success" style="font-size:13px">Total Freight forwarders/Clearing agents Apps</small>
                                                         </div>
                                                     </div>
@@ -191,7 +191,7 @@
                                                         <div class="panel-title">
                                                         </div>
                                                         <div class="panel-body">
-                                                            <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("ICD"))</span></div>
+                                                            <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Inland Container Depot (ICD)"))</span></div>
                                                             <small class="label label-info" style="font-size:15px">Total ICD Applications</small>
                                                         </div>
                                                     </div>
@@ -365,7 +365,12 @@
                                             {
                                             <tr>
                                                 <td>@app.ApplicationID</td>
-                                                <td>@app.Status</td>
+                                                <td>
+                                                    @{
+                                                        var status = app.Status == "ACTIVE" ? "Initiated" : app.Status;
+                                                    }
+                                                   <span>@status</span>
+                                                </td>
                                                 <td>@app.CompanyEmail</td>
                                                 <td>@app.CompanyName</td>
                                                 <td>@app.ApplicationTypeId</td>
@@ -416,8 +421,6 @@
                $(".applicationreport").DataTable({
                     dom: 'Blfrtip',
                 });
-
-
 
                 $("#all").click(function () {
                     table.search("All Company").draw();

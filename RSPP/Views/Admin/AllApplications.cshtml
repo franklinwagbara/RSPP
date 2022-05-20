@@ -1,9 +1,9 @@
-﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+﻿@model List<RSPP.Models.MyApplicationRequestForm>
 
     @{
         ViewBag.Title = "All Applications";
         Layout = "~/Views/Shared/_ElaLayout.cshtml";
-        RSPP.Models.DB.RSPPdbContext dbCtxt = new RSPP.Models.DB.RSPPdbContext();
+        //RSPP.Models.DB.RSPPdbContext dbCtxt = new RSPP.Models.DB.RSPPdbContext();
     }
 
 
@@ -18,8 +18,8 @@
                 <thead>
                     <tr>
                         <th>Application Ref</th>
-                        <th>Company Email</th>
-                        <th>Agency Name</th>
+                        <th>Company Name</th>
+                        <th>Application Category</th>
                         <th>Fee Paid</th>
                         <th>App Stage</th>
                         <th>Status</th>
@@ -33,29 +33,30 @@
                     @foreach (var br in Model)
                     {
                     <tr>
+                        
                         <td class="nr">@br.ApplicationId</td>
-                        <td><a href="@Url.Action("ApplicationDetails", new { applicationId = br.ApplicationId })">@br.CompanyEmail</a></td>
+                        <td>
+                            <a href="@Url.Action("ApplicationDetails", new { applicationId = br.ApplicationId })">@br.CompanyName
+                            </a>
+                        </td>
                         <td>@br.AgencyName</td>
 
                         <td>
-                            @{var amt = dbCtxt.PaymentLog.Where(w => w.ApplicationId == br.ApplicationId).FirstOrDefault()?.TxnAmount;}
-                            <span>@amt</span>
+                            <span>@br.AmountPaid</span>
                         </td>
 
                         <td>
-                            @if (br.CurrentStageId == 7)
+                            @if (br.Status == "Approved")
                             {
                                 <div class="alert alert-mini alert-success">
                                     <button type="button" class="use-address media btn btn-success btn-xs"><strong>Certificate Issued</strong> <i class="fa fa-eye"></i></button>
-
-                                    @*<strong>ATC Letter Issued</strong>*@
                                 </div>
                             }
-                            
+
                             else
                             {
                                 <div class="alert alert-mini alert-info">
-                                    <strong>@dbCtxt.WorkFlowState.Where(w => w.StateId == br.CurrentStageId).FirstOrDefault().StateName.ToString()</strong>
+                                    <strong>@br.CurrentStage</strong>
                                 </div>
                             }
                         </td>
@@ -85,8 +86,7 @@
                                 <div>@date</div>
                             }
                         </td>
-                        @{ string rate = dbCtxt.WorkFlowState.Where(w => w.StateId == br.CurrentStageId).FirstOrDefault().Progress; }
-                        <td><div class="badge"><b style="font-size:large">@rate</b></div></td>
+                        <td><div class="badge"><b style="font-size:large">@br.AppProgress</b></div></td>
                         <td>
                             <a href="@Url.Action("ViewApplication", new { applicationId = br.ApplicationId})" class="btn btn-xs btn-info">View <i class="fa fa-eye"></i></a>
                         </td>

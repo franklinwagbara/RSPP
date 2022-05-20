@@ -40,7 +40,7 @@
                 <tr>
                     <th>#</th>
                     <th>Document Name</th>
-                    <th>Select file <span class="text-danger">(Max 4MB; Only images(jpeg, gif, jpg or png) & PDF files are allowed)</span></th>
+                    <th>Select file <span class="text-danger">(Max 4MB; Only image (jpeg, gif, jpg, png) or document (pdf) file is allowed)</span></th>
                     <th style="width:20%">Progress</th>
                     <th>File Name</th>
                     <th>File Image</th>
@@ -238,7 +238,6 @@
 
             debugger;
             var AppID = $("#txtApplicationId").val();
-            var c = $('.docUpload').get(0).files.length;
             if ($('.docUpload').get(0).files.length >= 1 ){
                 var msg = confirm("Are you sure the documents you provided are valid?")
                 if (msg === true) {
