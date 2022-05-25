@@ -9,7 +9,7 @@
 
     @using (Html.BeginForm("UpdateFacilityRecord", "Admin", FormMethod.Post, new { @id = "formid" }))
     {
-        @Html.AntiForgeryToken()
+        @*@Html.AntiForgeryToken()*@
 
         <div class="modal fade updaterecordmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
             <div class="modal-dialog modal" style="margin:0 auto 0 -20%; margin-top:24%; height:100%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
@@ -87,7 +87,7 @@
                             </div>
                         </div>
 
-                        <span style="margin-left:200px"> <button class="btn btn-success" id="facupdaterecord"><span class="fa fa-save"></span> Update Record</button></span>
+                        <span style="margin-left:200px"> <button class="btn btn-success" id="facupdaterecord" type="button"><span class="fa fa-save"></span> Update Record</button></span>
 
                     </div>
 
@@ -275,9 +275,10 @@
                     if (msg === true) {
                     $(".loadingImage").show('fast');
                         $.post("/Admin/UpdateFacilityRecord", { "ApplicationId": ApplicationId, "AgencyName": AgencyName, CurrentStageId: currentStageId, "lastAssignedUser": LastAssignedUser, "ApplicationType": ApplicationType, "Companyemail": CompanyEmail, "CompanyAddress": CompanyAddress}, function (res) {
-                        if (res === "success") {
+                            debugger;
+                            var response = res.status;
+                            if (response == "success") {
                             alert("Update was successful");
-
 
                             $(".updaterecordmodal").modal("hide");
                             history.go(0);

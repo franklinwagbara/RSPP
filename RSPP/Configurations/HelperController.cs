@@ -681,7 +681,7 @@ namespace RSPP.Configurations
 
             try
             {
-                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46 && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate descending select new { a, app }).ToList();
+                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46 && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate ascending select new { a, app }).ToList();
 
                 if (actionhistory.Count > 0)
                 {
@@ -692,9 +692,9 @@ namespace RSPP.Configurations
                         companyMessage.Date = item.a.ActionDate.ToString();
                         companyMessage.MessageId = Convert.ToString(item.a.ActionId);
                         companyMessage.Message = item.a.Message;
-                        if (item.a.NextStateId == 7 || item.a.NextStateId == 105 || item.a.NextStateId == 106)
+                        if (item.a.NextStateId == 1 && item.app.Status == "Rejected")
                         {
-                            companyMessage.MessageType = "Error";
+                            companyMessage.MessageType = "Application Rejected";
                         }
                         else
                         {

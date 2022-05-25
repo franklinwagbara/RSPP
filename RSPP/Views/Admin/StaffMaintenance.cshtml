@@ -15,7 +15,7 @@
             @using (Html.BeginForm("NewUser", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", id = "newstaff" }))
             {
                 @Html.AntiForgeryToken()
-                <div class="modal fade addstaffmodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
+                <div class="modal fade addstaffmodal" data-backdrop="static" tabindex="-1" role="dialog" style="vertical-align: middle; width:100%" aria-labelledby="calenderModalLabel">
                     <div class="modal-dialog modal-sm" style="vertical-align: middle; display:block; width:40%;  margin:0 auto 0 -20%; overflow-y:hidden; overflow-x:hidden;" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -30,7 +30,7 @@
                                         <div class="col-sm-6">
                                             <label style="font-weight:bold">User Email</label>
                                             <div class="form-group">
-                                                <div class="col-sm-10">
+                                                <div class="col-md-10">
                                                     <input id="locationid" name="locationid" type="hidden" />
                                                     <input id="roleuser" name="roleuser" type="hidden" />
                                                     @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @required = "required", @autocomplete = "off", @type = "email" })
@@ -56,12 +56,12 @@
                                             <label style="font-weight:bold">User Role</label>
                                             <div class="form-group">
                                                 <div class="col-md-10">
-                                                    <select id="Userroles" name="Userroles" class="form-control roleuser" required="required" style="width:220px"></select>
+                                                    <select id="Userroles" name="Userroles" class="form-control roleuser" required="required"></select>
                                                     @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
 
-                                            <div class="col-sm-4">
+                                            <div class="col-sm-8">
 
                                                 <div style="border:groove; height:120px; width:120px">
                                                     <img id="signatureimg" src="" alt="Signature image" class="center-cropped signatureimg" /><br />
@@ -75,8 +75,8 @@
                                                 <input id="fileUpload" class="imgInp" name="myfiles" type="file" required="required" accept="image/gif, image/png, image/jpeg" style="display: none; width:120px" />
 
                                                 @*<div class="custom-file">
-                                                <input type="file" id="fileUpload" class="fileUpload">
-                                            </div>*@
+                                                        <input type="file" id="fileUpload" class="fileUpload">
+                                                    </div>*@
 
                                             </div>
 
@@ -98,7 +98,7 @@
             @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post, new { id = "deleteUser" }))
             {
                 <div class="modal fade DeleteUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
-                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:20%; margin:0 auto 0 -10%" role="document">
+                    <div class="modal-dialog" style="display:block; vertical-align:middle; width:20%; margin:0 auto 0 -10%" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -106,25 +106,25 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-horizontal">
-                                    <div class="container">
-                                        <div class="row">
-                                            <div class="col-sm-8">
-                                                <label style="font-weight:bold">User Email</label>
-                                                <div class="form-group">
-                                                    <div class="col-md-5">
-                                                        <input type="text" class="form-control useremail" id="useremail" readonly="readonly" name="useremail" />
+                                    @*<div class="container">*@
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label style="font-weight:bold">User Email</label>
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="text" class="form-control useremail" id="useremail" readonly="readonly" name="useremail" />
 
-                                                    </div>
                                                 </div>
+                                            </div>
 
-                                                <div class="form-group">
-                                                    <div class="col-md-10">
-                                                        <button type="button" class="btn btn-danger" id="DeleteUsers">Delete</button>
-                                                    </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    <button type="button" class="btn btn-danger" id="DeleteUsers">Delete</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    @*</div>*@
                                 </div>
 
                             </div>
@@ -136,7 +136,7 @@
             @using (Html.BeginForm("ActivateUser", "Admin", FormMethod.Post, new { id = "activateUser" }))
             {
                 <div class="modal fade ActivateUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
-                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%; margin-top:100px" role="document">
+                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -145,45 +145,45 @@
 
                             <div class="modal-body">
                                 <div class="form-horizontal">
-                                    <div class="container">
-                                        <div class="row">
+                                    @*<div class="container">*@
+                                    <div class="row">
 
-                                            <div class="col-sm-12">
+                                        <div class="col-md-12">
 
-                                                <label style="margin-left:17px">User FullName</label>
-                                                <div class="form-group">
-                                                    <div class="col-md-5">
-                                                        <input type="hidden" id="UserLocationActivate" name="UserLocationActivate" />
-                                                        <input type="hidden" id="userID" name="userID" />
-                                                        <input type="text" id="userfullName" name="userfullName" class="form-control" readonly="readonly" />
+                                            <label style="margin-left:17px">User FullName</label>
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <input type="hidden" id="UserLocationActivate" name="UserLocationActivate" />
+                                                    <input type="hidden" id="userID" name="userID" />
+                                                    <input type="text" id="userfullName" name="userfullName" class="form-control" readonly="readonly" />
 
-                                                    </div>
                                                 </div>
-                                                <label style="margin-left:17px">Reason to Activate User</label>
-                                                <div class="form-group">
-                                                    <div class="col-md-5">
-                                                        <textarea cols="5" rows="5" id="activate" name="activate" required="" class="form-control" style="resize:none"></textarea>
-                                                    </div>
+                                            </div>
+                                            <label style="margin-left:17px">Reason to Activate User</label>
+                                            <div class="form-group">
+                                                <div class="col-md-12">
+                                                    <textarea cols="5" rows="5" id="activate" name="activate" required="" class="form-control" style="resize:none"></textarea>
                                                 </div>
-                                                <div class="form-group">
-                                                    <div class="col-md-10">
-                                                        <button type="button" class="btn btn-success" id="ActiveUsers">Save</button>
-                                                    </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="col-md-10">
+                                                    <button type="button" class="btn btn-success" id="ActiveUsers">Save</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-
+                                @*</div>*@
                             </div>
+
                         </div>
                     </div>
                 </div>
-            }
+            </div>
+        }
             @using (Html.BeginForm("DeactivateUser", "Admin", FormMethod.Post, new { id = "deactivateUser" }))
             {
-                <div class="modal fade DeactivateUser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
-                    <div class="modal-dialog modal-sm" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%" role="document">
+                <div class="modal fade DeactivateUser" data-backdrop="static" tabindex="-1" role="dialog" style="vertical-align: middle; width:100%" aria-labelledby="calenderModalLabel">
+                    <div class="modal-dialog" style="display:inline-block; vertical-align:middle; width:30%; margin:0 auto 0 -10%" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -192,14 +192,14 @@
 
                             <div class="modal-body">
                                 <div class="form-horizontal">
-                                    <div class="container">
+                                    @*<div class="container">*@
                                         <div class="row">
 
-                                            <div class="col-sm-12">
+                                            <div class="col-md-12">
                                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                                 <label style="font-weight:bold">User FullName</label>
                                                 <div class="form-group">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-12">
                                                         <input type="hidden" id="userid" name="userid" />
                                                         <input type="hidden" id="userlocationDeactivate" name="userlocationDeactivate" />
                                                         <input type="text" id="fullName" name="fullName" readonly="readonly" class="form-control" />
@@ -209,9 +209,8 @@
                                                 <input type="hidden" id="UserLocationid" name="UserLocationid" class="UserLocationid" />
                                                 <label style="font-weight:bold">Reason to Deactivate User</label>
                                                 <div class="form-group">
-                                                    <div class="col-md-5">
+                                                    <div class="col-md-12">
                                                         <textarea cols="5" id="DeactivateComment" rows="5" name="DeactivateComment" required="" class="form-control" style="resize:none"></textarea>
-
 
                                                     </div>
                                                 </div>
@@ -224,7 +223,7 @@
                                             </div>
 
                                         </div>
-                                    </div>
+                                    @*</div>*@
                                 </div>
                             </div>
 
@@ -238,7 +237,7 @@
                 @Html.AntiForgeryToken()
 
                 <div class="modal fade EditUsermodal" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
-                    <div class="modal-dialog modal-sm" style="vertical-align: middle; display:block; width:40%;  margin:0 auto 0 -20%; overflow-y:hidden; overflow-x:hidden;" role="document">
+                    <div class="modal-dialog modal-sm" style="vertical-align: middle; display:block; width:30%;  margin:0 auto 0 -20%; overflow-y:hidden; overflow-x:hidden;" role="document">
 
                         @*<div class="modal-dialog modal" style="display:inline-block; margin:0 auto 0 -25%; overflow-y:hidden; overflow-x:hidden; width:50%" role="document">*@
                         <div class="modal-content">
@@ -249,10 +248,10 @@
 
                             <div class="modal-body">
                                 <div class="form-horizontal">
-                                    <div class="container">
+                                    @*<div class="container">*@
                                         <div class="row">
 
-                                            <div class="col-sm-4">
+                                            <div class="col-md-6">
                                                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
                                                 <input type="hidden" class="Fullname" id="Fullname" name="Fullname" />
@@ -277,11 +276,11 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-sm-4">
+                                            <div class="col-md-6">
                                                 <label style="font-weight:bold">User Role</label>
                                                 <div class="form-group">
                                                     <div class="col-md-10">
-                                                        <select id="Userrole" name="Userrole" class="form-control roleuser" required="required" style="width:280px"></select>
+                                                        <select id="Userrole" name="Userrole" class="form-control roleuser" required="required"></select>
                                                     </div>
                                                 </div>
                                                 <label style="font-weight:bold">User Email</label>
@@ -292,26 +291,26 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-sm-6">
+                                                <div class="col-md-8">
                                                     <div class="form-group">
                                                         <div style="border:groove; height:120px; width:120px">
                                                             <img id="signatureimg" src="" alt="Signature image" class="center-cropped signatureimg" /><br />
 
                                                         </div>
 
-                                                        <label for="EditpostedFile" class="custom-file-upload">
+                                                        <label for="EditpostedFile" class="custom-file-upload" style="width:170px">
                                                             <i class="fa fa-upload"></i> Change Signature
                                                         </label>
                                                         <input id="EditpostedFile" class="imgInp" name="editFiles" type="file" required="required" style="display: none; width:300px" />
                                                     </div>
                                                 </div>
 
-                                               
+
                                             </div>
                                             <br />
 
                                         </div>
-                                    </div>
+                                    @*</div>*@
                                 </div>
 
                             </div>
@@ -388,228 +387,297 @@
         </div>
     </div>
 
-</div>
+    </div>
 
-@section Scripts {
-    <script type="text/javascript">
-        $(document).ready(function () {
+    @section Scripts {
+        <script type="text/javascript">
+            $(document).ready(function () {
 
-            debugger;
-            $(".imgInp").change(function () {
-                debugger
-                readURL(this);
-            });
-
-            var table = $(".staff").DataTable({
-                "processing": true,
-                "serverSide": true,
-                ajax: {
-                    url: "/Admin/GetAllUser",
-                    type: "POST",
-                },
-                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                columns: [
-                    {
-                        data: "userEmail"
-                    },
-                    {
-                        data: "fullname"
-
-                    },
-                    {
-                        data: "userRole"
-                    },
-
-                    {
-                        data: "status",
-                        render: function (data, type, user) {
-                            if (user.status === "ACTIVE") {
-                                return '<strong class="badge" style="background-color:green"><i class="fa fa-check"></span> Active</strong>';
-                            } else {
-                                return '<strong class="badge" style="background-color:red"><i class="fa fa-ban"></i> DeActivated</strong>';
-                            }
-                        }
-
-                    },
-
-                ],
-
-                "columnDefs": [
-                    {
-                        "targets": 4,
-                        "data": null,
-
-                        "render": function (data, type, row) {
-                            if (row.status === "ACTIVE") {
-                                return '<div id="deactive" class="btn btn-xs btn-info"><i class="fa fa-ban""></i> Deactivate</div>';
-                            }
-                            else {
-                                return '<span id="active" class="btn btn-xs btn-primary"><i class="fa fa-check"></i> Activate</span>';
-
-                            }
-                        }
-                    },
-
-
-                    {
-                        "targets": 5,
-                        "data": null,
-                        "render": function (data, type, row) {
-                            return '<button id="EditUsers" class="btn btn-xs btn-primary EditUsers"><i class="fa fa-edit"></i>  Edit</button>';
-
-                        }
-                    },
-
-
-
-                    {
-                        "targets": 6,
-                        "data": null,
-                        "defaultContent":
-                            '<p id="DeleteUsers" class="btn btn-xs btn-danger DeleteUsers"><i class="fa fa-trash"></i>  Delete</p>'
-                    },
-
-                    //{
-                    //    "targets": 7,
-                    //    "data": "SignatureImage",
-                    //    "visible": false,
-                    //    "searchable": false,
-                    //},
-                ]
-
-            });
-            $('#staff').on('click',
-                'p',
-                function () {
-                    $(".DeleteUser").modal('show');
-                    $(".EditUsermodal").modal('hide');
-                    $(".DeactivateUser").modal('hide');
-                    $(".ActivateUser").modal('hide');
-                    var data = table.row($(this).parents('tr')).data();
-                    $(".useremail").val(data.userEmail);
-
-                });
-            $('#staff').on('click',
-                'button',
-                function () {
-
-                    debugger;
-                    $(".EditUsermodal").modal('show');
-                    $(".DeactivateUser").modal('hide');
-                    $(".ActivateUser").modal('hide');
-                    var data = table.row($(this).parents('tr')).data();
-
-                    $(".EditUserEmail").val(data.userEmail);
-                    var full = $(".Fullname").val(data.fullname);
-                    var fullname = [];
-                    fullname = full.val().split(' ')
-                    $("#FirstName").val(fullname[0]);
-                    $("#LastName").val(fullname[1]);
-                    $(".roleuser option:selected").text(data.userRoles);
-                    var str = data.signatureImage;
-                    if (str !== null) {
-                        var signturesplit = str.split("~");
-                        $('.signatureimg').attr('src', signturesplit[1]);
-                    } else {
-                        $('.signatureimg').attr('src', "");
-                    }
-                });
-
-
-
-            $('#staff').on('click',
-                'div',
-                function () {
-                    $(".DeactivateUser").modal('show');
-                    $(".EditUsermodal").modal('hide');
-                    $(".ActivateUser").modal('hide');
-                    var data = table.row($(this).parents('tr')).data();
-                    $("#fullName").val(data.fullname);
-                    $("#userid").val(data.userEmail);
-
-                });
-            $('#staff').on('click',
-                'span',
-                function () {
-                    $(".ActivateUser").modal('show');
-                    $(".EditUsermodal").modal('hide');
-                    $(".DeactivateUser").modal('hide');
-                    var data = table.row($(this).parents('tr')).data();
-                    $("#userfullName").val(data.fullname);
-                    $("#userID").val(data.userEmail);
-                });
-
-            $(".roleuser").ready(function () {//get all user role populated in the dropdownlist
-                var html = "";
                 debugger;
-                $(".roleuser").html("");
+                $(".imgInp").change(function () {
+                    debugger
+                    readURL(this);
+                });
 
-                $.getJSON("/Admin/GetUserRole",
-                    {},
-                    function (datas) {
-                        //$(".roleuser").append("<option disabled selected>--Select Role--</option>");
-                        html += "<option>"+"</option>";
-                        $.each(datas,
-                            function (key, val) {
-                                html += "<option value=" + val.role + ">" + val.role + "</option>";
-                            });
-                        $(".roleuser").append(html);
+                var table = $(".staff").DataTable({
+                    "processing": true,
+                    "serverSide": true,
+                    ajax: {
+                        url: "/Admin/GetAllUser",
+                        type: "POST",
+                    },
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    dom: 'Bfrtip',
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ],
+                    columns: [
+                        {
+                            data: "userEmail"
+                        },
+                        {
+                            data: "fullname"
+
+                        },
+                        {
+                            data: "userRole"
+                        },
+
+                        {
+                            data: "status",
+                            render: function (data, type, user) {
+                                if (user.status === "ACTIVE") {
+                                    return '<strong class="badge" style="background-color:green"><i class="fa fa-check"></span> Active</strong>';
+                                } else {
+                                    return '<strong class="badge" style="background-color:red"><i class="fa fa-ban"></i> DeActivated</strong>';
+                                }
+                            }
+
+                        },
+
+                    ],
+
+                    "columnDefs": [
+                        {
+                            "targets": 4,
+                            "data": null,
+
+                            "render": function (data, type, row) {
+                                if (row.status === "ACTIVE") {
+                                    return '<div id="deactive" class="btn btn-xs btn-info"><i class="fa fa-ban""></i> Deactivate</div>';
+                                }
+                                else {
+                                    return '<span id="active" class="btn btn-xs btn-primary"><i class="fa fa-check"></i> Activate</span>';
+
+                                }
+                            }
+                        },
+
+
+                        {
+                            "targets": 5,
+                            "data": null,
+                            "render": function (data, type, row) {
+                                return '<button id="EditUsers" class="btn btn-xs btn-primary EditUsers"><i class="fa fa-edit"></i>  Edit</button>';
+
+                            }
+                        },
+
+
+
+                        {
+                            "targets": 6,
+                            "data": null,
+                            "defaultContent":
+                                '<p id="DeleteUsers" class="btn btn-xs btn-danger DeleteUsers"><i class="fa fa-trash"></i>  Delete</p>'
+                        },
+
+                        //{
+                        //    "targets": 7,
+                        //    "data": "SignatureImage",
+                        //    "visible": false,
+                        //    "searchable": false,
+                        //},
+                    ]
+
+                });
+                $('#staff').on('click',
+                    'p',
+                    function () {
+                        $(".DeleteUser").modal('show');
+                        $(".EditUsermodal").modal('hide');
+                        $(".DeactivateUser").modal('hide');
+                        $(".ActivateUser").modal('hide');
+                        var data = table.row($(this).parents('tr')).data();
+                        $(".useremail").val(data.userEmail);
+
                     });
-            });
+                $('#staff').on('click',
+                    'button',
+                    function () {
+
+                        debugger;
+                        $(".EditUsermodal").modal('show');
+                        $(".DeactivateUser").modal('hide');
+                        $(".ActivateUser").modal('hide');
+                        var data = table.row($(this).parents('tr')).data();
+
+                        $(".EditUserEmail").val(data.userEmail);
+                        var full = $(".Fullname").val(data.fullname);
+                        var fullname = [];
+                        fullname = full.val().split(' ')
+                        $("#FirstName").val(fullname[0]);
+                        $("#LastName").val(fullname[1]);
+                        $(".roleuser option:selected").text(data.userRoles);
+                        var str = data.signatureImage;
+                        if (str !== null) {
+                            var signturesplit = str.split("~");
+                            $('.signatureimg').attr('src', signturesplit[1]);
+                        } else {
+                            $('.signatureimg').attr('src', "");
+                        }
+                    });
+
+
+
+                $('#staff').on('click',
+                    'div',
+                    function () {
+                        $(".DeactivateUser").modal('show');
+                        $(".EditUsermodal").modal('hide');
+                        $(".ActivateUser").modal('hide');
+                        var data = table.row($(this).parents('tr')).data();
+                        $("#fullName").val(data.fullname);
+                        $("#userid").val(data.userEmail);
+
+                    });
+                $('#staff').on('click',
+                    'span',
+                    function () {
+                        $(".ActivateUser").modal('show');
+                        $(".EditUsermodal").modal('hide');
+                        $(".DeactivateUser").modal('hide');
+                        var data = table.row($(this).parents('tr')).data();
+                        $("#userfullName").val(data.fullname);
+                        $("#userID").val(data.userEmail);
+                    });
+
+                $(".roleuser").ready(function () {//get all user role populated in the dropdownlist
+                    var html = "";
+                    debugger;
+                    $(".roleuser").html("");
+
+                    $.getJSON("/Admin/GetUserRole",
+                        {},
+                        function (datas) {
+                            //$(".roleuser").append("<option disabled selected>--Select Role--</option>");
+                            html += "<option>" + "</option>";
+                            $.each(datas,
+                                function (key, val) {
+                                    html += "<option value=" + val.role + ">" + val.role + "</option>";
+                                });
+                            $(".roleuser").append(html);
+                        });
+                });
 
 
 
 
 
-            //$("#UserEmail").autocomplete({
-            //    source: function (request, response) {
-            //        $.ajax({
-            //            url: '/Admin/UserIdAutosearch',
-            //            type: "GET",
-            //            datatype: "json",
-            //            data: {
-            //                term: request.term
-            //            },
-            //            success: function (data) {
-            //                response($.map(data,
-            //                    function (val, item) {
-            //                        return {
-            //                            label: val.userEmail,
-            //                            value: val.userEmail,
-            //                            staffFullName: val.firstName,
-            //                        }
+                //$("#UserEmail").autocomplete({
+                //    source: function (request, response) {
+                //        $.ajax({
+                //            url: '/Admin/UserIdAutosearch',
+                //            type: "GET",
+                //            datatype: "json",
+                //            data: {
+                //                term: request.term
+                //            },
+                //            success: function (data) {
+                //                response($.map(data,
+                //                    function (val, item) {
+                //                        return {
+                //                            label: val.userEmail,
+                //                            value: val.userEmail,
+                //                            staffFullName: val.firstName,
+                //                        }
 
-            //                    }));
+                //                    }));
 
-            //            }
+                //            }
 
-            //        });
-            //    },
+                //        });
+                //    },
 
-            //    select: function (event, ui) {
-            //        debugger;
-            //        $("#staffFullName").val(ui.item.staffFullName);
-            //        var userid = $("#UserId").val();
+                //    select: function (event, ui) {
+                //        debugger;
+                //        $("#staffFullName").val(ui.item.staffFullName);
+                //        var userid = $("#UserId").val();
 
-            //    }
-            //});
+                //    }
+                //});
 
 
 
-            $("#addnewuser").click(function () {
-                debugger;
-                if ($("#UserEmail").val() !== "" && $("#staffFullName").val() !== "" && $("#Userroles option:selected").text() !== "") {
-                    var files = $('#fileUpload').prop("files");
-                    var url = "/Admin/NewUser";
+                $("#addnewuser").click(function () {
+                    debugger;
+                    if ($("#UserEmail").val() !== "" && $("#staffFullName").val() !== "" && $("#Userroles option:selected").text() !== "") {
+                        var files = $('#fileUpload').prop("files");
+                        var url = "/Admin/NewUser";
+                        var formData = new FormData();
+                        formData.append("MyUploader", files[0]);
+                        formData.append("UserEmail", $("#UserEmail").val());
+                        formData.append("staffFullName", $("#staffFullName").val());
+                        formData.append("Userroles", $("#Userroles option:selected").text());
+                        $(".loadingImage").show();
+                        jQuery.ajax({
+                            type: 'POST',
+                            url: url,
+                            data: formData,
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("XSRF-TOKEN",
+                                    $('input:hidden[name="__RequestVerificationToken"]').val());
+                            },
+                            success: function (repo) {
+                                if (repo.status == "success") {
+                                    $(".loadingImage").hide();
+                                    alert(repo.message);
+                                    history.go(0);
+                                } else {
+                                    $(".loadingImage").hide();
+                                    alert(repo.message);
+                                }
+                            },
+                            error: function () {
+                                $(".loadingImage").hide();
+                                alert(repo.message);
+                            }
+                        });
+                    } else { alert("All inputs are required except signature image"); }
+                });
+
+
+                $("#DeleteUsers").click(function () {
+                    $.post($("#deleteUser").attr('action'), $("#deleteUser").serialize()).done(function (data) {
+
+                        var status = data.status;
+                        $(".loadingImage").show();
+
+                        if (status === "failed") {
+                            $(".loadingImage").hide();
+                            alert(data.message);
+                        }
+                        else {
+                            alert(data.message);
+                            $(".loadingImage").hide();
+                            history.go(0);
+                        }
+
+                    }).fail(function (data) {
+                        $(".loadingImage").hide();
+                        alert('Network Communication Error, Restore Connection and Try again');
+                    }).always(function (data) {
+                        $(".loadingImage").hide();
+                    });
+                });
+
+
+
+
+
+                $("#EditUsers").click(function () {
+                    debugger;
+                    var files = $("#EditpostedFile").prop("files");
+                    var url = "/Admin/EditStaff";
                     var formData = new FormData();
-                    formData.append("MyUploader", files[0]);
-                    formData.append("UserEmail", $("#UserEmail").val());
-                    formData.append("staffFullName", $("#staffFullName").val());
-                    formData.append("Userroles", $("#Userroles option:selected").text());
+                    formData.append("MyFileUploader", files[0]);
+                    formData.append("FirstName", $("#FirstName").val());
+                    formData.append("LastName", $("#LastName").val());
+                    formData.append("EditUserEmail", $(".EditUserEmail").val());
+                    formData.append("Userrole", $("#Userrole option:selected").text());
                     $(".loadingImage").show();
                     jQuery.ajax({
                         type: 'POST',
@@ -637,168 +705,99 @@
                             alert(repo.message);
                         }
                     });
-                } else { alert("All inputs are required except signature image");}
-            });
+                    //$.post($("#editStaff").attr('action'), $("#editStaff").serialize()).done(function (data) {
 
+                    //    var status = data.status;
+                    //    $(".loadingImage").show();
 
-            $("#DeleteUsers").click(function () {
-                $.post($("#deleteUser").attr('action'), $("#deleteUser").serialize()).done(function (data) {
+                    //    if (status === "failed") {
+                    //        $(".loadingImage").hide();
+                    //        alert(data.message);
+                    //    }
+                    //    else {
+                    //        alert(data.message);
+                    //        $(".loadingImage").hide();
+                    //        history.go(0);
+                    //    }
 
-                    var status = data.status;
-                    $(".loadingImage").show();
-
-                    if (status === "failed") {
-                        $(".loadingImage").hide();
-                        alert(data.message);
-                    }
-                    else {
-                        alert(data.message);
-                        $(".loadingImage").hide();
-                        history.go(0);
-                    }
-
-                }).fail(function (data) {
-                    $(".loadingImage").hide();
-                    alert('Network Communication Error, Restore Connection and Try again');
-                }).always(function (data) {
-                    $(".loadingImage").hide();
+                    //}).fail(function (data) {
+                    //    $(".loadingImage").hide();
+                    //    alert('Network Communication Error, Restore Connection and Try again');
+                    //}).always(function (data) {
+                    //    $(".loadingImage").hide();
+                    //});
                 });
-            });
 
 
 
 
 
-            $("#EditUsers").click(function () {
-                debugger;
-                var files = $("#EditpostedFile").prop("files");
-                var url = "/Admin/EditStaff";
-                var formData = new FormData();
-                formData.append("MyFileUploader", files[0]);
-                formData.append("FirstName", $("#FirstName").val());
-                formData.append("LastName", $("#LastName").val()); 
-                formData.append("EditUserEmail", $(".EditUserEmail").val());
-                formData.append("Userrole", $("#Userrole option:selected").text());
-                $(".loadingImage").show();
-                jQuery.ajax({
-                    type: 'POST',
-                    url: url,
-                    data: formData,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("XSRF-TOKEN",
-                            $('input:hidden[name="__RequestVerificationToken"]').val());
-                    },
-                    success: function (repo) {
-                        if (repo.status == "success") {
+
+                $("#ActiveUsers").click(function () {
+                    $.post($("#activateUser").attr('action'), $("#activateUser").serialize()).done(function (data) {
+
+                        var status = data.status;
+                        $(".loadingImage").show();
+
+                        if (status === "failed") {
                             $(".loadingImage").hide();
-                            alert(repo.message);
-                            history.go(0);
-                        } else {
-                            $(".loadingImage").hide();
-                            alert(repo.message);
+                            alert(data.message);
                         }
-                    },
-                    error: function () {
+                        else {
+                            alert(data.message);
+                            $(".loadingImage").hide();
+                            history.go(0);
+                        }
+
+                    }).fail(function (data) {
                         $(".loadingImage").hide();
-                        alert(repo.message);
-                    }
+                        alert('Network Communication Error, Restore Connection and Try again');
+                    }).always(function (data) {
+                        $(".loadingImage").hide();
+                    });
                 });
-                //$.post($("#editStaff").attr('action'), $("#editStaff").serialize()).done(function (data) {
-
-                //    var status = data.status;
-                //    $(".loadingImage").show();
-
-                //    if (status === "failed") {
-                //        $(".loadingImage").hide();
-                //        alert(data.message);
-                //    }
-                //    else {
-                //        alert(data.message);
-                //        $(".loadingImage").hide();
-                //        history.go(0);
-                //    }
-
-                //}).fail(function (data) {
-                //    $(".loadingImage").hide();
-                //    alert('Network Communication Error, Restore Connection and Try again');
-                //}).always(function (data) {
-                //    $(".loadingImage").hide();
-                //});
-            });
 
 
 
 
+                $("#DeactiveUsers").click(function () {
+                    $.post($("#deactivateUser").attr('action'), $("#deactivateUser").serialize()).done(function (data) {
+                        debugger;
+                        var status = data.status;
+                        $(".loadingImage").show();
 
+                        if (status === "failed") {
+                            $(".loadingImage").hide();
+                            alert(data.message);
+                        }
+                        else {
+                            alert(data.message);
+                            $(".loadingImage").hide();
+                            history.go(0);
+                        }
 
-            $("#ActiveUsers").click(function () {
-                $.post($("#activateUser").attr('action'), $("#activateUser").serialize()).done(function (data) {
-
-                    var status = data.status;
-                    $(".loadingImage").show();
-
-                    if (status === "failed") {
+                    }).fail(function (data) {
                         $(".loadingImage").hide();
-                        alert(data.message);
-                    }
-                    else {
-                        alert(data.message);
+                        alert('Network Communication Error, Restore Connection and Try again');
+                    }).always(function (data) {
                         $(".loadingImage").hide();
-                        history.go(0);
-                    }
-
-                }).fail(function (data) {
-                    $(".loadingImage").hide();
-                    alert('Network Communication Error, Restore Connection and Try again');
-                }).always(function (data) {
-                    $(".loadingImage").hide();
+                    });
                 });
+
+
+
             });
+            function readURL(input) {
+                debugger;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
 
-
-
-
-            $("#DeactiveUsers").click(function () {
-                $.post($("#deactivateUser").attr('action'), $("#deactivateUser").serialize()).done(function (data) {
-                    debugger;
-                    var status = data.status;
-                    $(".loadingImage").show();
-
-                    if (status === "failed") {
-                        $(".loadingImage").hide();
-                        alert(data.message);
-                    }
-                    else {
-                        alert(data.message);
-                        $(".loadingImage").hide();
-                        history.go(0);
+                    reader.onload = function (e) {
+                        $('.signatureimg').attr('src', e.target.result);
                     }
 
-                }).fail(function (data) {
-                    $(".loadingImage").hide();
-                    alert('Network Communication Error, Restore Connection and Try again');
-                }).always(function (data) {
-                    $(".loadingImage").hide();
-                });
-            });
-
-
-
-        });
-        function readURL(input) {
-            debugger;
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('.signatureimg').attr('src', e.target.result);
+                    reader.readAsDataURL(input.files[0]);
                 }
-
-                reader.readAsDataURL(input.files[0]);
             }
-        }
-    </script>
-}
+        </script>
+    }

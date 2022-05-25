@@ -16,7 +16,7 @@
         <legend class="scheduler-border alert alert-success">Application Assignment</legend>
 
         <div class="row col-md-12">
-            <div class="col-md-8" style="float:left;">
+            <div class="col-md-8" style="float:left">
                 <table class="table table-responsive table-bordered mydataTable" id="pushTable">
                     <thead>
                         <tr>
@@ -92,6 +92,8 @@
         });
         var table = $(".mydataTable").DataTable({
             "scrollX": true,
+            "scrollY": '200px',
+            "scrollCollapse": true,
             "processing": true,
             "serverSide": true,
             ajax: {

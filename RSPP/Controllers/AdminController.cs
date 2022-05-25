@@ -2113,7 +2113,7 @@ namespace RSPP.Controllers
                     StaffEmail = up.UserEmail,
                     StaffName = up.FirstName,
                     status = up.Status,
-                    OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).Count()
+                    OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
                 });
 
             }
@@ -2521,7 +2521,7 @@ namespace RSPP.Controllers
         }
 
         [HttpPost]
-        public ActionResult UpdateFacilityRecord(string ApplicationId, string AgencyName, short CurrentStageId, string lastAssignedUser, string ApplicationType, string Companyemail, string CompanyAddress)
+        public JsonResult UpdateFacilityRecord(string ApplicationId, string AgencyName, short CurrentStageId, string lastAssignedUser, string ApplicationType, string Companyemail, string CompanyAddress)
         {
             var result = "";
 
@@ -2537,8 +2537,8 @@ namespace RSPP.Controllers
                     appinfo.LastAssignedUser = lastAssignedUser;
                     appinfo.AgencyName = AgencyName;
                     appinfo.ApplicationTypeId = ApplicationType;
-
                     _context.SaveChanges();
+                    result = "success";
                 }
 
 
@@ -2548,7 +2548,7 @@ namespace RSPP.Controllers
                 result = ex.Message;
             }
 
-            return Json(result);
+            return Json(new { Status = result });
         }
 
 

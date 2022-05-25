@@ -19,7 +19,7 @@
                 <th>On Desk</th>
                 <th>Status</th>
                 <th style="width:2px"></th>
-                @if (ViewBag.UserRole == "SUPPORT" || ViewBag.UserRole == "ICT" || ViewBag.UserRole == "SUPERADMIN")
+                @if (ViewBag.UserRole != "OFFICER")
                 {
                     <th style="width:2px"></th>
                 }
@@ -41,7 +41,7 @@
                         <a href="#modalPopup" data-url="@Url.Action("ViewStaffDesk", new { userid = s.StaffEmail })"
                            data-name="@s.StaffName" class="popAlert btn btn-xs btn-info" data-toggle="modal">View Desk</a>
                     </td>
-                    @if (ViewBag.UserRole == "SUPPORT" || ViewBag.UserRole == "ICT" || ViewBag.UserRole == "SUPERADMIN")
+                    @if (ViewBag.UserRole != "OFFICER")
                     {
                         <td>
                             <a class="btn btn-success btn-xs btn-block appidlist" href="javascript:DelegateNewUser('@s.StaffEmail','@s.Role')"><i class="fa fa-recycle"></i> Re-Route</a>
@@ -56,7 +56,7 @@
 {
 <div class="modal fade Rerouteuser" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="calenderModalLabel">
     @*<div class="modal-dialog modal-lg" style="margin-top:100px; width:80%" role="document">*@
-    <div class="modal-dialog modal" style="margin:0 auto 0 -40%; margin-top:30%; height:100%; width:80%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
+    <div class="modal-dialog modal" style="margin:0 auto 0 -40%; margin-top:25%; height:100%; width:80%; overflow-y:hidden; overflow-x:hidden; display:block;" role="document">
 
         <div class="modal-content">
             <div class="modal-header">
@@ -64,7 +64,7 @@
                     <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100; width:100px; margin-top:-110px" src="~/images/spinning.gif" />
                 </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Are you Sure You Want to Re-Assign User?</h4>
+                <h4 class="modal-title text-success" id="exampleModalLabel"><i class="fa fa-hand-o-down"></i>  Note: The checkbox of the application to be re-routed/re-assigned must be selected before re-assign button will show</h4>
 
             </div>
 

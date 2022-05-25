@@ -124,7 +124,7 @@
         foreach (var item in ViewBag.AllApplicationStageDetails)
 
         {
-            if ((item.CurrentStageId == 1))
+            if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
             {
                 <div class="col-md-12">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
