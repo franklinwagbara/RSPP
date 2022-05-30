@@ -784,11 +784,11 @@ namespace RSPP.Configurations
 
 
 
-        public List<ApplicationRequestForm> CompanyInfo(string applicationId)
+        public List<MyApplicationRequestForm> CompanyInfo(string applicationId)
         {
             var today = DateTime.Now.Date;
-            var Appinfo = new List<ApplicationRequestForm>();
-            var Appinfoagency = (from p in _context.ApplicationRequestForm
+            var Appinfo = new List<MyApplicationRequestForm>();
+            var Appinfoagency = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                                  where p.ApplicationId == applicationId
                                  select new
                                  {
@@ -796,11 +796,12 @@ namespace RSPP.Configurations
                                      p.AgencyName,
                                      p.CompanyAddress,
                                      p.CompanyWebsite,
+                                     u.CompanyName,
                                      p.DateofEstablishment
                                  }).ToList();
             foreach (var item in Appinfoagency)
             {
-                Appinfo.Add(new ApplicationRequestForm()
+                Appinfo.Add(new MyApplicationRequestForm()
                 {
                     CompanyEmail = item.CompanyEmail,
                     AgencyName = item.AgencyName,

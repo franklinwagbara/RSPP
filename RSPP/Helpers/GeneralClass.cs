@@ -230,7 +230,7 @@ namespace RSPP.Helpers
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
             body += "<p>Kindly go to <a href='"+ PortalBaseUrlLive + "'>RRPSPU PORTAL(CLICK HERE)</a></p>";
-            body += "<p>Nigerian Shipper's Council<br/> <small>(RSPP) </small></p> </div>";
+            body += "<p>Nigerian Shipper's Council<br/> <small>(RRPSPU) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
         }

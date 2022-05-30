@@ -1,10 +1,10 @@
 ﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
 
-
 @{
     int count = 0;
     ViewBag.Title = "MyDesk";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
+    RSPP.Models.DB.RSPPdbContext dbCtxt = new RSPP.Models.DB.RSPPdbContext();
 }
 
 
@@ -25,6 +25,7 @@
                     <th>S/N</th>
                     <th>Application Id</th>
                     <th>Application Type</th>
+                    <th>Company Name</th>
                     <th>Company Email</th>
                     <th>Company Address</th>
                     <th>Date</th>
@@ -38,7 +39,11 @@
             <td>@(count += 1)</td>
             <td>@req.ApplicationId</td>
             <td>
-               @req.ApplicationTypeId
+                @req.ApplicationTypeId
+            </td>
+            <td>
+                @{var companyname = (from c in dbCtxt.UserMaster where c.UserEmail == req.CompanyEmail select c.CompanyName).FirstOrDefault();}
+                <span>@companyname</span>
             </td>
             <td>@req.CompanyEmail</td>
             <td>@req.CompanyAddress</td>
@@ -53,7 +58,7 @@
                     </div>
                 </div>
             </td>
-           
+
         </tr>
             }
         </table>
@@ -76,6 +81,7 @@
                     "infoEmpty": "No Application on your Desk Currently",
                     "infoFiltered": "(filtered from _MAX_ total records)"
                 },
+                dom: 'Blfrtip',
                 "order": [[1, "desc"]]
             });
         });

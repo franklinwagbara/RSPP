@@ -696,7 +696,7 @@ namespace RSPP.Controllers
             string message = string.Empty;
             string appid = string.Empty;
 
-            ResponseWrapper responseWrapper = _workflowHelper.processAction(applicationid, "Submit", _helpersController.getSessionEmail(), "Application was successfully sumbited after document upload");
+            ResponseWrapper responseWrapper = _workflowHelper.processAction(applicationid, "Submit", _helpersController.getSessionEmail(), "Application was successfully submitted after document upload");
             if (!responseWrapper.status)
             {
                 status = "failure";

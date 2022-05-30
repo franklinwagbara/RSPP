@@ -26,27 +26,22 @@
                                 @d.DocumentName
 
                             </td>
-                            @if (d.DocumentName.Contains(".pdf"))
-                            {
-                                <td>
+                            <td>
+                                @if (d.DocumentName.Contains(".pdf"))
+                                {
                                     <a href="javascript:FileView('@d.DocumentSource')" class="list-group-item">
-                                        <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                        <img src="@Url.Content("~/images/pdficon.png")" width="60" height="60" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
                                              style="display: inline-block;" />
                                     </a>
-
-                                </td>
-                            }
-                            else
-                            {
-                        <td>
-                            <a href="javascript:FileView('@d.DocumentSource')" class="list-group-item">
-                                <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                     style="display: inline-block;" />
-                            </a>
-
-                        </td>
-                            }
-
+                                }
+                                else
+                                {
+                                    <a href="javascript:FileView('@d.DocumentSource')" class="list-group-item">
+                                        <img src="@Url.Content("~/UploadedFiles/"+d.DocumentSource)" width="60" height="60" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                             style="display: inline-block;" />
+                                    </a>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>

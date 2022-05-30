@@ -533,14 +533,22 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-
+        
 
         [HttpGet]
         public ActionResult ApplicationDetails(string applicationId)
         {
-            ApplicationRequestForm br = null;
-            br = _context.ApplicationRequestForm.Where(c => c.ApplicationId.Trim() == applicationId).FirstOrDefault();
+            MyApplicationRequestForm br = null;
+            br = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail where p.ApplicationId == applicationId select new MyApplicationRequestForm {
+                ApplicationId = p.ApplicationId,
+                AgencyId = p.AgencyId,
+                AgencyName = p.AgencyName,
+                CompanyAddress = p.CompanyAddress,
+                CompanyEmail = p.CompanyEmail,
+                CompanyName = u.CompanyName,
+                CompanyWebsite = p.CompanyWebsite,
+                DateofEstablishment = p.DateofEstablishment
+            }).FirstOrDefault();
             if (br != null)
             {
                 ViewBag.MyAgencyId = br.AgencyId;
@@ -1123,7 +1131,7 @@ namespace RSPP.Controllers
             int totalRecords = 0;
             var today = DateTime.Now.Date;
 
-            var staff = (from p in _context.ApplicationRequestForm
+            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                          where p.LicenseReference != null && p.IsLegacy == "NO"
 
                          select new
@@ -1133,7 +1141,8 @@ namespace RSPP.Controllers
                              p.CompanyEmail,
                              p.CompanyAddress,
                              p.ApplicationTypeId,
-                             p.AgencyName
+                             p.AgencyName,
+                             u.CompanyName
                          });
 
 
@@ -1534,7 +1543,7 @@ namespace RSPP.Controllers
             int skip = start != null ? Convert.ToInt32(start) : 0;
             int totalRecords = 0;
             var today = DateTime.Now.Date;
-            var staff = (from p in _context.ApplicationRequestForm
+            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                          where p.LicenseReference != null && p.LicenseReference != ""
 
                          select new
@@ -1544,6 +1553,7 @@ namespace RSPP.Controllers
                              p.CompanyEmail,
                              p.Status,
                              p.AgencyName,
+                             u.CompanyName,
                              LicenseIssuedDate = p.LicenseIssuedDate,
                              LicenseExpiryDate = p.LicenseExpiryDate,
                              issueddate = p.LicenseIssuedDate.ToString(),
@@ -2016,7 +2026,12 @@ namespace RSPP.Controllers
 
             var generatedapplicationid = generalClass.GenerateApplicationNo();
             var status = _helpersController.ApplicationForm(model, MyTerminals, "YES", generatedapplicationid);
-
+            if(status == "success")
+            {
+                string subject = "Legacy Application Added";
+                string content = "Your legacy application with the certificate reference number "+ model.LicenseReference+ " was successfully added to the system.";
+                generalClass.SendStaffEmailMessage(model.CompanyEmail, subject, content);
+            }
             return Json(new { Status = status });
 
 
@@ -2042,7 +2057,9 @@ namespace RSPP.Controllers
 
 
             var staff = (from p in _context.PaymentLog
+                         
                          join r in _context.ApplicationRequestForm on p.ApplicationId equals r.ApplicationId
+                         join u in _context.UserMaster on r.CompanyEmail equals u.UserEmail
                          where p.Status == "AUTH"
 
                          select new
@@ -2056,6 +2073,7 @@ namespace RSPP.Controllers
                              transDATE = p.TransactionDate,
                              r.ApplicationTypeId,
                              AgencyName = r.AgencyName,
+                             u.CompanyName,
                              CompanyEmail = r.CompanyEmail
 
                          });

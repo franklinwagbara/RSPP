@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.DB.ApplicationRequestForm
+﻿@model RSPP.Models.MyApplicationRequestForm
 
 @{
     ViewBag.Title = "Application Details";
@@ -24,9 +24,10 @@
             <thead>
                 <tr>
                     <th><strong>Application Reference No.</strong></th>
-                    <th><strong>Agency Name</strong> </th>
+                    <th><strong>Category Name</strong> </th>
                     <th><strong>Company Address</strong></th>
                     <th><strong>Company Email</strong></th>
+                    <th><strong>Company Name</strong></th>
                     <th><strong>Company Website</strong></th>
                     <th><strong>Date of Establishment</strong></th>
                 </tr>
@@ -38,6 +39,7 @@
                     <td>@Model.AgencyName</td>
                     <td>@Model.CompanyAddress</td>
                     <td>@Model.CompanyEmail</td>
+                    <td>@Model.CompanyName</td>
                     <td>@Model.CompanyWebsite</td>
                     <td>@Model.DateofEstablishment</td>
                 </tr>

@@ -189,7 +189,7 @@
                 <div class="col-md-12">
                     <div class="panel">
                         <header class="panel-heading panel-border">
-                            <h3 class="text-primary"> payment Report </h3>
+                            <h3 class="text-primary"> Payment Report </h3>
 
                         </header>
                         <div class="panel-body">
@@ -229,7 +229,7 @@
                                             <td>@ViewBag.HaulersTruckers</td>
                                         </tr>
                                         <tr>
-                                            <td>ICD</td>
+                                            <td>Inland Container Depot (ICD)</td>
                                             <td>@ViewBag.ICD</td>
                                         </tr>
                                         <tr>
@@ -305,12 +305,12 @@
 
                                     <div class="input-group">
 
-                                        <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
+                                        <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i> From</div>
                                         <div><input type="date" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
                                     </div>
                                 </div><div class="col-md-3">
                                     <div class="input-group">
-                                        <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
+                                        <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i> To</div>
                                         <div><input type="date" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
                                         <div class="input-group-addon" style="background-color:red">
                                             <button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none"></button>
@@ -360,6 +360,7 @@
                                             <th><strong>Payment Status</strong> </th>
                                             <th><strong>Category Name</strong> </th>
                                             <th><strong>Company Email</strong> </th>
+                                            <th><strong>Company Name</strong> </th>
                                             <th><strong>Total Amount</strong> </th>
                                             <th><strong>Transaction Date</strong> </th>
                                         </tr>
@@ -497,7 +498,9 @@
                     {
                         data: "companyEmail"
                     },
-                    
+                    {
+                        data: "companyName"
+                    },
                     {
                         data: "txnAmount",
 
@@ -613,7 +616,7 @@
                             { name: 'Dry Port Operator', y: data.dryPortOperator },
                             { name: 'Freight Forwarders and Clearing Agents', y: data.freightForwarders_ClearingAgents },
                             { name: 'Haulers/Truckers', y: data.haulers_Truckers },
-                            { name: 'ICD', y: data.icd },
+                            { name: 'Inland Container Depot (ICD)', y: data.icd },
                             { name: 'Logististics Service Provider', y: data.logististics_Service_Provider },
                             { name: 'Stevedoring/Warehousing', y: data.stevedoring_Warehousing },
                             { name: 'Seaport Terminal Operators', y: data.seaportTerminalOperator },
@@ -656,7 +659,7 @@
                             rotation: -45,
                         },
                         categories: ['Bargo Operators', 'Cargo Consolidators/De-Consolidators', 'Individual Category (Import & Exporter)', 'Dry Port Operator', 'Freight Forwarders and Clearing Agents', 'Haulers/Truckers', 'Other Port Service Providers', 'Logististics Service Provider', 'Stevedoring/Warehousing', 'Seaport Terminal Operators', 'Off Dock Terminal Operators',
-                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandling', 'Corperate Category', 'ICD']
+                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandling', 'Corperate Category', 'Inland Container Depot (ICD)']
                     },
                     plotOptions: {
                         column: {
