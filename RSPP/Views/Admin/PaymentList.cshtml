@@ -281,7 +281,7 @@
                                     <tfoot>
                                         <tr>
                                             <th><b>Grand Total</b></th>
-                                            <th><b style="float:right">₦@ViewBag.GrandTotal</b></th>
+                                            <th><b style="float:right">₦ @ViewBag.GrandTotal.ToString("N")</b></th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -374,7 +374,7 @@
                                             <th></th>
                                             <th></th>
                                             <th></th>
-                                            <th>₦@ViewBag.GrandTotal</th>
+                                            <th></th>
                                             <th></th>
                                         </tr>
                                     </tfoot>
@@ -395,7 +395,7 @@
                     <table>
                         <tr class="cell-">
                             <td>
-                                <div style="color:darkred; font-weight:bold">@*@ViewBag.GrandTotal (@ViewBag.GrandTotalInWords)*@</div>
+                                <div style="color:darkred; font-weight:bold">@ViewBag.GrandTotal.ToString("N") (@ViewBag.GrandTotalInWords)</div>
                             </td>
 
                             <td>
@@ -524,7 +524,7 @@
 
                     // Total over this page
                     pageTotal = api
-                        .column(6, { filter: 'applied' })
+                        .column(7, { filter: 'applied' })
                         .data()
                         .reduce(function (a, b) {
                             return intVal(a) + intVal(b);
@@ -532,10 +532,10 @@
 
                     // Update footer
                     debugger;
-                    $(api.column(6).footer()).html(
+                    $(api.column(7).footer()).html(
                         'Per Page = ' + '₦' + pageTotal,
-                        $("#totalsum").text(pageTotal),
-                        $("#amtinword").text("(" + numberToWords(Number(pageTotal)) + ")"),
+                        //$("#totalsum").text(pageTotal),
+                        //$("#amtinword").text("(" + numberToWords(Number(pageTotal)) + ")"),
                     );
 
 
@@ -616,7 +616,7 @@
                             { name: 'Dry Port Operator', y: data.dryPortOperator },
                             { name: 'Freight Forwarders and Clearing Agents', y: data.freightForwarders_ClearingAgents },
                             { name: 'Haulers/Truckers', y: data.haulers_Truckers },
-                            { name: 'Inland Container Depot (ICD)', y: data.icd },
+                            { name: 'ICD', y: data.icd },
                             { name: 'Logististics Service Provider', y: data.logististics_Service_Provider },
                             { name: 'Stevedoring/Warehousing', y: data.stevedoring_Warehousing },
                             { name: 'Seaport Terminal Operators', y: data.seaportTerminalOperator },
@@ -659,7 +659,7 @@
                             rotation: -45,
                         },
                         categories: ['Bargo Operators', 'Cargo Consolidators/De-Consolidators', 'Individual Category (Import & Exporter)', 'Dry Port Operator', 'Freight Forwarders and Clearing Agents', 'Haulers/Truckers', 'Other Port Service Providers', 'Logististics Service Provider', 'Stevedoring/Warehousing', 'Seaport Terminal Operators', 'Off Dock Terminal Operators',
-                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandling', 'Corperate Category', 'Inland Container Depot (ICD)']
+                            'Shipping Agency', 'ShippingCompany/Line', 'Shippers Association', 'Cargo Surveyor', 'Chandling', 'Corperate Category', 'ICD']
                     },
                     plotOptions: {
                         column: {

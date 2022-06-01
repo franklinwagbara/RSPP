@@ -1131,7 +1131,7 @@ namespace RSPP.Controllers
             int totalRecords = 0;
             var today = DateTime.Now.Date;
 
-            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail orderby p.LicenseReference descending
                          where p.LicenseReference != null && p.IsLegacy == "NO"
 
                          select new
@@ -1990,11 +1990,11 @@ namespace RSPP.Controllers
             ViewBag.IndividualCategory = Convert.ToDecimal(paymentlist.IndividualCategory).ToString("N");
             ViewBag.CorperateCategory = Convert.ToDecimal(paymentlist.CorperateCategory).ToString("N");
             ViewBag.OtherPortServiceProviders = Convert.ToDecimal(paymentlist.OtherPortServiceProviders).ToString("N");
-             var GrandTotal = Math.Round(Convert.ToDecimal(ViewBag.BargeOperators) + Convert.ToDecimal(ViewBag.CargoConsolidatorsDeConsolidators) + Convert.ToDecimal(ViewBag.Chandling) + Convert.ToDecimal(ViewBag.DryPortOperator) + Convert.ToDecimal(ViewBag.FreightForwardersClearingAgents) + Convert.ToDecimal(ViewBag.HaulersTruckers) + Convert.ToDecimal(ViewBag.ICD)
+            ViewBag.GrandTotal = Math.Round(Convert.ToDecimal(ViewBag.BargeOperators) + Convert.ToDecimal(ViewBag.CargoConsolidatorsDeConsolidators) + Convert.ToDecimal(ViewBag.Chandling) + Convert.ToDecimal(ViewBag.DryPortOperator) + Convert.ToDecimal(ViewBag.FreightForwardersClearingAgents) + Convert.ToDecimal(ViewBag.HaulersTruckers) + Convert.ToDecimal(ViewBag.ICD)
                 + Convert.ToDecimal(ViewBag.LogististicsServiceProvider) + Convert.ToDecimal(ViewBag.StevedoringWarehousing) + Convert.ToDecimal(ViewBag.SeaportTerminalOperator) + Convert.ToDecimal(ViewBag.OffDockTerminalOperator) + Convert.ToDecimal(ViewBag.ShippersAssociation)
                 + Convert.ToDecimal(ViewBag.CargoSurveyor) + Convert.ToDecimal(ViewBag.IndividualCategory) + Convert.ToDecimal(ViewBag.CorperateCategory) + Convert.ToDecimal(ViewBag.OtherPortServiceProviders), 2);
-            ViewBag.GrandTotal = GrandTotal.ToString("N");
-            ViewBag.GrandTotalInWords = generalClass.NumberToWords(Convert.ToInt64(GrandTotal));
+            //ViewBag.GrandTotal = GrandTotal.ToString("N");
+            ViewBag.GrandTotalInWords = generalClass.NumberToWords(Convert.ToInt64(ViewBag.GrandTotal));
             return View();
         }
 

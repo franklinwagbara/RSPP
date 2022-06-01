@@ -17,11 +17,12 @@
                 <tr>
                     <th>Application Ref</th>
                     <th>Company Email</th>
+                    <th>Certificate Number</th>
                     <th>Agency Name</th>
                     <th>Status</th>
                     <th>Date Applied</th>
                     <th>Rate</th>
-                   
+
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,7 @@
                     <tr>
                         <td class="nr">@br.ApplicationId</td>
                         <td><a href="@Url.Action("ApplicationDetails", new { applicationId = br.ApplicationId })">@br.CompanyEmail</a></td>
+                        <td>@br.LicenseReference</td>
                         <td>@br.AgencyName</td>
 
                         <td>

@@ -34,7 +34,8 @@
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Reference Number</th>
+                    <th>Application Ref</th>
+                    <th>Certificate Number</th>
                     <th>Company Email</th>
                     <th>Application Category</th>
                     <th>Date Applied</th>
@@ -47,19 +48,20 @@
 
                 @foreach (RSPP.Models.DB.ApplicationRequestForm appmaster in Model)
                 {
-                    <tr>
-                        <td>@(ViewBag.Counter += 1)</td>
-                        <td>@appmaster.ApplicationId</td>
-                        <td>@appmaster.CompanyEmail</td>
-                        <td>@appmaster.AgencyName</td>
-                        <td>@appmaster.AddedDate</td>
-                        <td>
-                            <strong class="badge badge-success btn btn-sm"><b>Approved</b></strong>
-                        </td>
+                <tr>
+                    <td>@(ViewBag.Counter += 1)</td>
+                    <td>@appmaster.ApplicationId</td>
+                    <td>@appmaster.LicenseReference</td>
+                    <td>@appmaster.CompanyEmail</td>
+                    <td>@appmaster.AgencyName</td>
+                    <td>@appmaster.AddedDate</td>
+                    <td>
+                        <strong class="badge badge-success btn btn-sm"><b>Approved</b></strong>
+                    </td>
 
 
 
-                    </tr>
+                </tr>
 
                 }
             </tbody>
