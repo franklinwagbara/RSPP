@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Globalization;
 using System.Net.Http.Headers;
+using Microsoft.Extensions.Logging;
 
 namespace RSPP.Controllers
 {
@@ -30,13 +31,14 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         UtilityHelper _utilityHelper;
         private ILog log = log4net.LogManager.GetLogger(typeof(CompanyController));
+        protected readonly ILogger<CompanyController> _logger;
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
 
 
         [Obsolete]
-        public CompanyController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
+        public CompanyController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv, ILogger<CompanyController> logger)
         {
             _context = context;
             _configuration = configuration;
@@ -45,6 +47,7 @@ namespace RSPP.Controllers
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
             _utilityHelper = new UtilityHelper(_context);
+            _logger = logger;
         }
 
 

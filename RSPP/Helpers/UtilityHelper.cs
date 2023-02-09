@@ -6,6 +6,7 @@ using RSPP.Models;
 using RSPP.Models.DB;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,12 +16,13 @@ namespace RSPP.Helpers
 {
     public class UtilityHelper : Controller
     {
-
+        //string path = 
         public RSPPdbContext _context;
         GeneralClass generalClass = new GeneralClass();
 
         PaymentTransactionModel paymentRequest = new PaymentTransactionModel();
         private static ILog log = log4net.LogManager.GetLogger(typeof(UtilityHelper));
+
         public UtilityHelper(RSPPdbContext context)
         {
             _context = context;
@@ -35,23 +37,34 @@ namespace RSPP.Helpers
             client.Timeout = -1;
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", "remitaConsumerKey="+generalClass.merchantIdLive+",remitaConsumerToken="+APIHash);
-            var requestobj = JsonConvert.SerializeObject(model); 
+            request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+            var requestobj = JsonConvert.SerializeObject(model);
+            //StreamWriter sw = new StreamWriter("log.txt", true);
+            //sw.WriteLine(requestobj);
+            //sw.Dispose();
+
+            log.Info("This is the request OBJ :" + requestobj);
             request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
             IRestResponse response = client.Execute(request);
             string content = response.Content;
             var removeunwantedstring1 = content.Replace("jsonp (", "");
-            var removeunwantedstring2 = removeunwantedstring1.Replace(")","");
+            var removeunwantedstring2 = removeunwantedstring1.Replace(")", "");
 
 
             if (response.IsSuccessful)
             {
                 webResponse.message = "Success";
                 webResponse.value = JsonConvert.DeserializeObject<RemitaModel>(removeunwantedstring2);
+                StreamWriter sw_Passed = new StreamWriter("log.txt", true);
+                sw_Passed.WriteLine(webResponse.message);
+                sw_Passed.Dispose();
             }
             else
             {
                 webResponse.message = "Failed";
+                StreamWriter sw_Failed = new StreamWriter("log.txt", true);
+                sw_Failed.WriteLine(webResponse.message);
+                sw_Failed.Dispose();
             }
             return webResponse;
         }
