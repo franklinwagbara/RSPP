@@ -39,9 +39,9 @@ namespace RSPP.Helpers
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
             var requestobj = JsonConvert.SerializeObject(model);
-            //StreamWriter sw = new StreamWriter("log.txt", true);
-            //sw.WriteLine(requestobj);
-            //sw.Dispose();
+            StreamWriter sw = new StreamWriter("log.txt", true);
+            sw.WriteLine(requestobj);
+            sw.Dispose();
 
             log.Info("This is the request OBJ :" + requestobj);
             request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
