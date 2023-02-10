@@ -38,6 +38,9 @@ namespace RSPP.Helpers
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+            StreamWriter swAPI = new StreamWriter("log.txt", true);
+            swAPI.WriteLine(APIHash);
+            swAPI.Dispose();
             var requestobj = JsonConvert.SerializeObject(model);
             StreamWriter sw = new StreamWriter("log.txt", true);
             sw.WriteLine(requestobj);
