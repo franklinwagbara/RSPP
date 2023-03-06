@@ -77,7 +77,7 @@ namespace RSPP.Helpers
         {
             WebResponse webResponse = new WebResponse();
 
-            var client = new RestClient(generalClass.GetPaymentBaseUrlLive+ generalClass.merchantIdLive+"/"+rrr+"/"+ APIHash+"/status.reg");
+            var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/"+rrr+"/"+ APIHash+"/status.reg");
             client.Timeout = -1;
             var request = new RestRequest(Method.GET);
             request.AddHeader("Content-Type", "application/json");

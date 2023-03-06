@@ -31,6 +31,7 @@ namespace RSPP.Helpers
         //public string PostPaymentUrl = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
         //public string GetPaymentBaseUrl = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/";
         //public string PortalBaseUrl = "http://rprspu-demo.azurewebsites.net";
+        //public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
         //public string FinalizePaymentURL = "https://remitademo.net/remita/ecomm/finalize.reg";
         //Remita live credentials
         public string merchantIdLive = "2987258165";
