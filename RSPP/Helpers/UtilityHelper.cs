@@ -38,10 +38,13 @@ namespace RSPP.Helpers
             var request = new RestRequest(Method.POST);
             request.AddHeader("Content-Type", "application/json");
             request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+            StreamWriter swAPI = new StreamWriter("log.txt", true);
+            swAPI.WriteLine(APIHash);
+            swAPI.Dispose();
             var requestobj = JsonConvert.SerializeObject(model);
-            //StreamWriter sw = new StreamWriter("log.txt", true);
-            //sw.WriteLine(requestobj);
-            //sw.Dispose();
+            StreamWriter sw = new StreamWriter("log.txt", true);
+            sw.WriteLine(requestobj);
+            sw.Dispose();
 
             log.Info("This is the request OBJ :" + requestobj);
             request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
@@ -74,7 +77,7 @@ namespace RSPP.Helpers
         {
             WebResponse webResponse = new WebResponse();
 
-            var client = new RestClient(generalClass.GetPaymentBaseUrlLive+ generalClass.merchantIdLive+"/"+rrr+"/"+ APIHash+"/status.reg");
+            var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/"+rrr+"/"+ APIHash+"/status.reg");
             client.Timeout = -1;
             var request = new RestRequest(Method.GET);
             request.AddHeader("Content-Type", "application/json");
