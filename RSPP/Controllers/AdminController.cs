@@ -2115,26 +2115,37 @@ namespace RSPP.Controllers
 
 
 
-
+        [Authorize ]
         [HttpGet]
         public ActionResult StaffDesk()
         {
+            var userMaster = (from u in _context.UserMaster select u).FirstOrDefault();
             string ErrorMessage = "";
             StaffDeskModel model = new StaffDeskModel();
             List<StaffDesk> staffDeskList = new List<StaffDesk>();
             var desk = _context.UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT").ToList();
-            foreach (UserMaster up in desk)
+            if (userMaster.UserRole != "Officer")
             {
-                staffDeskList.Add(new StaffDesk()
+                foreach (UserMaster up in desk)
                 {
-                    Role = up.UserRole,
-                    StaffEmail = up.UserEmail,
-                    StaffName = up.FirstName,
-                    status = up.Status,
-                    OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
-                });
+                    staffDeskList.Add(new StaffDesk()
+                    {
+                        Role = up.UserRole,
+                        StaffEmail = up.UserEmail,
+                        StaffName = up.FirstName,
+                        status = up.Status,
+                        OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
+                    });
 
+                }
             }
+            else
+            {
+                ErrorMessage = "You do not have access to view this page as an Officer";
+                ViewBag.ErrorMessage = ErrorMessage;    
+                
+            }
+            
             model.StaffDeskList = staffDeskList;
             ViewBag.ErrorMessage = ErrorMessage;
             ViewBag.UserRole = _helpersController.getSessionRoleName();

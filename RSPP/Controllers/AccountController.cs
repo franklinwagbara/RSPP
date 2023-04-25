@@ -14,6 +14,9 @@ using RSPP.Configurations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using System.Net.Mail;
+using System.Web;
+using System.Net;
 
 namespace RSPP.Controllers
 {
@@ -26,6 +29,7 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         GeneralClass generalClass = new GeneralClass();
         public static string roleid;
+        public string body;
         public const string sessionEmail = "_sessionEmail";
         public const string sessionStaffName = "_sessionStaffName";
         public const string sessionRoleName = "_sessionRoleName";
@@ -79,13 +83,18 @@ namespace RSPP.Controllers
                     HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
                     HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
 
-                    if (userMaster.UserType.Contains("COMPANY"))
+                    if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == true)
                     {
+
                         status = "success";
                         message = "Company";
                         HttpContext.Session.SetString(sessionCompanyName, userMaster.CompanyName);
 
-                        return Json(new{Status = status, Message = message });
+                        return Json(new { Status = status, Message = message });
+                    }
+                    else if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == false)
+                    {
+                        return Json(new { Status = status, Message = "Kindly Confirm your mail by clicking on the link sent to your email!!!"});
                     }
                     else
                     {
@@ -96,14 +105,14 @@ namespace RSPP.Controllers
                         return Json(new { Status = status, Message = message });
                     }
 
-                    
+
 
                 }
                 else
                 {
                     status = "failed";
                     message = "Login failed!! please check your login credentials";
-                    return Json(new {Status = status, Message = message }); //Content("<html><head><script>alert(\"" + validateResult + "\");window.location.replace('LogOff')</script></head></html>");
+                    return Json(new { Status = status, Message = message }); //Content("<html><head><script>alert(\"" + validateResult + "\");window.location.replace('LogOff')</script></head></html>");
                 }
 
 
@@ -157,7 +166,7 @@ namespace RSPP.Controllers
 
 
 
-                if (userMaster !=default(UserMaster))
+                if (userMaster != default(UserMaster))
                 {
                     Logger.Info("User Master Status => " + userMaster.Status);
                     UserLogin userLogin = new UserLogin();
@@ -197,6 +206,68 @@ namespace RSPP.Controllers
         {
             return View();
         }
+        private void SendConfirmationEmail(string email, string token)
+        {
+            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng"); //new MailAddress("quadrymustaqeem@gmail.com","Mustaqeem Quadry");
+            var toAddress = new MailAddress(email);
+            const string fromPassword = "nsc2018#";
+            const string subject = "Confirm your email address";
+            //string callBackURL = 
+            body = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+            var smtp = new SmtpClient
+            {
+                Host = "webmail.shipperscouncil.gov.ng", //"smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
+                Timeout = 20000
+            };
+
+            var message = new MailMessage();
+            message.From = fromAddress;
+            message.To.Add(toAddress);
+            message.Subject = subject;
+            message.Body = body;
+            GeneralClass gen = new GeneralClass();
+            gen.ConfirmationEmailMessage(body, toAddress, subject);
+            //smtp.Send(message);
+
+        }
+
+        public ActionResult ConfirmEmail(string token)
+        {
+                        var user = (from u in _context.UserMaster where u.EmailConfirmationToken == token select u).FirstOrDefault();
+
+
+
+            if (user != null)
+            {
+                // Update the user's account to confirm their email address
+                user.EmailConfirmed = true;
+                user.EmailConfirmationToken = null;
+                _context.SaveChanges();
+
+                // Redirect the user to a "confirmation success" page
+                return RedirectToAction("ConfirmationSuccess");
+            }
+            else
+            {
+                // Redirect the user to a "confirmation error" page
+                return RedirectToAction("ConfirmationError");
+            }
+        }
+        public ActionResult ConfirmationSuccess()
+        {
+            return RedirectToAction("Login");
+        }
+
+        // GET: Account/ConfirmationError
+        public ActionResult ConfirmationError()
+        {
+            return View();
+        }
 
         [HttpPost]
         public JsonResult AccountRegister(string Email, string PhoneNbr, string Companyaddress, string Passwrd, string Companyname)
@@ -205,6 +276,8 @@ namespace RSPP.Controllers
             string message = string.Empty;
             UserMaster usermaster = new UserMaster();
             Passwrd = generalClass.Encrypt(Passwrd);
+            string token = Guid.NewGuid().ToString();
+            SendConfirmationEmail(Email, token);
             var checkexistemail = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
             try
             {
@@ -223,10 +296,15 @@ namespace RSPP.Controllers
                     usermaster.UpdatedOn = DateTime.Now;
                     usermaster.CreatedOn = DateTime.Now;
                     usermaster.Status = "ACTIVE";
+                    usermaster.EmailConfirmed = false;
+                    usermaster.EmailConfirmationToken = token;
                     _context.Add(usermaster);
                     _context.SaveChanges();
                     status = "success";
                     message = "Your registration was successful";
+
+                    SendConfirmationEmail(Email, token);
+
                 }
                 else
                 {
@@ -265,6 +343,7 @@ namespace RSPP.Controllers
                  if(sendmail == "failed")
                 {
                     msg = "Unable to send activation link to "+ Email+". Please try again later.";
+
                 }
                 else {
                     msg = "Activation link was successfully sent to " + Email;

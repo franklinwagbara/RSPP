@@ -41,7 +41,7 @@
                         </div>
                     </div>
                 </div>
-                <form action="@generalClass.FinalizePaymentURLLive"  method="POST">
+                <form action="@generalClass.FinalizePaymentURLLive"  method="POST" id="form_id">
                     <input name="merchantId" value="@ViewBag.MerchantId" type="hidden" />
                     <input name="hash" value="@ViewBag.AppkeyHashed" type="hidden" />
                     <input name="rrr" value="@ViewBag.RRR" type="hidden" />
@@ -50,7 +50,8 @@
 
                     @*<input style="margin-left:300px" type="submit" name="submit_btn" class="btn btn-success" value="Pay Now">*@
                 </form>
-                <div name="bypassbtn" id="bypassbtn" onclick="ByPassPayment()" style="margin-left:300px" class="btn btn-success"><i class="fa fa-money"></i> <b>By Pass Payment</b></div>
+                <br/>
+                @*<div name="bypassbtn" id="bypassbtn" onclick="ByPassPayment()" style="margin-left:300px" class="btn btn-success"><i class="fa fa-money"><b> By Pass Payment</b></i></div>*@
 
             </div>
         </div>
@@ -69,16 +70,33 @@
 
         $(document).ready(function () {
 
-            //$('#bypassbtn').click(function (e) {
-            //    e.preventDefault();
+            //$('#bypassbtn').click(function () {
+            //    //e.preventDefault();
             //    debugger;
+            //if ($("#formid").valid()) {
+            //debugger;
+            //    var Applicationid = '@ViewBag.Applicationid';
+            //    var txtPaymentName = '@ViewBag.AgencyName';
+            //    var txtpaymentamount = '@ViewBag.Amount';
+
+            //$.post("/Company/ByPassPayment", { applicationid: Applicationid, PaymentName: txtPaymentName, paymentamount: txtpaymentamount }, function (data) {
+
+            //        if (data.status === "success") {
+            //            window.location = "/Company/DocumentUpload?ApplicationId=" + Applicationid;
+            //        } else {
+            //            alert(data.message);
+            //        }
+
+            //    });
+            //}
+            //    //debugger;
 
             //});
 
         });
         function ByPassPayment() {
 
-            //if ($("#formid").valid()) {
+            if ($("#form_id").valid()) {
             debugger;
                 var Applicationid = '@ViewBag.Applicationid';
                 var txtPaymentName = '@ViewBag.AgencyName';
@@ -93,7 +111,7 @@
                     }
 
                 });
-            //}
+            }
 
         }
 
@@ -109,7 +127,7 @@
 
             newWin.document.close();
 
-            setTimeout(function () { newWin.close(); }, 10);
+            //setTimeout(function () { newWin.close(); }, 10);
 
         }
     </script>
