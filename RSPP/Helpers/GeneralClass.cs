@@ -198,7 +198,7 @@ namespace RSPP.Helpers
             var message = "";
             var password = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rprspu-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rprspu-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -277,7 +277,7 @@ namespace RSPP.Helpers
             
             var password = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rprspu-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng";//"rprspu-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -332,7 +332,7 @@ namespace RSPP.Helpers
             var result = "";          
             var apiKey = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rspp-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rspp-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -466,7 +466,7 @@ namespace RSPP.Helpers
         {
             String LicenseNum = null;
 
-            LicenseNum = "NSC/RPRSPU/";
+            LicenseNum = "NSC/RRPSPU/";
 
             CertificateSerialNumber seriallist = (from c in dbCtxt.CertificateSerialNumber select c).FirstOrDefault();
             long result = Convert.ToInt64(seriallist.SerialNumber);
