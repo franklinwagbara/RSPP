@@ -238,7 +238,7 @@ namespace RSPP.Controllers
 
         public ActionResult ConfirmEmail(string token)
         {
-                        var user = (from u in _context.UserMaster where u.EmailConfirmationToken == token select u).FirstOrDefault();
+            var user = (from u in _context.UserMaster where u.EmailConfirmationToken == token select u).FirstOrDefault();
 
 
 
