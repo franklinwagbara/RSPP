@@ -12,6 +12,8 @@
     <Content Remove="Views\Shared\_ElaFooter.cshtml" />
     <Content Remove="Views\Shared\_ElaHeader.cshtml" />
     <Content Remove="Views\Shared\_ElaSideBar.cshtml" />
+    <Content Remove="wwwroot\css\navbar.ts" />
+    <Content Remove="wwwroot\css\StyleSheet.css" />
     <Content Remove="wwwroot\js\buttons.html5.min.js" />
     <Content Remove="wwwroot\js\buttons.print.min.js" />
     <Content Remove="wwwroot\js\dataTablesbuttons.min.js" />

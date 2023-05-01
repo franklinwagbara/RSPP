@@ -48,7 +48,7 @@
 
 
 </head>
-<body>
+<body >
 
 
     <nav class="navbar navbar-expand-lg navbar-dark  fixed-top" style="box-shadow: 0 3px 5px black; background-color:#073c75">
@@ -116,16 +116,18 @@
 
 
 
+    <div style="padding-left:15px;padding-right:15px;">
+        <div class="container-fluid" style="box-shadow:0 0 5px #c5c5c5; padding: 0 15px 20px 15px; background:white;">
+            <div class="panel-body">
+                <br /><br /><p></p>
+                @RenderBody()
 
-    <div class="container" style="box-shadow:0 0 5px #c5c5c5; padding: 0 15px 20px 15px; background:white;">
-        <div class="panel-body">
-            <br /><br /><p></p>
-            @RenderBody()
-
-            <br />
-            <br />
+                <br />
+                <br />
+            </div>
         </div>
     </div>
+    
 
     <br /><br />
 
