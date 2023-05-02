@@ -1,0 +1,87 @@
+﻿@media screen and (max-width: 1348px){
+    .btn {
+        border-radius: 15px !important;
+        margin-bottom: 15px;
+    }
+}
+
+
+@media screen and (max-width: 900px){
+    .btn{
+        border-radius:15px !important;
+        margin-bottom: 15px;
+    }
+
+    .hero{
+        display:flex;
+        flex-direction: column;
+    }
+
+
+    .col-sm-4{
+        margin:0;
+        padding:0;
+    }
+
+    .mobile-welcome {
+        /*margin-left: 170px !important;*/
+        margin:0 auto;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .app-summary {
+        margin: 0 auto
+    }
+    
+}
+
+@media screen and (max-width: 895px) {
+    .FirstDashCount {
+        width: 120px !important;
+    }
+
+    .DashCount {
+        width: 120px !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #BackImage {
+        background-repeat: repeat
+    }
+
+    .row {
+        flex-direction: column;
+    }
+
+    .FirstDashCount {
+        width: 400px !important;
+    }
+
+    .DashCount {
+        width: 400px !important;
+        margin-bottom: 10px
+    }
+
+    
+}
+
+@media screen and (max-width: 685px){
+    .FirstDashCount {
+        width: 300px !important;
+    }
+
+    .DashCount {
+        width: 300px !important;
+        margin-bottom: 10px
+    }
+
+}
+
+@media screen and (max-width: 577px){
+    .DashCompanyName{
+        font-size: 23px
+    }
+    
+}
