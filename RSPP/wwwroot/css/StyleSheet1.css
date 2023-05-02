@@ -102,10 +102,22 @@
     
 }
 
-@media screen and (max-width: 577px){
+/*@media screen and (max-width: 577px){
     .DashCompanyName {
-        font-size: 23px;
-        margin-left: 80px
+        font-size: 18px;
+        margin-left: 120px
     }
     
+}*/
+@media screen and (max-width: 577px) {
+    .DashCompanyName {
+        font-size: 18px;
+        margin-left: 50px
+    }
+}
+@media screen and (max-width: 376px) {
+    .DashCompanyName {
+        font-size: 15px;
+        margin-left: 27px;
+    }
 }
