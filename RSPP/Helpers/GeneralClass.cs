@@ -187,8 +187,8 @@ namespace RSPP.Helpers
             body += "<p>Dear Sir/Madam,</p>";
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
-            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'>Please click on this activation link to activate your new password</a></p>";
-            body += "<p>Please click on this activation link to activate your new password: <a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'> + Url.Action("PasswordActivation", "Account", new { token = token }, protocol: Request.Scheme) + </a></p>";
+            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + EncrptedPassword + "'>Please click on this activation link to activate your new password</a></p>";
+            //body += "<p>Please click on this activation link to activate your new password: <a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'> + Url.Action("PasswordActivation", "Account", new { token = token }, protocol: Request.Scheme) + </a></p>";
             body += "<p>Nigerian Shipper's Council<br/> <small>(RSPP) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
