@@ -17,6 +17,7 @@ using System.Security.Claims;
 using System.Net.Mail;
 using System.Web;
 using System.Net;
+using System.IO;
 
 namespace RSPP.Controllers
 {
@@ -355,10 +356,20 @@ namespace RSPP.Controllers
 
         public ActionResult PasswordActivation(string Email, string Password)
         {
-            var updatepassword = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
-            updatepassword.Password = Password;
-            _context.SaveChanges();
-            return RedirectToAction("Login");
+            StreamWriter sw = new StreamWriter("log.txt");
+            sw.WriteLine(Password);
+            sw.Close();
+            if (Password != null)
+            {
+                var updatepassword = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
+                updatepassword.Password = Password;
+                _context.SaveChanges();
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                return RedirectToAction("ConfirmationError");
+            }
         }
 
 
