@@ -161,7 +161,21 @@ namespace RSPP.Helpers
             return imageResult;
         }
 
-
+        public string ConfirmationEmailTemplate(string email, string subject, string content)
+        {
+            string body = "<div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
+            body += "<div style='padding: 10px 30px 30px 30px;'>";
+            body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
+            body += "<p>Dear Sir/Madam,</p>";
+            body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
+            body += "<br>";
+            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'>Please click on this activation link to activate your new password</a></p>";
+            body += "<p>Nigerian Shipper's Council<br/> <small>(RSPP) </small></p> </div>";
+            body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
+            return body;
+        }
 
         public string ForgotPasswordTemplate(string email, string subject, string content, string EncrptedPassword)
         {
@@ -173,7 +187,8 @@ namespace RSPP.Helpers
             body += "<p>Dear Sir/Madam,</p>";
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
-            body += "<p><a href='"+ PortalBaseUrlLive + passwordactivationlinkExtension+ "" + email + "&Password="+ EncrptedPassword + "'>Please click on this activation link to activate your new password</a></p>";
+            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + EncrptedPassword + "'>Please click on this activation link to activate your new password</a></p>";
+            //body += "<p>Please click on this activation link to activate your new password: <a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'> + Url.Action("PasswordActivation", "Account", new { token = token }, protocol: Request.Scheme) + </a></p>";
             body += "<p>Nigerian Shipper's Council<br/> <small>(RSPP) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
@@ -184,7 +199,7 @@ namespace RSPP.Helpers
             var message = "";
             var password = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rprspu-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rprspu-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -193,17 +208,19 @@ namespace RSPP.Helpers
             MailMessage _mail = new MailMessage();
             SmtpClient client = new SmtpClient(Host, Port);
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Credentials = new System.Net.NetworkCredential(username, password);
             client.UseDefaultCredentials = false;
             client.EnableSsl = true;
-            client.Credentials = new System.Net.NetworkCredential(username, password);
+
             _mail.From = new MailAddress(emailFrom);
             _mail.To.Add(new MailAddress(email));
             _mail.Subject = subject;
-            _mail.IsBodyHtml = true;
+
             _mail.Body = msgBody;
+            _mail.IsBodyHtml = true;
             try
             {
-               client.Send(_mail);
+                client.Send(_mail);
                 result = "success";
             }
             catch (Exception ex)
@@ -214,8 +231,82 @@ namespace RSPP.Helpers
             return result;
         }
 
+        //public string ForgotPasswordEmailMessage(string email, string subject, string content, string EncrptedPassword)
+        //{
+        //    var result = "";
+        //    var password = "BGgG3V+HB0G9y6cj1OoHvo5c7YA+sEZmgis7ZltwTf1X";
+        //    var username = "AKIA4R3D7VDR3DUB3OZZ";
+        //    var emailFrom = "nmdpra-no-reply@nmdpra.gov.ng";
+        //    var Host = "email-smtp.us-east-1.amazonaws.com";
+        //    var Port = 587;
 
+        //    var msgBody = ForgotPasswordTemplate(email, subject, content, EncrptedPassword);
 
+        //    MailMessage _mail = new MailMessage();
+        //    SmtpClient client = new SmtpClient(Host, Port);
+        //    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+        //    client.UseDefaultCredentials = false;
+        //    client.EnableSsl = true;
+        //    client.Credentials = new System.Net.NetworkCredential(username, password);
+        //    _mail.From = new MailAddress(emailFrom);
+        //    _mail.To.Add(new MailAddress(email));
+        //    _mail.Subject = subject;
+        //    _mail.IsBodyHtml = true;
+        //    _mail.Body = msgBody;
+        //    //if (attach != null)
+        //    //{
+        //    //    string name = "App Letter";
+        //    //    Attachment at = new Attachment(new MemoryStream(attach), name);
+        //    //    _mail.Attachments.Add(at);
+        //    //}
+        //    //_mail.CC=
+        //    try
+        //    {
+
+        //        client.Send(_mail);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result = ex.Message;
+        //    }
+        //    return result;
+        //}
+        public string ConfirmationEmailMessage(string message, MailAddress email, string subject)
+        {
+            var result = "";
+            
+            var password = "nsc2018#";
+            var username = "nscregistration@shipperscouncil.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng";//"rprspu-noreply@nscregistration.gov.ng";
+            var Host = "webmail.shipperscouncil.gov.ng";
+            var Port = 587;
+
+            
+
+            MailMessage _mail = new MailMessage();
+            SmtpClient client = new SmtpClient(Host, Port);
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+            client.Credentials = new System.Net.NetworkCredential(username, password);
+            _mail.From = new MailAddress(emailFrom);
+            _mail.To.Add(email);
+            _mail.Subject = subject;
+            _mail.IsBodyHtml = true;
+            _mail.Body = message;
+            try
+            {
+                client.Send(_mail);
+                result = "success";
+            }
+            catch (Exception ex)
+            {
+                message = ex.ToString();
+                result = "failed";
+            }
+            return result;
+        }
 
 
 
@@ -242,7 +333,7 @@ namespace RSPP.Helpers
             var result = "";          
             var apiKey = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rspp-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rspp-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -376,7 +467,7 @@ namespace RSPP.Helpers
         {
             String LicenseNum = null;
 
-            LicenseNum = "NSC/RPRSPU/";
+            LicenseNum = "NSC/RRPSPU/";
 
             CertificateSerialNumber seriallist = (from c in dbCtxt.CertificateSerialNumber select c).FirstOrDefault();
             long result = Convert.ToInt64(seriallist.SerialNumber);
