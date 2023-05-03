@@ -39,15 +39,12 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
-
+        <link href="~/css/nav-side-bar.css" rel="stylesheet" />
     </environment>
 
 
    
     <style>
-
-       
-
         .center-cropped {
             width: 120px;
             height: 120px;
@@ -169,7 +166,7 @@
     @*<div id="loading" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
         <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/Images/spinning.gif" />
     </div>*@
-    <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86" role="navigation">
+    <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86; height: 70px !important" role="navigation">
         <div class="navbar-header" style="float:left">
             <div class="navbar-brand navbar-left">
                 <a href="#">
@@ -187,14 +184,14 @@
         </div>
 
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <span class="icon-bar bar-color"></span>
+            <span class="icon-bar bar-color"></span>
+            <span class="icon-bar bar-color"></span>
         </button>
 
         <div class="top-nav">
             <form class="navbar-right" onsubmit="return confirm('Are you sure you want to log out ?');" id="logoutForm" method="get" action="@Url.Action("LogOff", "Account")">
-                <ul class="nav navbar-nav pull-right">
+                <ul class="nav navbar-nav pull-right brand-responsive">
 
                     <li>
                         <a title="Manage" href="@Url.Action("ChangePassword","Admin")" class="text-white"><b>WELCOME &nbsp;@Context.Session.GetString(AccountController.sessionStaffName).ToString().ToUpper()</b></a>
@@ -222,17 +219,9 @@
 
     <div class="" id="appContainer" style="background-color:#7eaa86">
         <br />
-        <div class="ctrl-sidebar" style="background-color:#7eaa86">
-
-
-
-
-
-
+        <div class="ctrl-sidebar" style="background-color:red !important">
             <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll">
                 <br />
-
-
 
                 <ul class="parent" style="background-color:#7eaa86; color:white">
                     <li>
@@ -580,18 +569,7 @@
 
                 </ul>
 
-
-
-
-
-
-
-
             </div>
-
-
-
-
         </div>
         <div class="ctrl-content">
             @RenderBody()
