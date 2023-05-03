@@ -32,13 +32,15 @@ namespace RSPP
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });
+                }).ConfigureServices(services => {
+                    services.AddHostedService<PaymentConfirmationService>();
+                    services.AddHostedService<ExpiryCertificateReminderService>();});
 
-       
-            //.ConfigureServices(services =>
-            //       services.AddHostedService<PaymentConfirmationService>());
 
-        //.UseShutdownTimeout(TimeSpan.FromSeconds(10))
+                    //.ConfigureServices(services =>
+                    //       services.AddHostedService<PaymentConfirmationService>());
 
-    }
+                    //.UseShutdownTimeout(TimeSpan.FromSeconds(10))
+
+                }
 }

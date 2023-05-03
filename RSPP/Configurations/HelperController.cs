@@ -681,7 +681,7 @@ namespace RSPP.Configurations
 
             try
             {
-                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46 && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate ascending select new { a, app }).ToList();
+                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46) && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate ascending select new { a, app }).ToList();
 
                 if (actionhistory.Count > 0)
                 {
@@ -1160,7 +1160,7 @@ namespace RSPP.Configurations
 
 
 
-            var absolutUrl = Host + "/Verify/VerifyPermitQrCode/" + id;
+            var absolutUrl = Host + "/Verify/VerifyPermitQrCode?id=" + id;
             var QrCode = generalClass.GenerateQR(absolutUrl);
             if (details != null)
             {

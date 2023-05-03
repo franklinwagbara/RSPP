@@ -35,6 +35,7 @@ namespace RSPP
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<RSPPdbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSPPConnectionString")));
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -45,9 +46,10 @@ namespace RSPP
 
             //AddHostedService
 
-            services.AddHostedService<PaymentConfirmationService>();
-            services.AddHostedService<ExpiryCertificateReminderService>();
+            //services.AddHostedService<PaymentConfirmationService>();
+            //services.AddHostedService<ExpiryCertificateReminderService>();
             services.AddDistributedMemoryCache();
+
             services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Index");
 
 
@@ -78,9 +80,10 @@ namespace RSPP
             {
                 options.AutomaticAuthentication = false;
             });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            services.AddDbContext<RSPPdbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("RSPPConnectionString")));
+            
             services.AddControllersWithViews().AddNewtonsoftJson(options =>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>

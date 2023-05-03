@@ -30,7 +30,9 @@
         <link href="~/css/otherStyle.css" rel="stylesheet" />
         <link href="~/css/jquery-ui.css" rel="stylesheet" />
         <link href="~/css/select2.min.css" rel="stylesheet" />
+
         @*<link rel="stylesheet" type="text/css" href="https: //cdn.datatables.net/1.11.2/css/jquery.dataTables.css">*@
+
         <link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.0.0/css/buttons.dataTables.min.css" />
         <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css" />
@@ -40,125 +42,13 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
 
+        <link href="~/css/navbar.css" rel="stylesheet" />
     </environment>
 
 
    
     <style>
-
-       
-
-        .center-cropped {
-            width: 120px;
-            height: 120px;
-            background-position: center center;
-            background-repeat: no-repeat;
-        }
-
-        .custom-file-upload {
-            border: 1px solid #ccc;
-            display: inline-block;
-            padding: 6px 12px;
-            cursor: pointer;
-            color: #214528
-        }
-
-        .table-responsive {
-            overflow-y: visible !important;
-        }
-
-
-        .btn.round {
-            border-radius: 50px;
-        }
-
-        .label-medium {
-            vertical-align: super;
-            font-size: medium;
-        }
-
-        .label-large {
-            vertical-align: super;
-            font-size: large;
-        }
-
-        .label-bs {
-            vertical-align: super;
-        }
-
-        .label-as-badge {
-            border-radius: 1em;
-        }
-
-        .ui-autocomplete {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1510 !important;
-            float: left;
-            display: none;
-            padding: 4px 0;
-            margin: 2px 0 0 0;
-            list-style: none;
-            background-color: #ffffff;
-            border-color: #ccc;
-            border-color: rgba(0, 0, 0, 0.2);
-            border-style: solid;
-            border-width: 1px;
-            -webkit-border-radius: 2px;
-            -moz-border-radius: 2px;
-            border-radius: 2px;
-            -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            -webkit-background-clip: padding-box;
-            -moz-background-clip: padding;
-            background-clip: padding-box;
-            *border-right-width: 2px;
-            *border-bottom-width: 2px;
-        }
-
-        fieldset.scheduler-border {
-            border: 1px groove #ddd !important;
-            padding: 0 1.4em 1.4em 1.4em !important;
-            margin: 0 0 1.5em 0 !important;
-            -webkit-box-shadow: 0px 0px 0px 0px #000;
-            box-shadow: 0px 0px 0px 0px #000;
-        }
-
-        legend.scheduler-border {
-            width: inherit; /* Or auto */
-            padding: 0 10px; /* To give a bit of padding on the left and right */
-            border-bottom: none;
-        }
-
-        #appContainer .ctrl-sidebar .sidebar > ul > li:last-child {
-            height: 500px;
-        }
-
-        .flash {
-            border: 2px solid #e32424;
-            border-radius: 10px;
-            color: #e32424;
-            -webkit-animation: pulse linear 2s infinite;
-            animation: pulse linear 2s infinite;
-        }
-
-
-        #appContainer .ctrl-sidebar .sidebar {
-            width: 235px;
-            float: left;
-            position: relative;
-            margin-right: -100%;
-            padding: 0;
-            max-height: 100% !important;
-            background-color: #6987;
-        }
-
-        tbody tr td {
-            font-family: 'Poppins', sans-serif;
-             color: #000000; 
-        }
+        
 
     </style>
 
@@ -177,19 +67,13 @@
                 </a>
             </div>
             <div class="navbar-left">
-                @*<form class="navbar-form navbar-left" role="search" action="@Url.Action("/")" method="get">
-            <div class="form-group">~/images/NSCnameLOGO.png
-                <input type="text" name="q" class="form-control" placeholder="Search for Application">
-            </div>
-            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-        </form>*@
+                
             </div>
         </div>
 
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+        <button type="button" class="top navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse2" aria-controls="navbar-collapse2" aria-expanded="false" aria-label="Toggle Navigation">
+            <span class="navbar-toggler-icon"></span>
+            
         </button>
 
         <div class="top-nav">
@@ -200,7 +84,7 @@
                         <a title="Manage" href="@Url.Action("ChangePassword","Admin")" class="text-white"><b>WELCOME &nbsp;@Context.Session.GetString(AccountController.sessionStaffName).ToString().ToUpper()</b></a>
                     </li>
                     <li>
-                        <button type="submit" class="initLogoff ad"><i class="fa fa-power-off" style="font-size: 22px; color:red" title="LogOut"></i></button>
+                        <button type="submit" class="initLogoff ad"><i class="fa fa-power-off" style="font-size: 22px; " title="LogOut"></i></button>
                     </li>
                 </ul>
                 @Html.AntiForgeryToken()
@@ -209,34 +93,20 @@
         </div>
     </div>
 
+    <div  id="appContainer" class="d-flex flex-column flex-md-row" style="background-color:#7eaa86">
 
 
-
-
-
-
-
-
-
-
-
-    <div class="" id="appContainer" style="background-color:#7eaa86">
+        
         <br />
-        <div class="ctrl-sidebar" style="background-color:#7eaa86">
-
-
-
-
-
-
-            <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll">
+        <div class="ctrl-sidebar"  style="background-color:#7eaa86;">
+       
+            <div class="sidebar collapse navbar-collapse" style="overflow-y: scroll;">
+     
                 <br />
-
-
-
-                <ul class="parent" style="background-color:#7eaa86; color:white">
+                
+                <ul class="navbar-nav w-100 d-flex flex-md-column text-center text-md-end" style="background-color:#7eaa86; color:white">
                     <li>
-                        <a href="#">
+                        <a href="#" class="nav-link" aria-current="page">
                             <small class="text-white">@rolename</small>
                         </a>
                     </li>
@@ -246,7 +116,8 @@
 
                         <a href="#" class="has-arrow" aria-expanded="false">
                             <i class="fa fa-table"></i>
-                            <span class="text-white">Dashboard</span>
+                            <span class="text-white"> Dashboard</span>
+                         
                             <span class="more"></span>
                             <span class="act"></span>
                         </a>
@@ -397,12 +268,7 @@
                                 </a>
                             </li>
 
-                            @*<li>
-                    <a href="/Admin/AllExtraPayment" id="AllExtraPayment">
-                        <i class="fa fa-folder-open" aria-hidden="true"></i>
-                        <span class="text-white">All Extra Payment</span>
-                    </a>
-                </li>*@
+                           
                             <li>
                                 <a href="/Admin/GiveValueList" id="GiveValueList">
                                     <i class="fa fa-edit" aria-hidden="true"></i>
@@ -504,18 +370,7 @@
                                     <span class="text-white">All Certificates</span>
                                 </a>
                             </li>
-                            @*<li>
-                                <a href="/Admin/NonPrintedLicense" id="NonPrintedLicense">
-                                    <i class="fa fa-eye-slash" aria-hidden="true"></i>
-                                    <span class="text-white">Non Printed Certificates</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/Admin/PrintedLicense" id="PrintedLicense">
-                                    <i class="fa fa-cogs" aria-hidden="true"></i>
-                                    <span class="text-white">Printed Certificates</span>
-                                </a>
-                            </li>*@
+                            
                         </ul>
                     </li>
                     <li class="more main-list">
@@ -579,25 +434,17 @@
 
 
                 </ul>
-
-
-
-
-
-
-
-
             </div>
-
-
-
-
         </div>
         <div class="ctrl-content">
             @RenderBody()
         </div>
         <div class="clear"></div>
     </div>
+    
+
+    
+
     <div class="clear"></div>
     <div class="" style="color: #f7f7f7;">
         <hr style="margin: 10px; padding: 0px;">
