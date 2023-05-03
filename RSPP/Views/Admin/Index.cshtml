@@ -36,30 +36,38 @@
 
         @if (ViewBag.LoggedInRole != "OFFICER")
         {
-        <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
             <div class="alert alert-warning">
                 <div class="icon  pull-right" style="font-size:xx-large"><i class="fa fa-smile-o" style="padding-right:5px"></i></div>
                 <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">@ViewBag.TotalApplicationWorkedOn</div>
                 <span style="font-size:18px">Total Applications in Process</span>
-                <p>
-                    <a href="#" class="clear">
-                        @*See Applications... <i class="fa fa-chevron-right"></i>*@
+                <div style="height:12px">
+                    <p>
+                    <a href="@Url.Action("MyDesk")" class="clear">
+                        @*See Applications... *@
+                        <i></i>
                     </a>
                 </p>
+                </div>
+                
             </div>
         </div>
         }
+        
 
         <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
             <div class="alert alert-danger">
                 <div class="icon pull-right" style="font-size:x-large"><i class="fa fa-ban" style="padding-right:5px"></i></div>
                 <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">@ViewBag.TotalRejection</div>
                 <span style="font-size:17px">Total Applications Rejected</span>
-                <p>
-                    <a href="#" class="clear">
-                        @*See Applications...*@ <i class="fa fa-chevron-right"></i>
+                <div style="height:12px">
+                    <p>
+                    <a href="@Url.Action("MyDesk")" class="clear">
+                        @*See Applications... *@
+                        <i></i>
                     </a>
                 </p>
+                </div>
             </div>
         </div>
 
@@ -69,11 +77,14 @@
                 <div class="icon pull-right" style="font-size:xx-large"><i class="fa fa-check-circle" style="padding-right:5px"></i></div>
                 <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">@ViewBag.PermitCount</div>
                 <span style="font-size:18px">Total Applications Approved</span>
-                <p>
-                    <a href="#" class="clear">
-                        @*See Applications... *@ <i class="fa fa-chevron-right"></i>
+                <div style="height:12px">
+                    <p>
+                    <a href="@Url.Action("MyDesk")" class="clear">
+                        @*See Applications... *@
+                        <i></i>
                     </a>
                 </p>
+                </div>
             </div>
         </div>
 
