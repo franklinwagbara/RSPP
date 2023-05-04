@@ -1,0 +1,93 @@
+﻿@using RSPP.Models;
+@using RSPP.Models.DB;
+@model List<RSPP.Models.Permitmodel>
+@{
+    ViewBag.Title = "Certificate";
+    Layout = null;
+    int count = 0;
+}
+
+<div class="row">
+    <div class="pageTitle bg1">
+        <h2 class="lefty">@ViewBag.Title</h2>AllCertificates
+        <div class="righty">
+
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+@if (ViewBag.Err != null)
+{
+    <div class="col-md-12">
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <strong>Application Error!</strong> @ViewBag.Err
+        </div>
+    </div>
+}
+
+<table>
+    <thead>
+        <tr>
+            <th>
+                Application REF
+            </th>
+            <th>
+                Certificate Reference
+            </th>
+            <th>
+                Company Email
+            </th>
+            <th>
+                Company Address
+            </th>
+            <th>
+                Application Type
+            </th>
+            <th>
+                Agency Name
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (var item in Model.OrderByDescending(x=> x.DateIssued))
+   {
+       var check = item.Expiry.AddDays(-30);
+            var now = DateTime.Now;
+            string color = string.Empty;
+
+            if (item.Expiry < now)
+            {
+                color = "danger";
+            }
+            else if (check <= now)
+            {
+                color = "warning";
+            }
+            count++;
+
+            <tr>
+                <td>@count</td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApprefNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LicenseNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyName)
+                </td> 
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CompanyName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AgencyName)
+                </td>
+            </tr>
+   }
+
+</table>

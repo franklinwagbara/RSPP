@@ -278,7 +278,7 @@ namespace RSPP.Controllers
             UserMaster usermaster = new UserMaster();
             Passwrd = generalClass.Encrypt(Passwrd);
             string token = Guid.NewGuid().ToString();
-            SendConfirmationEmail(Email, token);
+            
             var checkexistemail = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
             try
             {
@@ -309,15 +309,26 @@ namespace RSPP.Controllers
                 }
                 else
                 {
-                    status = "exist";
-                    message = "Record with the email "+Email+" already exist in the database.";
+                    if (usermaster.EmailConfirmed == false)
+                    {
+                        status = "exist";
+                        message = "User with the email: " + Email + " already exist on the portal. A new mail has been sent to confirm your email.";
+                        SendConfirmationEmail(Email, token);
+                    }
+                    else
+                    {
+                        status = "exist";
+                        message = "User with the email: " + Email + " already exist on the portal. Kindly login with your email";
+                    }
+                    
+                    return Json(new { Status = status, Message = message });
                 }
             }
             catch(Exception ex)
             {
-                status = "failed";
+                status = "exist";
                 message = ex.Message;
-                //return Json(new { Status = status, Message = message });
+                return Json(new { Status = status, Message = message });
             }
 
             return Json(new { Status = status, Message = message });
