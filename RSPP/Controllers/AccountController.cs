@@ -18,6 +18,7 @@ using System.Net.Mail;
 using System.Web;
 using System.Net;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace RSPP.Controllers
 {
@@ -36,6 +37,9 @@ namespace RSPP.Controllers
         public const string sessionRoleName = "_sessionRoleName";
         public const string sessionCompanyName = "_sessionCompanyName";
         private static readonly log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        [Obsolete]
+        private readonly IHostingEnvironment _hostingEnv;
 
 
         public AccountController(RSPPdbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
@@ -95,7 +99,9 @@ namespace RSPP.Controllers
                     }
                     else if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == false)
                     {
-                        return Json(new { Status = status, Message = "Kindly Confirm your mail by clicking on the link sent to your email!!!"});
+                        var token = userMaster.EmailConfirmationToken;
+                        SendConfirmationEmail(Email, token);
+                        return Json(new { Status = status, Message = "User with this email: " + Email+ " is registered on the portal. A mail has been sent to you to confirm your email address!!!"});
                     }
                     else
                     {
