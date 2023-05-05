@@ -13,17 +13,17 @@
     <table class="table table-striped dataTable">
         <thead>
             <tr>
-                <th>#</th>
-                <th>Staff Email</th>
-                <th>Staff Name</th>
-                <th>Role</th>
-                <th>On Desk</th>
-                <th>Status</th>
-                <th style="width:2px"></th>
-                <th style="width:2px"></th>
+                
                 @if (ViewBag.UserRole != "OFFICER")
                 {
-                    
+                    <th>#</th>
+                    <th>Staff Email</th>
+                    <th>Staff Name</th>
+                    <th>Role</th>
+                    <th>On Desk</th>
+                    <th>Status</th>
+                    <th style="width:2px"></th>
+                    <th style="width:2px"></th>
                 }
             </tr>
         </thead>
@@ -33,22 +33,22 @@
             {
               
                 <tr>
-                    <td>@(i++)</td>
-                    <td>@s.StaffEmail</td>
-                    <td>@s.StaffName </td>
-                    <td>@s.Role</td>
-                    <td>@s.OnDesk</td>
-                    <td>@s.status</td>
-                    <td>
-                        <a href="#modalPopup" data-url="@Url.Action("ViewStaffDesk", new { userid = s.StaffEmail })"
-                           data-name="@s.StaffName" class="popAlert btn btn-xs btn-info" data-toggle="modal">View Desk</a>
-                    </td>
-                    <td>
-                            <a class="btn btn-success btn-xs btn-block appidlist" href="javascript:DelegateNewUser('@s.StaffEmail','@s.Role')"><i class="fa fa-recycle"></i> Re-Route</a>
-                    </td>
+                    
                     @if (ViewBag.UserRole != "OFFICER")
                     {
-                        
+                        <td>@(i++)</td>
+                        <td>@s.StaffEmail</td>
+                        <td>@s.StaffName </td>
+                        <td>@s.Role</td>
+                        <td>@s.OnDesk</td>
+                        <td>@s.status</td>
+                        <td>
+                            <a href="#modalPopup" data-url="@Url.Action("ViewStaffDesk", new { userid = s.StaffEmail })"
+                                data-name="@s.StaffName" class="popAlert btn btn-xs btn-info" data-toggle="modal">View Desk</a>
+                        </td>
+                        <td>
+                            <a class="btn btn-success btn-xs btn-block appidlist" href="javascript:DelegateNewUser('@s.StaffEmail','@s.Role')"><i class="fa fa-recycle"></i> Re-Route</a>
+                        </td>
                     }
                 </tr>
             }

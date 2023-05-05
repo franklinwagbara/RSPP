@@ -213,8 +213,9 @@ namespace RSPP.Controllers
         {
             return View();
         }
-        private void SendConfirmationEmail(string email, string token)
+        private string SendConfirmationEmail(string email, string token)
         {
+            string result;
             var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng"); //new MailAddress("quadrymustaqeem@gmail.com","Mustaqeem Quadry");
             var toAddress = new MailAddress(email);
             const string fromPassword = "nsc2018#";
@@ -238,9 +239,9 @@ namespace RSPP.Controllers
             message.Subject = subject;
             message.Body = body;
             GeneralClass gen = new GeneralClass();
-            gen.ConfirmationEmailMessage(body, toAddress, subject);
+            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
             //smtp.Send(message);
-
+            return result;
         }
 
         public ActionResult ConfirmEmail(string token)
@@ -319,7 +320,16 @@ namespace RSPP.Controllers
                     {
                         status = "exist";
                         message = "User with the email: " + Email + " already exist on the portal. A new mail has been sent to confirm your email.";
-                        SendConfirmationEmail(Email, token);
+                        string sendmail = SendConfirmationEmail(Email, token);
+                        if (sendmail == "failed")
+                        {
+                            message += "Unable to send Confirmation link to " + Email + ". Please try again later.";
+
+                        }
+                        else
+                        {
+                            message += "Confirmation link was successfully sent to " + Email;
+                        }
                     }
                     else
                     {
