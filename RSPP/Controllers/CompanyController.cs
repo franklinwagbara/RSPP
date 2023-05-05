@@ -554,42 +554,51 @@ namespace RSPP.Controllers
             var uploadeddoc = (from d in _context.UploadedDocuments where d.ApplicationId == ApplicationId select d).ToList();
             ViewBag.MyApplicationID = ApplicationId;
             ViewBag.UploadedDocCount = uploadeddoc.Count;
-            if (uploadeddoc.Count == 0 || doclist.Count() != uploadeddoc.Count())
+            if (linseofbusinessid != 1 )
             {
-                if (doclist.Count > 0)
+                if (uploadeddoc.Count == 0 || doclist.Count() != uploadeddoc.Count())
                 {
-                    foreach (var item in doclist)
+                    if (doclist.Count > 0)
                     {
+                        foreach (var item in doclist)
+                        {
+                            DocList.Add(new DocUpload()
+                            {
+
+                                DocumentName = item.DocumentName,
+                                DocId = item.DocId,
+                                IsMandatory = item.IsMandatory
+
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var item in uploadeddoc)
+                    {
+                        var docnamesplit = item.DocumentName.ToString().Split('_');
+                        var uploadedfilenamesplit = item.DocumentSource.ToString().Split('_').Last();
+
                         DocList.Add(new DocUpload()
                         {
-
-                            DocumentName = item.DocumentName,
-                            DocId = item.DocId,
-                            IsMandatory = item.IsMandatory
-
+                            DocumentName = docnamesplit[0],
+                            DocId = item.DocumentUploadId,
+                            IsMandatory = "Y",
+                            DocumentSource = item.DocumentSource,
+                            UploadedDocName = uploadedfilenamesplit
                         });
                     }
                 }
+                return View(DocList);
             }
             else
             {
-                foreach (var item in uploadeddoc)
-                {
-                    var docnamesplit = item.DocumentName.ToString().Split('_');
-                    var uploadedfilenamesplit = item.DocumentSource.ToString().Split('_').Last();
-
-                    DocList.Add(new DocUpload()
-                    {
-                        DocumentName = docnamesplit[0],
-                        DocId = item.DocumentUploadId,
-                        IsMandatory = "Y",
-                        DocumentSource = item.DocumentSource,
-                        UploadedDocName = uploadedfilenamesplit
-                    });
-                }
+                SubmitDocumentUpload(ApplicationId);
+                return RedirectToAction("MyApplications");
             }
 
-            return View(DocList);
+            
         }
 
 
