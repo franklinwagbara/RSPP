@@ -1973,7 +1973,16 @@ namespace RSPP.Controllers
             List<StaffDesk> staffDeskList = new List<StaffDesk>();
             var desk = _context.UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT").ToList();
             if (userMaster.UserRole != "Officer")
-            {
+                //{
+
+                //}
+                //else
+                //{
+                //    ErrorMessage = "You do not have access to view this page as an Officer";
+                //    ViewBag.ErrorMessage = ErrorMessage;    
+
+                //}
+
                 foreach (UserMaster up in desk)
                 {
                     staffDeskList.Add(new StaffDesk()
@@ -1986,14 +1995,7 @@ namespace RSPP.Controllers
                     });
 
                 }
-            }
-            else
-            {
-                ErrorMessage = "You do not have access to view this page as an Officer";
-                ViewBag.ErrorMessage = ErrorMessage;    
-                
-            }
-            
+
             model.StaffDeskList = staffDeskList;
             ViewBag.ErrorMessage = ErrorMessage;
             ViewBag.UserRole = _helpersController.getSessionRoleName();

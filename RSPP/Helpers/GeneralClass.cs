@@ -180,7 +180,7 @@ namespace RSPP.Helpers
         public string ForgotPasswordTemplate(string email, string subject, string content, string EncrptedPassword)
         {
             string body = "<div>";
-            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+ HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+HostedNSCLogo+ "' alt='Logo'/></div>";
             body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
             body += "<div style='padding: 10px 30px 30px 30px;'>";
             body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
@@ -307,8 +307,6 @@ namespace RSPP.Helpers
             }
             return result;
         }
-
-
 
 
         public string StaffMessageTemplate(string subject, string content)
