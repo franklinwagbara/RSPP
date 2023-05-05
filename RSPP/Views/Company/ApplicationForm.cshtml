@@ -108,7 +108,7 @@
 
 
             <div id="Agencyid1" style="display:none">
-                <div class="row form-group">
+                @*<div class="row form-group">
                     <label class="control-label col-md-2">Services Provided In Port<sup style="color:red; font-weight:bold">*</sup></label>
                     <div class="col-md-4">
                         <textarea class="form-control" id="ServicesProvidedInPort" name="ServicesProvidedInPort" cols="3" rows="3">@Model.ServicesProvidedInPort</textarea>
@@ -120,7 +120,7 @@
                         <textarea class="form-control" id="AnyOtherRelevantInfo" name="AnyOtherRelevantInfo" cols="3" rows="3">@Model.AnyOtherRelevantInfo</textarea>
 
                     </div>
-                </div>
+                </div>*@
             </div>
 
             <div id="Agencyid2" style="display:none">
@@ -666,9 +666,9 @@
 
                             if (data.agencyId === 1) {
 
-                                $("#ServicesProvidedInPort").val(data.servicesProvidedInPort);
-                                $("#AnyOtherRelevantInfo").val(data.anyOtherRelevantInfo);
-                                $("#ServicesProvidedInPort").attr("readonly", true);
+                                //$("#ServicesProvidedInPort").val(data.servicesProvidedInPort);
+                                //$("#AnyOtherRelevantInfo").val(data.anyOtherRelevantInfo);
+                                //$("#ServicesProvidedInPort").attr("readonly", true);
                                 $("#Agencyid1").show();
                                 $("#Agencyid2").hide();
                                 $("#Agencyid3").hide();
@@ -873,7 +873,7 @@
                     $("#Agencyid5").hide();
                         $("#Agencyid6").hide();
                         $(".nepcregnumhide").hide();
-                    $("#ServicesProvidedInPort").attr("required", true);
+                    $("#ServicesProvidedInPort").attr("required", false);
 
                     $("#CustomLicenseNum").attr("required", false);
                     $("#CustomLicenseExpiryDate").attr("required", false);
