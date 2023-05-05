@@ -102,13 +102,6 @@
     
 }
 
-/*@media screen and (max-width: 577px){
-    .DashCompanyName {
-        font-size: 18px;
-        margin-left: 120px
-    }
-    
-}*/
 @media screen and (max-width: 577px) {
     .DashCompanyName {
         font-size: 18px;
@@ -119,5 +112,11 @@
     .DashCompanyName {
         font-size: 15px;
         margin-left: 27px;
+    }
+    .sm-txt{
+        font-size:17px!important;
+    }
+    th, td{
+        font-size:12px!important;
     }
 }
