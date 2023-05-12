@@ -308,14 +308,6 @@ namespace RSPP.Controllers
             return Json(new { Status = status, Message = message });
         }
 
-
-
-
-
-
-
-
-
         [HttpPost]
         public ActionResult DeactivateUser()
         {
@@ -343,9 +335,6 @@ namespace RSPP.Controllers
             }
             return Json(new { Status = status, Message = message });
         }
-
-
-
 
         public JsonResult GetFees(int MyCategoryid)
         {
@@ -403,9 +392,6 @@ namespace RSPP.Controllers
             return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data });
 
         }
-
-
-
 
         public ActionResult AllApplications()
         {
@@ -482,9 +468,6 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-
-
         public ActionResult AllPayment()
         {
             List<PaymentModel> payment = new List<PaymentModel>();
@@ -523,17 +506,11 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-
-
-
         public ActionResult AllStaffOutofOffice()
         {
             ViewBag.AllStaffOutofOfficeList = _helpersController.GetAllOutofOffice();
             return View();
         }
-
-        
 
         [HttpGet]
         public ActionResult ApplicationDetails(string applicationId)
@@ -587,9 +564,6 @@ namespace RSPP.Controllers
 
             return View(br);
         }
-
-
-
 
         private object FilterApplications()
         {
@@ -720,10 +694,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         //public ActionResult ApplicationReport()
         //{
         //    int totalapplication = (from a in _context.ApplicationRequestForm select a).ToList().Count();
@@ -799,11 +769,6 @@ namespace RSPP.Controllers
 
         //}
 
-
-
-
-
-
         [HttpGet]
         public ActionResult GetApplicationChart(ApplicationRatio Appobj)
         {
@@ -814,12 +779,6 @@ namespace RSPP.Controllers
             Appobj.Legacy = (from a in _context.ApplicationRequestForm where a.IsLegacy == "YES" select a).ToList().Count();
             return Json(Appobj);
         }
-
-
-
-
-
-
 
         [HttpGet]
         public ActionResult ChangePassword()
@@ -877,9 +836,6 @@ namespace RSPP.Controllers
             return View(_context.UserMaster.Where(u => u.UserType == "COMPANY").ToList());
         }
 
-
-
-
         [HttpGet]
         public ActionResult CompanyDocuments(string compId)
         {
@@ -905,11 +861,6 @@ namespace RSPP.Controllers
             ViewBag.CompanyEmail = userId;
             return View(companypermit);
         }
-
-
-
-
-
 
         [HttpGet]
         public ActionResult CompanyProfile(string CompanyEmail)
@@ -943,9 +894,6 @@ namespace RSPP.Controllers
             return View();
 
         }
-
-
-
 
         [HttpPost]
         public ActionResult AddExtraPayment()
@@ -1008,15 +956,11 @@ namespace RSPP.Controllers
         }
 
 
-
         public ActionResult GetRelievedStaffOutofOffice()
         {
             ViewBag.ReliverStaffOutofOfficeList = _helpersController.GetReliverStaffOutofOffice(_helpersController.getSessionEmail());
             return View();
         }
-
-
-
 
         [HttpPost]
         public ActionResult GetStaffStartOutofOffice()
@@ -1043,8 +987,6 @@ namespace RSPP.Controllers
             return Json(status);
         }
 
-
-
         [HttpPost]
         public ActionResult GetStaffEndOutofOffice()
         {
@@ -1070,9 +1012,6 @@ namespace RSPP.Controllers
             return Json(status);
         }
 
-
-
-
         [HttpPost]
         public JsonResult EndLeave(OutofOffice office)
         {
@@ -1097,15 +1036,6 @@ namespace RSPP.Controllers
             }
             return Json(new { Status = status, Message = message });
         }
-
-
-
-
-
-
-
-
-
 
 
         public ActionResult ALLPermits()
@@ -1182,14 +1112,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-
-
-
         [HttpPost]
         public ActionResult ApplicationAcceptDecline(string applicationId, string myaction, string mycomment)//, string DocId
         {
@@ -1245,13 +1167,7 @@ namespace RSPP.Controllers
         }
 
 
-
-
-
-
-
-
-
+        
         [HttpGet]
 
         public ActionResult WorkFlow()
@@ -1266,8 +1182,6 @@ namespace RSPP.Controllers
             string result = _helpersController.UpdateWorkFlowRecord(WorkFlowId, Action, ActionRole, CurrentStageID, NextStateID, TargetRole);
             return Json(result);
         }
-
-
 
         [HttpPost]
         public JsonResult AddWorkFlowRecord(string Action, string ActionRole, short CurrentStageID, short NextStateID, string TargetRole)
@@ -1417,14 +1331,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-
-
-
         [HttpPost]
         public ActionResult GiveValue(string Appid)
         {
@@ -1485,8 +1391,6 @@ namespace RSPP.Controllers
         }
 
 
-
-
         [HttpGet]
         public JsonResult GetCompanyNameAutoSearch(string term = "")
         {
@@ -1505,9 +1409,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
         public ActionResult CertificateReport()
         {
 
@@ -1521,10 +1422,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
-
 
         [AllowAnonymous]
         [HttpPost]
@@ -1595,10 +1492,6 @@ namespace RSPP.Controllers
         }
 
 
-
-
-
-
         [HttpGet]
         public ActionResult MyDesk()
         {
@@ -1620,12 +1513,6 @@ namespace RSPP.Controllers
         }
 
 
-
-
-
-
-
-
         public ActionResult PrintedLicense()
         {
             return View();
@@ -1635,9 +1522,6 @@ namespace RSPP.Controllers
         {
             return View();
         }
-
-
-
 
 
         [HttpPost]
@@ -1706,9 +1590,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
         [HttpPost]
         public ActionResult GetNonPrintedLicense()
         {
@@ -1773,11 +1654,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
         public ActionResult OutOfOffice()
         {
             ViewBag.UserID = _helpersController.getSessionEmail();
@@ -1785,9 +1661,6 @@ namespace RSPP.Controllers
             staffJsonList = _context.UserMaster.Where(s => s.UserType != "COMPANY").ToList();
             return View();
         }
-
-
-
 
         [HttpPost]
         public JsonResult AddOutofOffice()//OutofOffice usr
@@ -1824,11 +1697,6 @@ namespace RSPP.Controllers
             return Json(new { Status = status, Message = message });
         }
 
-
-
-
-
-
         [HttpPost]
         public JsonResult DeleteOutofOffice()//OutofOffice office
         {
@@ -1855,11 +1723,6 @@ namespace RSPP.Controllers
             }
             return Json(new { Status = status, Message = message });
         }
-
-
-
-
-
 
         [HttpPost]
         public JsonResult EditOutofOffice()//OutofOffice usr
@@ -1890,12 +1753,6 @@ namespace RSPP.Controllers
 
             return Json(new { Status = status, Message = message });
         }
-
-
-
-
-
-
 
         [AllowAnonymous]
         [HttpPost]
@@ -1943,8 +1800,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
         [HttpGet]
         public ActionResult UserIdAutosearch(string term = "")
         {
@@ -1959,9 +1814,6 @@ namespace RSPP.Controllers
             return Json(staffJsonList1);
 
         }
-
-
-
 
         public ActionResult PaymentList()
         {
@@ -2111,38 +1963,44 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
+        [Authorize ]
         [HttpGet]
         public ActionResult StaffDesk()
         {
+            var userMaster = (from u in _context.UserMaster select u).FirstOrDefault();
             string ErrorMessage = "";
             StaffDeskModel model = new StaffDeskModel();
             List<StaffDesk> staffDeskList = new List<StaffDesk>();
             var desk = _context.UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT").ToList();
-            foreach (UserMaster up in desk)
-            {
-                staffDeskList.Add(new StaffDesk()
-                {
-                    Role = up.UserRole,
-                    StaffEmail = up.UserEmail,
-                    StaffName = up.FirstName,
-                    status = up.Status,
-                    OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
-                });
+            if (userMaster.UserRole != "Officer")
+                //{
 
-            }
+                //}
+                //else
+                //{
+                //    ErrorMessage = "You do not have access to view this page as an Officer";
+                //    ViewBag.ErrorMessage = ErrorMessage;    
+
+                //}
+
+                foreach (UserMaster up in desk)
+                {
+                    staffDeskList.Add(new StaffDesk()
+                    {
+                        Role = up.UserRole,
+                        StaffEmail = up.UserEmail,
+                        StaffName = up.FirstName,
+                        status = up.Status,
+                        OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
+                    });
+
+                }
+
             model.StaffDeskList = staffDeskList;
             ViewBag.ErrorMessage = ErrorMessage;
             ViewBag.UserRole = _helpersController.getSessionRoleName();
-            return View(model);
+            return View(staffDeskList);
         }
-
-
-
 
         [HttpGet]
         public ActionResult StaffTaskAssignment(string userid, string role)
@@ -2156,10 +2014,6 @@ namespace RSPP.Controllers
             ViewBag.ErrorMessage = ErrorMessage;
             return PartialView("TaskAssignment", appRequestList);
         }
-
-
-
-
 
         [HttpPost]
         public ActionResult Rerouteuser()
@@ -2215,11 +2069,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
         [HttpGet]
         public JsonResult AutoSearchCompanyAppId(string term = "")
         {
@@ -2227,8 +2076,6 @@ namespace RSPP.Controllers
             var CompanyAppId = (from a in _context.PaymentLog where a.ApplicationId.Contains(term) select new { textvalue = a.ApplicationId }).ToList();
             return Json(CompanyAppId);
         }
-
-
 
         [HttpGet]
         public ActionResult StaffMaintenance()
@@ -2238,12 +2085,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
-
-
-
 
         [HttpGet]
         public JsonResult GetUserRole()
@@ -2259,12 +2100,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-
         [HttpGet]
         public ActionResult StaffReport()
         {
@@ -2273,9 +2108,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
 
         [HttpPost]
         public ActionResult GetStaffReport()
@@ -2331,10 +2163,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         [HttpPost]
         public JsonResult GetNewAssignedUser(string myrole, string myoldemail)
         {
@@ -2347,12 +2175,6 @@ namespace RSPP.Controllers
                                 }).ToList();
             return Json(Newuseremail);
         }
-
-
-
-
-
-
 
         [HttpPost]
         public ActionResult TaskDelegationList()
@@ -2391,10 +2213,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         [HttpGet]
         public ActionResult ViewStaffDesk(string userid)
         {
@@ -2407,10 +2225,6 @@ namespace RSPP.Controllers
 
             return PartialView("_StaffDesk", appRequestList);
         }
-
-
-
-
 
         [HttpGet]
         public ActionResult TransitionHistory(string applicationId)
@@ -2569,13 +2383,6 @@ namespace RSPP.Controllers
             return Json(new { Status = result });
         }
 
-
-
-
-
-
-
-
         [HttpGet]
         public ActionResult ViewApplication(string applicationId)
         {
@@ -2644,12 +2451,6 @@ namespace RSPP.Controllers
             return View(appRequest);
         }
 
-
-
-
-
-
-
         [HttpGet]
         public ActionResult ApproveLicense(string applicationId, string myaction, string mycomment)
         {
@@ -2701,9 +2502,6 @@ namespace RSPP.Controllers
             return Json(new { status = "success", Message = responseWrapper.value });
         }
 
-
-
-
         private void GenerateLicenseDocument(string applicationId)
         {
             try
@@ -2718,8 +2516,6 @@ namespace RSPP.Controllers
             }
 
         }
-
-
 
         //public IActionResult ApplicationDetails(string ApplicationId)
         //{

@@ -41,6 +41,7 @@
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+        <link href="~/css/nav-side-bar.css" rel="stylesheet" />
 
         <link href="~/css/navbar.css" rel="stylesheet" />
     </environment>
@@ -48,7 +49,93 @@
 
    
     <style>
-        
+        .center-cropped {
+            width: 120px;
+            height: 120px;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        .custom-file-upload {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: #214528
+        }
+
+        .table-responsive {
+            overflow-y: visible !important;
+        }
+
+
+        .btn.round {
+            border-radius: 50px;
+        }
+
+        .label-medium {
+            vertical-align: super;
+            font-size: medium;
+        }
+
+        .label-large {
+            vertical-align: super;
+            font-size: large;
+        }
+
+        .label-bs {
+            vertical-align: super;
+        }
+
+        .label-as-badge {
+            border-radius: 1em;
+        }
+
+        .ui-autocomplete {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1510 !important;
+            float: left;
+            display: none;
+            padding: 4px 0;
+            margin: 2px 0 0 0;
+            list-style: none;
+            background-color: #ffffff;
+            border-color: #ccc;
+            border-color: rgba(0, 0, 0, 0.2);
+            border-style: solid;
+            border-width: 1px;
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;
+            -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            -webkit-background-clip: padding-box;
+            -moz-background-clip: padding;
+            background-clip: padding-box;
+            *border-right-width: 2px;
+            *border-bottom-width: 2px;
+        }
+
+        fieldset.scheduler-border {
+            border: 1px groove #ddd !important;
+            padding: 0 1.4em 1.4em 1.4em !important;
+            margin: 0 0 1.5em 0 !important;
+            -webkit-box-shadow: 0px 0px 0px 0px #000;
+            box-shadow: 0px 0px 0px 0px #000;
+        }
+
+        legend.scheduler-border {
+            width: inherit; /* Or auto */
+            padding: 0 10px; /* To give a bit of padding on the left and right */
+            border-bottom: none;
+        }
+
+        #appContainer .ctrl-sidebar .sidebar > ul > li:last-child {
+            height: 500px;
+        }
 
     </style>
 
@@ -59,7 +146,7 @@
     @*<div id="loading" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
         <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/Images/spinning.gif" />
     </div>*@
-    <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86" role="navigation">
+    <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86; height: 70px !important" role="navigation">
         <div class="navbar-header" style="float:left">
             <div class="navbar-brand navbar-left">
                 <a href="#">
@@ -67,18 +154,24 @@
                 </a>
             </div>
             <div class="navbar-left">
-                
+                @*<form class="navbar-form navbar-left" role="search" action="@Url.Action("/")" method="get">
+                <div class="form-group">~/images/NSCnameLOGO.png
+                <input type="text" name="q" class="form-control" placeholder="Search for Application">
+                </div>
+                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+        </form>*@
             </div>
         </div>
 
-        <button type="button" class="top navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse2" aria-controls="navbar-collapse2" aria-expanded="false" aria-label="Toggle Navigation">
-            <span class="navbar-toggler-icon"></span>
-            
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar bar-color"></span>
+            <span class="icon-bar bar-color"></span>
+            <span class="icon-bar bar-color"></span>
         </button>
 
         <div class="top-nav">
             <form class="navbar-right" onsubmit="return confirm('Are you sure you want to log out ?');" id="logoutForm" method="get" action="@Url.Action("LogOff", "Account")">
-                <ul class="nav navbar-nav pull-right">
+                <ul class="nav navbar-nav pull-right brand-responsive">
 
                     <li>
                         <a title="Manage" href="@Url.Action("ChangePassword","Admin")" class="text-white"><b>WELCOME &nbsp;@Context.Session.GetString(AccountController.sessionStaffName).ToString().ToUpper()</b></a>
@@ -98,13 +191,11 @@
 
         
         <br />
-        <div class="ctrl-sidebar"  style="background-color:#7eaa86;">
-       
-            <div class="sidebar collapse navbar-collapse" style="overflow-y: scroll;">
-     
+        <div class="ctrl-sidebar" style="background-color:red !important">
+            <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll">
                 <br />
-                
-                <ul class="navbar-nav w-100 d-flex flex-md-column text-center text-md-end" style="background-color:#7eaa86; color:white">
+
+                <ul class="parent" style="background-color:#7eaa86; color:white">
                     <li>
                         <a href="#" class="nav-link" aria-current="page">
                             <small class="text-white">@rolename</small>
@@ -150,12 +241,15 @@
                                     <span class="text-white">My Desk</span>
                                 </a>
                             </li>
-                            <li>
+                            @if(rolename != "OFFICER"){
+                                <li>
                                 <a href="/Admin/StaffDesk" id="StaffDesk">
                                     <i class="fa fa-users" aria-hidden="true"></i>
                                     <span class="text-white">Staff Desks</span>
                                 </a>
-                            </li>
+                                </li>
+                            }
+                            
 
                         </ul>
                     </li>
@@ -434,6 +528,7 @@
 
 
                 </ul>
+
             </div>
         </div>
         <div class="ctrl-content">
