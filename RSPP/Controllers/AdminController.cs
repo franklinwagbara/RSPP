@@ -1963,7 +1963,7 @@ namespace RSPP.Controllers
 
         }
 
-        [Authorize ]
+        //[Authorize ]
         [HttpGet]
         public ActionResult StaffDesk()
         {
@@ -1999,7 +1999,7 @@ namespace RSPP.Controllers
             model.StaffDeskList = staffDeskList;
             ViewBag.ErrorMessage = ErrorMessage;
             ViewBag.UserRole = _helpersController.getSessionRoleName();
-            return View(staffDeskList);
+            return View(model);
         }
 
         [HttpGet]
