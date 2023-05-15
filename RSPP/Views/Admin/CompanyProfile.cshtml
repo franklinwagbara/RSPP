@@ -32,7 +32,8 @@
 
 
 
-                    <div class="row xrow og_form"><br /><br />
+                    <div class="row xrow og_form">
+                        <br /><br />
                         <div class="pad company">
                             @*<h3>Company Information</h3>
                             <hr />*@
@@ -44,12 +45,8 @@
                                     <label class="control-label">Company Email</label>
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @if (ViewBag.LoginRole == "SUPPORT")
-                                        {
-                                            @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control" })
-                                        }
-                                        else
-                                        {@Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @readonly = "readonly" })}
+                                        @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control" })
+
                                     </div>
                                 </div>
 
@@ -60,13 +57,7 @@
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
                                         <div class="input-group">
-                                            @if (ViewBag.LoginRole == "SUPPORT")
-                                            {
-                                                @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
-                                            }
-                                            else
-                                            { @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "readonly" })}
-
+                                            @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
 
                                             <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar"></i></span>
                                         </div>
@@ -81,14 +72,7 @@
                                     <label class="control-label">Contact Phone Number</label>
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @if (ViewBag.LoginRole == "SUPPORT")
-                                        {
-                                            @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
-                                        }
-                                        else
-                                        { @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control", @readonly = "readonly" })}
-
-
+                                        @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
                                     </div>
                                 </div>
 
@@ -122,10 +106,10 @@
                     <div class="row xrow og_form">
                         <div class="pad">
                             @*<h3>Address</h3>
-        <hr />
-        <div class="col-md-12">
-            <p>Fields with <span class="req">*</span> are required</p>
-        </div>*@
+                            <hr />
+                            <div class="col-md-12">
+                            <p>Fields with <span class="req">*</span> are required</p>
+                            </div>*@
 
                             <div class="col-md-12 company">
                                 <div class="form-group">
@@ -137,8 +121,9 @@
 
                                         }
                                         else
-                                        {@Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
-                                    }
+                                        {
+                                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
+                                        }
                                     </div>
                                     <div style="display:none">
                                         <label class="control-label col-md-2">GPS Cordinates</label>
@@ -198,29 +183,29 @@
 
                                                         <a href="javascript:FileView('@d.DocumentSource')">
                                                             <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                 style="max-height: 40px; max-width: 40px; display: inline-block;"/>
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block;" />
                                                         </a>
                                                     }
                                                     else
                                                     {
                                                         <a href="javascript:FileView('@d.DocumentSource')" data-name="@d.DocumentName">
                                                             <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                 style="max-height: 40px; max-width: 40px; display: inline-block"/>
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block" />
                                                         </a>
 
                                                     }
                                                 </td>
                                                 @*}
-                                                    else
-                                                    {
-                                                        <td>
+                                            else
+                                            {
+                                            <td>
 
-                                                            <a href='@(d.DocumentSource)' target="_blank" data-name="@d.DocumentName">
-                                                                <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                     style="max-height: 40px; max-width: 40px; display: inline-block" alt="@d.DocumentName" />
-                                                            </a>
-                                                        </td>
-                                                    }*@
+                                            <a href='@(d.DocumentSource)' target="_blank" data-name="@d.DocumentName">
+                                            <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                            style="max-height: 40px; max-width: 40px; display: inline-block" alt="@d.DocumentName" />
+                                            </a>
+                                            </td>
+                                            }*@
 
                                             </tr>
                                         }
