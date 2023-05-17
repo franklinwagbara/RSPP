@@ -16,29 +16,36 @@ using System.Threading.Tasks;
 using System.Globalization;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
+using SendGrid;
 
 namespace RSPP.Controllers
 {
-    public class CompanyController : Controller
+    public class CompanyController : AppUserController
     {
         public RSPPdbContext _context;
+        public IConfiguration _configuration;
         WorkFlowHelper _workflowHelper;
         IHttpContextAccessor _httpContextAccessor;
-        public IConfiguration _configuration;
         GeneralClass generalClass = new GeneralClass();
         ResponseWrapper responseWrapper = new ResponseWrapper();
         List<ApplicationRequestForm> AppRequest = null;
         HelperController _helpersController;
         UtilityHelper _utilityHelper;
+
         private ILog log = log4net.LogManager.GetLogger(typeof(CompanyController));
         protected readonly ILogger<CompanyController> _logger;
 
-        [Obsolete]
-        private readonly IHostingEnvironment _hostingEnv;
+        private readonly IWebHostEnvironment _hostingEnv;
 
 
         [Obsolete]
-        public CompanyController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv, ILogger<CompanyController> logger)
+        public CompanyController(
+            RSPPdbContext context,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
+            IWebHostEnvironment hostingEnv,
+            ILogger<CompanyController> logger
+            ) : base(hostingEnv)
         {
             _context = context;
             _configuration = configuration;
@@ -66,6 +73,7 @@ namespace RSPP.Controllers
                 ViewBag.ProcessedApplicationCount = 0;
                 ViewBag.CompanyName = _helpersController.getSessionCompanyName();
 
+                //get action history message & action id for the current user
                 var Rejectcomment = (from u in _context.UserMaster
                                      where u.UserEmail == _helpersController.getSessionEmail()
                                      join a in _context.ApplicationRequestForm on u.UserEmail equals a.CompanyEmail
@@ -74,14 +82,13 @@ namespace RSPP.Controllers
                                      select new { ah.Message, ah.Action }).FirstOrDefault();
 
 
-
                 if (Rejectcomment != null)
                 {
                     TempData["Rejectcomment"] = Rejectcomment.Message;
                     TempData["Acceptcomment"] = Rejectcomment.Action;
                 }
+                // fetch all applications ids & currentstage for current user
                 AppRequest = _helpersController.GetApplicationDetails(companyemail, out AppRequest);
-
                 ViewBag.AllApplicationStageDetails = AppRequest;
 
 
@@ -102,18 +109,24 @@ namespace RSPP.Controllers
 
 
                 log.Info("About To Get Applications and Company Notification Messages");
-
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == companyemail select u).FirstOrDefault();
+                if (userMaster is null)
+                {
+                    // implement later
+                }
+
+                ViewBag.UserGuides = this.GetUserGuides(USER_TYPE_COMPANY, USER_GUIDES_COMPANY_PATH);
 
                 ViewBag.AllMessages = _helpersController.GetCompanyMessages(_context, userMaster);
 
+                // fetch all applications with licenses
                 ViewBag.AllUserApplication = _helpersController.GetApplications(userMaster.UserEmail, "ALL", out responseMessage);
 
                 log.Info("GetApplications ResponseMessage => " + responseMessage);
 
                 if (responseMessage == "SUCCESS")
                 {
-
+                    // get messages from unapproved applilcations
                     ViewBag.Allcomments = _helpersController.AllHistoryComment(_helpersController.getSessionEmail());
 
                     appStatistics = _helpersController.GetApplicationStatistics(_helpersController.getSessionEmail(), out responseMessage, out appStageReference);
@@ -132,6 +145,7 @@ namespace RSPP.Controllers
                 ViewBag.StageReferenceList = appStageReference;
                 ViewBag.ErrorMessage = responseMessage;
 
+
             }
             catch (Exception ex)
             {
@@ -142,6 +156,35 @@ namespace RSPP.Controllers
             return View();
         }
 
+
+        //[HttpGet]
+        //public ActionResult ViewFile(string fileName)
+        //{
+        //    string path = Path.Combine(_hostingEnv.WebRootPath, "UserGuides/Company/") + fileName;
+
+        //    byte[] bytes = System.IO.File.ReadAllBytes(path);
+        //    MemoryStream stream = new MemoryStream(bytes);
+
+        //    string mimeType = "application/pdf";
+
+        //    return  File(stream, mimeType);
+
+        //}
+        //public ActionResult DownloadFile(string fileName)
+        //{
+        //    string path = Path.Combine(_hostingEnv.WebRootPath, "UserGuides/Company/") + fileName;
+
+        //    byte[] bytes = System.IO.File.ReadAllBytes(path);
+        //    MemoryStream stream = new MemoryStream(bytes);
+
+        //    string mimeType = "application/pdf";
+
+        //    return new FileStreamResult(stream, mimeType)
+        //    {
+        //        FileDownloadName = fileName
+        //    };
+
+        //}
 
         public IActionResult ApplicationForm(string ApplicationId)
         {
@@ -333,9 +376,9 @@ namespace RSPP.Controllers
 
             //_context.SaveChanges();
 
-            status =  _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
+            status = _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
 
-            if(status == "Rejected")
+            if (status == "Rejected")
             {
                 responseWrapper = _workflowHelper.processAction(appid, "GenerateRRR", companyemail, "Payment recieved");
                 if (responseWrapper.status == true)
@@ -396,16 +439,16 @@ namespace RSPP.Controllers
             try
             {
                 apps = (from p in _context.ApplicationRequestForm.AsEnumerable()
-                             where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "NO"
-                             select new ApplicationRequestForm
-                             {
-                                 ApplicationId = p.ApplicationId,
-                                 CompanyEmail = p.CompanyEmail,
-                                 AgencyName = p.AgencyName,
-                                 AddedDate = p.AddedDate,
-                                 Status = p.Status,
-                                 CurrentStageId = p.CurrentStageId
-                             }).ToList();
+                        where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "NO"
+                        select new ApplicationRequestForm
+                        {
+                            ApplicationId = p.ApplicationId,
+                            CompanyEmail = p.CompanyEmail,
+                            AgencyName = p.AgencyName,
+                            AddedDate = p.AddedDate,
+                            Status = p.Status,
+                            CurrentStageId = p.CurrentStageId
+                        }).ToList();
 
             }
             catch (Exception ex)
@@ -421,21 +464,21 @@ namespace RSPP.Controllers
         [HttpGet]
         public ActionResult MyLegacyApplications()
         {
-           List <ApplicationRequestForm> legacyapp = new List<ApplicationRequestForm>();
+            List<ApplicationRequestForm> legacyapp = new List<ApplicationRequestForm>();
             try
             {
-                 legacyapp = (from p in _context.ApplicationRequestForm.AsEnumerable() 
-                                  where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "YES"
-                                  select new ApplicationRequestForm
-                                  {
-                                      ApplicationId = p.ApplicationId,
-                                      CompanyEmail = p.CompanyEmail,
-                                      AgencyName = p.AgencyName,
-                                      AddedDate = p.AddedDate,
-                                      Status = p.Status,
-                                      CurrentStageId = p.CurrentStageId
-                                  }).ToList();
-              
+                legacyapp = (from p in _context.ApplicationRequestForm.AsEnumerable()
+                             where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "YES"
+                             select new ApplicationRequestForm
+                             {
+                                 ApplicationId = p.ApplicationId,
+                                 CompanyEmail = p.CompanyEmail,
+                                 AgencyName = p.AgencyName,
+                                 AddedDate = p.AddedDate,
+                                 Status = p.Status,
+                                 CurrentStageId = p.CurrentStageId
+                             }).ToList();
+
             }
             catch (Exception ex)
             {
@@ -483,13 +526,13 @@ namespace RSPP.Controllers
 
             var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
             var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-           var RemitaRef= paymentdetails != null ? paymentdetails.Rrreference : RRR;
+            var RemitaRef = paymentdetails != null ? paymentdetails.Rrreference : RRR;
             string APIHash = generalClass.merchantIdLive + RemitaRef + generalClass.AppKeyLive; //generalClass.merchantId + RRR + generalClass.AppKey;
             ViewBag.AppkeyHashed = generalClass.GenerateSHA512(APIHash).ToLower();
             ViewBag.AgencyName = applicationdetails.AgencyName;
             ViewBag.Applicationid = applicationId;
             ViewBag.RRR = RemitaRef;
-            ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount: amount;
+            ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount : amount;
             ViewBag.MerchantId = generalClass.merchantIdLive;//generalClass.merchantId;
             ViewBag.BaseUrl = generalClass.PortalBaseUrlLive;//generalClass.PortalBaseUrl;
 
@@ -554,7 +597,7 @@ namespace RSPP.Controllers
             var uploadeddoc = (from d in _context.UploadedDocuments where d.ApplicationId == ApplicationId select d).ToList();
             ViewBag.MyApplicationID = ApplicationId;
             ViewBag.UploadedDocCount = uploadeddoc.Count;
-            if (linseofbusinessid != 1 )
+            if (linseofbusinessid != 1)
             {
                 if (uploadeddoc.Count == 0 || doclist.Count() != uploadeddoc.Count())
                 {
@@ -598,7 +641,7 @@ namespace RSPP.Controllers
                 return RedirectToAction("MyApplications");
             }
 
-            
+
         }
 
 
