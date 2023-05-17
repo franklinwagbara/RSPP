@@ -387,9 +387,7 @@ namespace RSPP.Configurations
             int totalPermitCount = 0;
             int permitExpiringCount = 0;
             responseMessage = "SUCCESS";
-            Dictionary<string,
-             int> appStatisticsTable = new Dictionary<string,
-             int>();
+            Dictionary<string,int> appStatisticsTable = new Dictionary<string,int>();
             List<int> workFlowStagesToWork = new List<int> { 1, 2, 3, 4, 5, 10, 46, 25, 27, 47 };
 
             applicationStageReference = new Dictionary<string, int>();
@@ -681,8 +679,15 @@ namespace RSPP.Configurations
 
             try
             {
-                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46) && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate ascending select new { a, app }).ToList();
+                // fetch actionhistory & appRequestForm data
+                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm 
+                                     on a.ApplicationId equals app.ApplicationId 
+                                     where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46) 
+                                     && app.CompanyEmail == userMaster.UserEmail 
+                                     orderby app.AddedDate ascending 
+                                     select new { a, app }).ToList();
 
+                // get messages from the above collection
                 if (actionhistory.Count > 0)
                 {
                     foreach (var item in actionhistory)
