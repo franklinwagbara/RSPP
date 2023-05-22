@@ -58,6 +58,14 @@ namespace RSPP.Controllers
         }
 
 
+        /// <summary>
+        /// Fetches various metrics of the company
+        /// - all application status
+        /// - messages
+        /// - user guides
+        /// </summary>
+        /// <returns>A view result</returns>
+
         public IActionResult Index()
         {
             string responseMessage = null;
@@ -104,9 +112,6 @@ namespace RSPP.Controllers
                     ViewBag.LoggedInUser = _helpersController.getSessionEmail();
                     ViewBag.ExtraPaymentEmail = extrapay.CompanyEmail;
                 }
-
-
-
 
                 log.Info("About To Get Applications and Company Notification Messages");
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == companyemail select u).FirstOrDefault();
@@ -156,35 +161,6 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-        //[HttpGet]
-        //public ActionResult ViewFile(string fileName)
-        //{
-        //    string path = Path.Combine(_hostingEnv.WebRootPath, "UserGuides/Company/") + fileName;
-
-        //    byte[] bytes = System.IO.File.ReadAllBytes(path);
-        //    MemoryStream stream = new MemoryStream(bytes);
-
-        //    string mimeType = "application/pdf";
-
-        //    return  File(stream, mimeType);
-
-        //}
-        //public ActionResult DownloadFile(string fileName)
-        //{
-        //    string path = Path.Combine(_hostingEnv.WebRootPath, "UserGuides/Company/") + fileName;
-
-        //    byte[] bytes = System.IO.File.ReadAllBytes(path);
-        //    MemoryStream stream = new MemoryStream(bytes);
-
-        //    string mimeType = "application/pdf";
-
-        //    return new FileStreamResult(stream, mimeType)
-        //    {
-        //        FileDownloadName = fileName
-        //    };
-
-        //}
 
         public IActionResult ApplicationForm(string ApplicationId)
         {

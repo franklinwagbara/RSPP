@@ -44,6 +44,8 @@ namespace RSPP.Models.DB
         {
             if (!optionsBuilder.IsConfigured)
             {
+
+                //optionsBuilder.UseSqlServer("Server=NSC-REG-SERVER\\SQLEXPRESS;Database=RSPP_db;User Id=sa; Password=*123*brandonetech#;Trusted_Connection=True;MultipleActiveResultSets=true");
                 //optionsBuilder.UseSqlServer("Server=LAPTOP-N5F7SSUF\\SQLEXPRESS;Database=RSPPdb;Trusted_Connection=True;");
                 optionsBuilder.UseSqlServer("Server=tcp:staging-servers.database.windows.net,1433;Initial Catalog=RPRSPU_DB;Persist Security Info=False;User ID=serveradmin;Password=*123*brandonetech#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False");
 

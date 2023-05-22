@@ -1,4 +1,7 @@
-﻿@{
+﻿@using RSPP.Controllers;
+@using RSPP.Models;
+
+@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 }
@@ -26,7 +29,7 @@
             <div class="row">
 
                 <div class="col-sm-3">
-                    <div class="FirstDashCount" >
+                    <div class="FirstDashCount">
                         <b>@ViewBag.ApplicationCount</b>
                     </div>
                     <div class="DashCount">
@@ -244,13 +247,13 @@
                             }
                         </tbody>
                         @*<tfoot>
-                            <tr>
-                                <th></th>
-                                <th>Type</th>
-                                <th>Message</th>
-                                <th>Elapsed Time</th>
-                            </tr>
-                        </tfoot>*@
+                    <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Elapsed Time</th>
+                    </tr>
+                    </tfoot>*@
                     </table>
                 </div>
             </div>
@@ -267,7 +270,19 @@
                     <a href="#" class="list-group-item">FAQs</a>
                     <a href="#" class="list-group-item">Video Guide</a>
                     @*<a href="#" class="list-group-item">Live Chat</a>*@ @*live chat commented out as requested in issues error log document*@
-                    <a href="#" class="list-group-item">Guide Lines</a>
+                    Guide Lines
+                    @foreach (FileModel file in ViewBag.UserGuides)
+                    {
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <a href="@Url.Action(nameof(CompanyController.ViewFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-info" target="_blank">View Guide</a>
+                            </div>
+                            <div class="col-sm-6">
+                                <a href="@Url.Action(nameof(CompanyController.DownloadFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-success">Download Guide</a>
+                            </div>
+                            
+                        </div>                        
+                    }
                 </div>
             </div>
         </div>
@@ -360,7 +375,7 @@ else
 
 @section scripts{
     <script type="text/javascript">
-       // $("#approvedlegacy").delay(30000).fadeOut(500);
+        // $("#approvedlegacy").delay(30000).fadeOut(500);
 
 
 
@@ -379,7 +394,7 @@ else
 
 
         function MoveToAction(ActionName, ApplicationID) {
-             debugger;
+            debugger;
             var r = confirm("Are you sure you Want To Continue?");
             if (r == true) {
 
@@ -391,32 +406,32 @@ else
         }
 
 
-                    function showMessageDetail(applicationId, notificationid) {
-                        $(".loadingImage").show('fast');
+        function showMessageDetail(applicationId, notificationid) {
+            $(".loadingImage").show('fast');
             var url = '@Url.Action("GetMessageDetail")';
             $.get(url, { ApplicationId: applicationId, MessageId: notificationid })
-         .fail(function (data) {
-             alert("Network Error");
-         })
-        .done(function (data) {
-            if (data.Status == "success") {
-                $('#notmodalheader').text("Message Details");
-                $('#notLicenseType').val(data.LicenseDesc);
-                $('#notTxnDate').val(data.MessageDate);
-                $('#notMessage').val(data.Message);
+                .fail(function (data) {
+                    alert("Network Error");
+                })
+                .done(function (data) {
+                    if (data.Status == "success") {
+                        $('#notmodalheader').text("Message Details");
+                        $('#notLicenseType').val(data.LicenseDesc);
+                        $('#notTxnDate').val(data.MessageDate);
+                        $('#notMessage').val(data.Message);
 
-                $("#notificationModal").modal('show');
-                $(".loadingImage").hide('fast');
-            }
-            else {
-                console.debug("here");
-                console.debug(data.Status);
-                console.debug(data.Message);
-                console.debug(data.AppDescription);
-                alert(data.Message);
-                $(".loadingImage").hide('fast');
-            }
-        });
+                        $("#notificationModal").modal('show');
+                        $(".loadingImage").hide('fast');
+                    }
+                    else {
+                        console.debug("here");
+                        console.debug(data.Status);
+                        console.debug(data.Message);
+                        console.debug(data.AppDescription);
+                        alert(data.Message);
+                        $(".loadingImage").hide('fast');
+                    }
+                });
         }
 
 
