@@ -1,4 +1,8 @@
-﻿@media screen and (max-width: 1348px){
+﻿
+.row-mobile {
+    display: none;
+}
+@media screen and (max-width: 1348px) {
     .btn {
         border-radius: 15px !important;
         margin-bottom: 15px;
@@ -8,30 +12,29 @@
 
 @media screen and (max-width: 900px){
     .btn{
-        border-radius:15px !important;
+        border-radius: 15px !important;
         margin-bottom: 15px;
     }
 
     .hero{
-        display:flex;
+        display: flex;
         flex-direction: column;
     }
 
 
     .col-sm-4{
-        margin:0;
-        padding:0;
+        margin: 0;
+        padding: 0;
     }
 
     .mobile-welcome {
-        /*margin-left: 170px !important;*/
-        margin:0 auto;
+        margin: 0 auto;
         margin-bottom: 30px;
         text-align: center;
     }
 
-    .app-summary {
-        margin: 0 auto
+    .app-state {
+        margin: 0 auto;
     }
     
 }
@@ -44,44 +47,74 @@
     .DashCount {
         width: 120px !important;
     }
+    
 }
 
 @media screen and (max-width: 768px) {
     #BackImage {
-        background-repeat: repeat
+        background-repeat: repeat;
     }
-
-    .row {
-        flex-direction: column;
+    .mobile-welcome {
+        margin-left: -30px;
+        margin-top: -45px;
     }
-
-    .FirstDashCount {
-        width: 400px !important;
+    .hide-for-mobile{
+        display: none !important;
+        visibility: hidden !important;
     }
-
-    .DashCount {
-        width: 400px !important;
-        margin-bottom: 10px
-    }
-
-    
-}
-
-@media screen and (max-width: 685px){
-    .FirstDashCount {
-        width: 300px !important;
-    }
-
-    .DashCount {
-        width: 300px !important;
-        margin-bottom: 10px
-    }
-
-}
-
-@media screen and (max-width: 577px){
     .DashCompanyName{
-        font-size: 23px
+        font-size: 18px;
+        display: block;
+        width: 300px;
+        margin-left: 200px;
+        text-align: center;
     }
-    
+    .app-state {
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+    .row-lg {
+        display: none;
+    }
+    .row-mobile {
+        display: block;
+    }
+
+    .DashCountWrapper {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px
+    }
+
+    .FirstDashCount {
+        display: flex;
+        flex-direction: column;
+        padding-bottom: 10px
+    }
+    .hide-for-mobile{
+        display: none;
+    }
+    .remove-margin{
+        margin-top: -200px !important;
+    }
+}
+
+@media screen and (max-width: 577px) {
+    .DashCompanyName {
+        font-size: 18px;
+        margin-left: 50px
+    }
+}
+@media screen and (max-width: 376px) {
+    .DashCompanyName {
+        font-size: 15px;
+        margin-left: 27px;
+    }
+    .sm-txt{
+        font-size: 17px !important;
+    }
+    th, td{
+        font-size: 12px !important;
+    }
 }
