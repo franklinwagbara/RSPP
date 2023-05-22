@@ -1,10 +1,10 @@
-﻿@model List<RSPP.Models.DB.ApplicationRequestForm>
+﻿@model List<RSPP.Models.MyDeskModel>
 
 @{
     int count = 0;
     ViewBag.Title = "MyDesk";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
-    RSPP.Models.DB.RSPPdbContext dbCtxt = new RSPP.Models.DB.RSPPdbContext();
+    //RSPP.Models.DB.RSPPdbContext dbCtxt = new RSPP.Models.DB.RSPPdbContext();
 }
 
 
@@ -33,17 +33,17 @@
                 </tr>
             </thead>
 
-            @foreach (RSPP.Models.DB.ApplicationRequestForm req in Model)
+            @foreach (RSPP.Models.MyDeskModel req in Model)
             {
         <tr>
             <td>@(count += 1)</td>
             <td>@req.ApplicationId</td>
             <td>
-                @req.ApplicationTypeId
+                @req.ApplicationType
             </td>
             <td>
-                @{var companyname = (from c in dbCtxt.UserMaster where c.UserEmail == req.CompanyEmail select c.CompanyName).FirstOrDefault();}
-                <span>@companyname</span>
+                @*@{var companyname = (from c in dbCtxt.UserMaster where c.UserEmail == req.CompanyEmail select c.CompanyName).FirstOrDefault();}*@
+                <span>@req.CompanyName</span>
             </td>
             <td>@req.CompanyEmail</td>
             <td>@req.CompanyAddress</td>
