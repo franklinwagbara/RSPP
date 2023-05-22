@@ -306,7 +306,8 @@
                                     window.location.href = "/Company/CompanyProfile";
                                 }
                                 else {
-                                    alert(data.Status);
+                                    //console.log('inside else');
+                                    //alert(data.Status); throwing error here
                                 }
                             })
                             .fail(function (data) {
@@ -323,12 +324,12 @@
                 e.preventDefault();
                 if ($("#addressform").valid()) {
 
-                    var r = confirm("Are you Sure the Profile Informations are Correct ?");
+                    var r = confirm("Are you Sure the Profile Informations are Correct?");
                     if (r == true) {
                         $.post($("#addressform").attr('action'), $("#addressform").serialize())
                             .done(function (data) {
 
-                                alert(data.Status);
+                                //alert(data.Status);
                                 window.location.href = "/Company/CompanyProfile";
                             })
                             .fail(function (data) {
