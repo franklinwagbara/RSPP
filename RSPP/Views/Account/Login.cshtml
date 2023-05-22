@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>RSPP|Login</title>
+    <title>RSPP | Login</title>
 
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
-    
+
 
     <style>
         .container {
@@ -40,7 +40,7 @@
 
 <body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
     @*@Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryval")*@
+    @Scripts.Render("~/bundles/jqueryval")*@
 
 
     @using (Html.BeginForm("ForgotPassword", "Account", FormMethod.Post, new { @id = "forgotpasswordformid" }))
@@ -142,6 +142,24 @@
             </div>
         </div>
     }
+
+    <div class="modal fade adminPopup" id="modalPopup">
+        <div class="modal-dialog" style="margin: 0 auto 0 -20%">
+            <div class="modal-content">
+                @*<div class="modal-header">
+
+                <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+                </button>
+                <h3 class="modal-title">Modal header</h3>
+                </div>*@
+                <div id="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="~/js/jquery-3.3.1.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.validate.min.js"></script>
@@ -177,9 +195,13 @@
                     $.post("/Account/Login", { Email: email, Password: passwrd }, function (data) {
                         var status = data.status;
                         var message = data.message;
-                        if (status === "success" && message === "Company") {
+                        if (status === "failed") {
+                            $(".loadingImage").hide();
+                            window.confirm(message);
+                        } else if (status === "success" && message === "Company") {
                             window.location = "/Company/Index";
-                        } else if (status === "success" && message === "Admin") {
+                        }
+                        else if (status === "success" && message === "Admin") {
                             window.location = "/Admin/Index";
                         } else {
                             $(".loadingImage").hide();

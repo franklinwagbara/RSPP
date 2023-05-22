@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Til"] = "alert page";
+}
+
+<button class="btn btn-primary" onclick="displayAlert()">test sweet</button>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        function displayAlert() {
+            Swal.fire("This is an example");
+        }
+    </script>
+    
+    }

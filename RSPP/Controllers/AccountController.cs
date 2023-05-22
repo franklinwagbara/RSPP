@@ -56,6 +56,12 @@ namespace RSPP.Controllers
         {
             return View();
         }
+        
+        [AllowAnonymous]
+        public IActionResult TestAlert()
+        {
+            return View();
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -99,9 +105,11 @@ namespace RSPP.Controllers
                     }
                     else if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == false)
                     {
-                        var token = userMaster.EmailConfirmationToken;
-                        SendConfirmationEmail(Email, token);
-                        return Json(new { Status = status, Message = "User with this email: " + Email+ " is registered on the portal. A mail has been sent to you to confirm your email address!!!"});
+                        status = "failed";
+                        //var token = userMaster.EmailConfirmationToken;
+                        //SendConfirmationEmail(Email, token);
+                        return Json(new { Status = status, Message = "The registered email : " + Email+ " has not been activated. Kindly check your email for an activation link or click the resend button below" });
+                        //return Json(new { Status = status, Message = "User with this email: " + Email+ " is registered on the portal. A mail has been sent to you to confirm your email address!!!"});
                     }
                     else
                     {
