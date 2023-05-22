@@ -19,3 +19,6 @@ Success
 20e2c21cd98bc3cc10540f342fab86bb73f3bd068ecbc86c625fb444b1b3138bc625c954ad90e3b85b1b3cbe5efb18ce0c5e6d6ec33ce8dae87334f0d049b997
 {"serviceTypeId":"2977866904","amount":"20000","orderId":"051423162239","payerName":"Emmaback coy","payerEmail":"emmanuel.okpukpan@brandonetech.com","payerPhone":"08189876324","description":"Cargo Consolidators/De-Consolidators"}
 Success
+ad6c307d501376170704f0184055e1116be65ebd15ff2e77f6d0a91148907a900d48eb4564a24f4af224bcc4ec82f88205b60ae1553ec91242d87d7f0f20bfb2
+{"serviceTypeId":"2977866904","amount":"20000","orderId":"051523110049","payerName":"Emmaback coy","payerEmail":"emmanuel.okpukpan@brandonetech.com","payerPhone":"08189876324","description":"Barge Operators"}
+Success
