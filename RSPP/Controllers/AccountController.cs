@@ -30,6 +30,7 @@ namespace RSPP.Controllers
         IHttpContextAccessor _httpContextAccessor;
         HelperController _helpersController;
         GeneralClass generalClass = new GeneralClass();
+        Emailer emailer = new Emailer();
         public static string roleid;
         public string body;
         public const string sessionEmail = "_sessionEmail";
@@ -57,12 +58,6 @@ namespace RSPP.Controllers
             return View();
         }
         
-        [AllowAnonymous]
-        public IActionResult TestAlert()
-        {
-            return View();
-        }
-
         [AllowAnonymous]
         [HttpPost]
         public JsonResult Login(string Email, string Password)
@@ -93,6 +88,9 @@ namespace RSPP.Controllers
 
                     HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
                     HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
+
+                    //status = "failed";
+                    //return Json(new { Status = status, Message = "The registered email : <strong>" + Email + "</strong> has not been activated. Kindly check your email for an activation link or click the resend button below." });
 
                     if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == true)
                     {
@@ -141,6 +139,35 @@ namespace RSPP.Controllers
             }
         }
 
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult ResendEmailConfirmation(string Email)
+        {
+            string responseMessage = string.Empty;
+            string status = string.Empty;
+            string message = string.Empty;
+
+            try
+            {
+                var userMaster = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
+
+                var token = userMaster.EmailConfirmationToken;
+                SendConfirmationEmail(Email, token);
+
+                status = "success";
+                return Json(new { Status = status, Message = "A message has been sent to the registered email : <strong>" + Email + "</strong>. Kindly check your email and click the activation link within the message." });
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.StackTrace);
+                status = "failed";
+                message = ex.Message;
+                return Json(new { Status = status, Message = message });
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> LogOff()
@@ -247,7 +274,9 @@ namespace RSPP.Controllers
             message.Subject = subject;
             message.Body = body;
             GeneralClass gen = new GeneralClass();
-            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
+            emailer.SendEmail("myself", "emmaist23@gmail.com", "email confir", body);
+            result = "success";
+            //result = gen.ConfirmationEmailMessage(body, toAddress, subject);
             //smtp.Send(message);
             return result;
         }
