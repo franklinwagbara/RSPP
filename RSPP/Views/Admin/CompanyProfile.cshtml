@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.DB.UserMaster
+﻿@model RSPP.Models.CompanyProfileModel
 @{
     ViewBag.Title = "Company Profile";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
@@ -6,6 +6,8 @@
 
 }
 <div class="content">
+
+
 
     <div class="row" style="margin-top:-24px">
         <br />
@@ -45,10 +47,10 @@
                                     <label class="control-label">Company Email</label>
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.EmailForUpdate, new { @class = "form-control" })
+                                        @Html.HiddenFor(model => model.UserEmail)
                                     </div>
                                 </div>
-
 
 
                                 <div class="form-group">
@@ -62,7 +64,6 @@
                                         </div>
                                     </div>
                                 </div>
-
 
 
                             </div>
@@ -80,14 +81,13 @@
                             </div>
                         </div>
                         <hr class="clear" />
-                        @*@if (ViewBag.LoginRole == "SUPPORT")
-                        {*@
-                            <div class="form-group">
-                                <div class="txtcenter">
-                                    <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
-                                </div>
+
+                        <div class="form-group">
+                            <div class="txtcenter">
+                                <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
                             </div>
-                        @*}*@
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -116,12 +116,12 @@
                                     <div class="">
                                         @*@if (ViewBag.LoginRole == "SUPPORT")
                                         {
-                                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control" })
 
                                         }
                                         else
                                         {*@
-                                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
+                                        @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
                                         @*}*@
                                     </div>
                                     <div style="display:none">
@@ -140,11 +140,11 @@
                         <div class="clear"></div>
                         @*@if (ViewBag.LoginRole == "SUPPORT")
                         {
-                            <div class="form-group">
-                                <div class="txtcenter">
-                                    <input type="submit" value="Update Address" id="updateAddress" class="btn btn-success" style="width: 200px;" tabindex="14" />
-                                </div>
-                            </div>
+                        <div class="form-group">
+                        <div class="txtcenter">
+                        <input type="submit" value="Update Address" id="updateAddress" class="btn btn-success" style="width: 200px;" tabindex="14" />
+                        </div>
+                        </div>
                         }*@
                     </div>
                 </form>
@@ -224,7 +224,69 @@
     </div>
     <br />
     <br />
+
+    <!-- The confirm update modal -->
+    <div class="modal" id="modalConfirmCompanyUpdate">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Company Details Update</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                    Are u sure you want to continue with this update. This action will send a reset password link to the company's provided email.
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-success" type="submit" id="btnUpdateCompanyDetailsAndSendLink">Update & Send Confirmation Link</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- The company update response modal -->
+    <div class="modal" id="modalCompanyUpdateResponse">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Company Details Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+
+
+
+
+
+
 @section scripts{
     <script src="@Url.Content("~/Scripts/jquery.ui.widget.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.iframe-transport.js")" type="text/javascript"></script>
@@ -351,30 +413,75 @@
             $('#updateProfile').click(function (e) {
                 e.preventDefault();
                 if ($("#profileform").valid()) {
-
-                    var r = confirm("Do you want to continue With the Update ?");
-                    if (r == true) {
-                        $.post($("#profileform").attr('action'), $("#profileform").serialize())
-                            .done(function (data) {
-                                console.log(data);
-                                if (data.Status === "success") {
-                                    //console.log('inside success');
-                                    alert("Profile Update Was Successfull");
-                                    window.location.href = "/Admin/CompanyProfile";
-                                }
-                                else {
-                                    //console.log('inside else');
-                                    //alert(data.Status); throwing error here
-                                }
-                            })
-                            .fail(function (data) {
-                                alert('Network  Error, Restore Connection and Try again');
-                            })
-                            .always(function (data) {
-                            });
-                    }
+                    $('#modalConfirmCompanyUpdate').modal('show');
                 }
             });
+
+            $('#btnUpdateCompanyDetailsAndSendLink').click(function (e) {
+
+                $('#modalConfirmCompanyUpdate').modal('hide');
+
+                var antiForgeryToken = $('#Profile input[name="__RequestVerificationToken"]').val();
+                var companyEmail = $('#Profile #UserEmail').val();
+                var emailForUpdate = $('#Profile #EmailForUpdate').val();
+                var companyName = $('#Profile #CompanyName').val();
+                var phoneNumber = $('#Profile #PhoneNum').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/UpdateCompanyRecord",
+                    data: {
+                        actionType: "UPDATE_PROFILE",
+                        __RequestVerificationToken: antiForgeryToken,
+                        UserEmail: companyEmail,
+                        EmailForUpdate: emailForUpdate,
+                        CompanyName: companyName,
+                        PhoneNum: phoneNumber
+                    },
+                    success: function (response) {
+
+                        $('#modalConfirmCompanyUpdate').modal('hide');
+                        $('#modalCompanyUpdateResponse').modal('show');
+                        $('#modalCompanyUpdateResponse .modal-body').html(response.message);
+
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+
+            });
+
+            //$('#updateProfile').click(function (e) {
+            //    e.preventDefault();
+            //    if ($("#profileform").valid()) {
+
+            //        var r = confirm("Do you want to continue With the Update ?");
+            //        if (r == true) {
+            //            $.post($("#profileform").attr('action'), $("#profileform").serialize())
+            //                .done(function (data) {
+            //                    console.log(data);
+            //                    if (data.Status === "success") {
+            //                        //console.log('inside success');
+            //                        alert("Profile Update Was Successfull");
+            //                        window.location.href = "/Admin/CompanyProfile";
+            //                    }
+            //                    else {
+            //                        //console.log('inside else');
+            //                        //alert(data.Status); throwing error here
+            //                    }
+            //                })
+            //                .fail(function (data) {
+            //                    alert('Network  Error, Restore Connection and Try again');
+            //                })
+            //                .always(function (data) {
+            //                });
+            //        }
+            //    }
+            //});
 
 
             //$('#updateAddress').click(function (e) {
