@@ -30,7 +30,7 @@ namespace RSPP.Controllers
         IHttpContextAccessor _httpContextAccessor;
         HelperController _helpersController;
         GeneralClass generalClass = new GeneralClass();
-        Emailer emailer = new Emailer();
+        //Emailer emailer = new Emailer();
         public static string roleid;
         public string body;
         public const string sessionEmail = "_sessionEmail";
@@ -51,13 +51,12 @@ namespace RSPP.Controllers
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
         }
 
-
         [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
-        
+
         [AllowAnonymous]
         [HttpPost]
         public JsonResult Login(string Email, string Password)
@@ -106,7 +105,7 @@ namespace RSPP.Controllers
                         status = "failed";
                         //var token = userMaster.EmailConfirmationToken;
                         //SendConfirmationEmail(Email, token);
-                        return Json(new { Status = status, Message = "The registered email : " + Email+ " has not been activated. Kindly check your email for an activation link or click the resend button below" });
+                        return Json(new { Status = status, Message = "The registered email : " + Email + " has not been activated. Kindly check your email for an activation link or click the resend button below" });
                         //return Json(new { Status = status, Message = "User with this email: " + Email+ " is registered on the portal. A mail has been sent to you to confirm your email address!!!"});
                     }
                     else
@@ -154,7 +153,21 @@ namespace RSPP.Controllers
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
 
                 var token = userMaster.EmailConfirmationToken;
-                SendConfirmationEmail(Email, token);
+                var emailMessage = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+                var emailResponse = Emailer.SendEmail(
+                    userMaster.CompanyName,
+                    userMaster.UserEmail,
+                    "Email Confirmation",
+                    emailMessage);
+                if (!emailResponse.Status)
+                {
+                    return Json(new
+                    {
+                        Status = status,
+                        emailResponse.Message
+                    });
+                }
 
                 status = "success";
                 return Json(new { Status = status, Message = "A message has been sent to the registered email : <strong>" + Email + "</strong>. Kindly check your email and click the activation link within the message." });
@@ -274,9 +287,8 @@ namespace RSPP.Controllers
             message.Subject = subject;
             message.Body = body;
             GeneralClass gen = new GeneralClass();
-            emailer.SendEmail("myself", "emmaist23@gmail.com", "email confir", body);
             result = "success";
-            //result = gen.ConfirmationEmailMessage(body, toAddress, subject);
+            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
             //smtp.Send(message);
             return result;
         }
@@ -322,7 +334,7 @@ namespace RSPP.Controllers
             UserMaster usermaster = new UserMaster();
             Passwrd = generalClass.Encrypt(Passwrd);
             string token = Guid.NewGuid().ToString();
-            
+
             var checkexistemail = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
             try
             {
@@ -373,11 +385,11 @@ namespace RSPP.Controllers
                         status = "exist";
                         message = "User with the email: " + Email + " already exist on the portal. Kindly login with your email";
                     }
-                    
+
                     return Json(new { Status = status, Message = message });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 status = "exist";
                 message = ex.Message;
@@ -393,7 +405,7 @@ namespace RSPP.Controllers
         {
             string msg = "";
             var checkifemailexist = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
-            if(checkifemailexist == null)
+            if (checkifemailexist == null)
             {
                 msg = "The email " + Email + " does not exist on this portal";
             }
@@ -402,19 +414,20 @@ namespace RSPP.Controllers
                 Random rnd = new Random();
                 int value = rnd.Next(100000, 999999);
                 string password = "nsc-" + value;
-                string content = "Your New Password is "+ password;
+                string content = "Your New Password is " + password;
                 string subject = "Forgot Password Activation Link";
                 var sendmail = generalClass.ForgotPasswordEmailMessage(Email, subject, content, generalClass.Encrypt(password));
-                 if(sendmail == "failed")
+                if (sendmail == "failed")
                 {
-                    msg = "Unable to send activation link to "+ Email+". Please try again later.";
+                    msg = "Unable to send activation link to " + Email + ". Please try again later.";
 
                 }
-                else {
+                else
+                {
                     msg = "Activation link was successfully sent to " + Email;
                 }
             }
-            return Json(new {message = msg });
+            return Json(new { message = msg });
         }
 
 

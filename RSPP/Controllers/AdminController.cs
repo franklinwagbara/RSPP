@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
@@ -874,30 +875,82 @@ namespace RSPP.Controllers
             var companydetails = (from a in _context.UserMaster where a.UserEmail == CompanyEmail select a).FirstOrDefault();
 
             ViewBag.AllCompanyDocument = _helpersController.CompanyDocument(CompanyEmail);
+            var companyProfileForUpdate = new CompanyProfileModel
+            {
+                UserEmail = CompanyEmail,
+                EmailForUpdate = CompanyEmail,
+                CompanyName = companydetails.CompanyName,
+                PhoneNum = companydetails.PhoneNum,
+                CompanyAddress = companydetails.CompanyAddress,
+            };
 
-            return View(companydetails);
+            return View(companyProfileForUpdate);
         }
 
-        public ActionResult UpdateCompanyRecord(UserMaster model)
+        [ValidateAntiForgeryToken]
+
+        public ActionResult UpdateCompanyRecord(CompanyProfileModel model)
         {
-            string status = "success";
+            string status = "failed";
+            string message = "unable to update company details";
+            string emailResponseMessage = string.Empty;
             string actionType = Request.Form["actionType"];
-            string companyId = Request.Form["companyId"];
+
             var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
-            if (actionType.Contains("UPDATE_PROFILE") && companydetails != null)
+            if(companydetails is null)
+            {
+                return Json(new
+                {
+                    Status = status,
+                    Message = "User Not found"
+                });
+            }
+
+            if (actionType.Contains("UPDATE_PROFILE"))
             {
                 companydetails.CompanyName = model.CompanyName;
                 companydetails.PhoneNum = model.PhoneNum;
-                companydetails.UserEmail = model.UserEmail;
+                if (companydetails.UserEmail != model.EmailForUpdate)
+                {
+                    companydetails.UserEmail = model.EmailForUpdate;
+
+                    // send email
+                    string token = companydetails.EmailConfirmationToken;
+                    var emailMessage = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+                    var emailResponse = Emailer.SendEmail(
+                        companydetails.CompanyName,
+                        companydetails.UserEmail,
+                        "Email Confirmation",
+                        emailMessage);
+                    if (!emailResponse.Status)
+                    {
+                        return Json(new
+                        {
+                            Status = status,
+                            emailResponse.Message
+                        });
+                    }
+                    emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
+                }
             }
-            else if (actionType.Contains("ADDRESS") && companydetails != null)
+            else if (actionType.Contains("ADDRESS"))
             {
                 companydetails.CompanyAddress = model.CompanyAddress;
             }
-            _context.SaveChanges();
+
+
+            if (_context.SaveChanges() > 0)
+            {
+
+                status = "success";
+                message = "Company details updated. " + emailResponseMessage;
+            };
+
             return Json(new
             {
-                Status = status
+                Status = status,
+                Message = message
             });
         }
 
@@ -2020,7 +2073,7 @@ namespace RSPP.Controllers
                 if (currentAdminRole == REGISTRAR)
                     query = query.Where(q => q.UserRole == SUPERVISOR || q.UserRole == OFFICER);
 
-                foreach(var staff in query.ToList())
+                foreach (var staff in query.ToList())
                 {
                     var onDesk = _context.ApplicationRequestForm
                         .Where(app => app.LastAssignedUser == staff.UserEmail).Count();
@@ -2031,7 +2084,7 @@ namespace RSPP.Controllers
                         StaffEmail = staff.UserEmail,
                         StaffName = staff.FirstName,
                         status = staff.Status,
-                        OnDesk= onDesk
+                        OnDesk = onDesk
                     });
                 }
 
