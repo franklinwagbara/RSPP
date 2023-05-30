@@ -37,7 +37,7 @@ namespace RSPP
         {
             services.AddDbContext<RSPPdbContext>(options => options
             .UseSqlServer(Configuration.GetConnectionString("RSPPConnectionString"))
-            .EnableSensitiveDataLogging()
+            //.EnableSensitiveDataLogging()
             );
             services.Configure<CookiePolicyOptions>(options =>
             {
