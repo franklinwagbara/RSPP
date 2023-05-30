@@ -159,7 +159,9 @@
         foreach (var item in ViewBag.AllApplicationStageDetails)
 
         {
-            if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
+           @* 
+           will resolve this shortly    
+           if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
             {
                 <div class="col-md-12">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
@@ -191,7 +193,7 @@
                     </div>
                 </div>
                 <br />
-            }
+            }*@
 
             @*if (item.Value == 3 && ((TempData["Acceptcomment"].ToString() == "Reject")))
                 {
@@ -206,6 +208,8 @@
 
 
 
+            @*
+            will resolve this shortly
             if (item.CurrentStageId == 4)
             {
                 <div class="col-md-12 hide-for-mobile">
@@ -215,7 +219,7 @@
                     </div>
                 </div>
                 <br />
-            }
+            }*@
 
 
         }
