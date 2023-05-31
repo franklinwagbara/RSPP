@@ -2,16 +2,13 @@
     ViewBag.Title = "Certificate Report";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
-<head>
-    <environment include="Development">
-        <link href="~/css/certificateReport.css" rel="stylesheet" />
-    </environment>
 
-</head>
-<div class="content" style="height:90vh; overflow-y: scroll;">
+<div class="content">
     <div class="row">
         <div class="col-md-12">
             <div class="panel">
+                <div style="height: 1450px;width: 240px; background-color: #7eaa86; position: absolute; left: -245px; top: 950px;"></div>
+
                 <header class="panel-heading panel-border">
                     <h3 class="text-primary"> Certificate Report </h3>
                     <div class="pull-right">
@@ -133,6 +130,10 @@
             <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
         </div>*@
 </div>
+
+@section css {
+    <link href="~/css/certificateReport.css" rel="stylesheet" />
+}
 @section Scripts {
 
     <script type="text/javascript">

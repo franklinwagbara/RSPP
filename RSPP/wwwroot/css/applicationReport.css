@@ -1,8 +1,4 @@
-﻿.application-container {
-    height: 100vh;
-    overflow-y: scroll;
-}
-
+﻿
 .label {
     display: block !important;
     white-space:inherit;
@@ -30,24 +26,6 @@
     .label {
         font-size: 10px;
     }
-
-    .application-container {
-        height: 188vh;
-    }
-
-    .full-w {
-        width: 100% !important;
-    }
-
-    .eightythree-percent {
-        width: 83%;
-    }
-}
-
-@media screen and (max-width: 912px){
-    .eightythree-percent {
-        width: 100%;
-    }
 }
     
 
@@ -68,11 +46,6 @@
 }
 
 @media screen and (max-width: 525px){
-    .smaller-devices {
-        width: 100% !important;
-        margin: 0 auto;
-    }
-
     .text-primary {
         text-align: center !important;
     }
