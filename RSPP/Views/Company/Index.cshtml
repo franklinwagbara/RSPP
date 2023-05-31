@@ -104,7 +104,7 @@
 
     <br />
 
-    <div style="width:50%; margin: 0 auto;" class="hide-for-mobile">
+    <div style="width:60%; margin: 0 auto;" class="hide-for-mobile">
         <div class="padd-s">
             <div class="btn-group btn-group-lg btn-toolbar" style="display:flex;justify-content:center">
                 <a class="btn btn-success round" role="button" href="@Url.Action("ApplicationForm")"><i class="fas fa-book  fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Apply For Certificate</a>
@@ -153,15 +153,17 @@
 
     if (ViewBag.AllApplicationStageDetails.Count > 0)
     {
+       int i = 0;
         foreach (var item in ViewBag.AllApplicationStageDetails)
-
         {
             if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
             {
-                <div class="col-md-12">
+                <div class="col-md-12 c_@i">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-book-reader fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('ApplicationForm','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE FORM AND UPLOAD/CHANGE REQUIRED LICENSE/APPROVAL DOCUMENTS
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
@@ -169,11 +171,13 @@
 
             if (item.CurrentStageId == 2)
             {
-                <div class="col-md-12">
-                    <div class="alert alert-warning alert-dismissible center-block" role="alert" align="center">
-                        `
+                <div class="col-md-12 c_@i">
+                    <div class="alert alert-warning alert-dismissible center-block" role="alert" align="center" style="position:relative">
+                     
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('GenerateRRR','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO FINALIZE APPLICATION
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
@@ -181,10 +185,12 @@
 
             if (item.CurrentStageId == 3 && TempData["Acceptcomment"] != null && TempData["Acceptcomment"].ToString() != "Reject")
             {
-                <div class="col-md-12">
+                <div class="col-md-12 c_@i">
                     <div class="alert btn-warning alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('DocumentUpload','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE REQUIRED CERTIFICATE DOCUMENTS
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
@@ -205,21 +211,22 @@
 
             if (item.CurrentStageId == 4)
             {
-                <div class="col-md-12 hide-for-mobile">
+                <div class="col-md-12 hide-for-mobile c_@i">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-file-alt fa-2x" aria-hidden="true"></i>
                         YOUR APPLICATION WITH THE REFERENCE NUMBER @item.ApplicationId IS BEING PROCCESSED AT THE MOMENT, YOU WILL BE NOTIFIED WHEN NECCESSAY.
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
                     </div>
                 </div>
                 <br />
             }
-
+            i++;
 
         }
     }
     <br />
     <br />
-    <div class="row xrow remove-margin">
+    <div class="row xrow">
         <div class="col-md-9 col-sm-12">
             <div class="row">
                 <div class="col-md-12">
@@ -382,6 +389,11 @@ else
     .btn.round {
         border-radius: 50px;
     }
+
+    .close {
+        opacity: 0;
+        transition:all 0.5ms ease-out;
+    }
 </style>
 
 
@@ -444,6 +456,13 @@ else
                 $(".loadingImage").hide('fast');
             }
         });
+        }
+
+        function closeNotification(x){
+            console.log(x);
+            $('.c_'+ x).addClass('d-none');
+            console.log('' + x);
+           // document.getElementById('notification').classList.add('close')
         }
 
 

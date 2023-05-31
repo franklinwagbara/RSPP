@@ -2,10 +2,12 @@
     ViewBag.Title = "Payment List";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
-<div class="content">
 
+<environment include="Development">
+    <link href="~/css/certificateReport.css" rel="stylesheet" />
+</environment>
 
-
+<div class="content" style="height:90vh; overflow-y: scroll;">
     <div class="row top_tiles">
         <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-info">
@@ -195,7 +197,7 @@
                         <div class="panel-body">
 
 
-                            <div class="col-md-12">
+                            <div class="col-md-12" style="overflow-x:scroll">
                                 <table class="table table-striped table-bordered" id="paymentsumary" style="font-size:small">
                                     <thead>
                                         <tr>
@@ -350,7 +352,7 @@
 
 
 
-                            <div style="margin-top:-50px" class="col-md-12">
+                            <div style="margin-top:-50px; overflow-x:scroll" class="col-md-12">
                                 <table class="table table-striped table-bordered" id="payment" style="font-size:small">
                                     <thead>
                                         <tr>
