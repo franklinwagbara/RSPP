@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using RSPP.Helpers;
 using RSPP.Models;
 using System.Collections.Generic;
 using System.IO;
 
 namespace RSPP.Controllers
 {
+    [SessionTimeout]
     /// <summary>
     /// Base Controller for features common to admin & company
     /// I may modify this later depending on the other features in the app
