@@ -4,104 +4,108 @@
     ViewBag.Title = "Application Report";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
-<head>
-    <environment include="Development">
-        <link href="~/css/applicationReport.css" rel="stylesheet" />
-        <link href="~/css/StyleSheet1.css" rel="stylesheet" />
-    </environment>
+
  
-</head>
-<div class="content application-container">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel">
-                        <header class="panel-heading panel-border">
-                            <h3 class="text-primary"> Application Report </h3>
-                            <div class="pull-right">
-                                <div class="row">
-                                    <div class="panel short-states" style="background-color:#eaeef3; margin-right:50px; margin-top:-30px">
-                                        <div class="panel-title">
-                                        </div>
-                                    </div>
+
+<div class="content">
+    <div class="panel">
+        <div class="row">
+            <div class="col-md-12">                   
+                <header class="panel-heading panel-border">
+                    <h3 class="text-primary"> Application Report </h3>
+                    <div class="pull-right">
+                        <div class="row">
+                            <div class="panel short-states" style="background-color:#eaeef3; margin-right:50px; margin-top:-30px">
+                                <div class="panel-title">
                                 </div>
                             </div>
-                        </header>
-                        @using (Html.BeginForm("ApplicationReport", "Admin", FormMethod.Post, new { @id = "formsearch" }))
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="col-md-12">
+                @using (Html.BeginForm("ApplicationReport", "Admin", FormMethod.Post, new { @id = "formsearch" }))
                         {
                             <div class="panel-body">
-                                <div class="row smaller-devices">
+                        <div style="height: 1550px;width: 240px; background-color: #7eaa86; position: absolute; left: -245px; top: 950px;"></div>
+                                <div class="row">
                                     <div class="col-md-10">
-                                        <div class="col-md-2 full-w">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
-                                                <div><input type="text" value="@ViewData["startdate"]" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 full-w">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
-                                                <div><input type="text" value="@ViewData["maxdate"]" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
+                                        <div class="row">
 
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 full-w">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-group"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="apptype" name="apptype" class="form-control apptype w-full" multiple>
-                                                        <option value="NEW">New</option>
-                                                        <option value="RENEWAL">Renewal</option>
-                                                    </select>
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
+                                                    <div><input type="text" value="@ViewData["startdate"]" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
                                                 </div>
                                             </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
+                                                    <div><input type="text" value="@ViewData["maxdate"]" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
+
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-group"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="apptype" name="apptype" class="form-control apptype w-full" multiple>
+                                                            <option value="NEW">New</option>
+                                                            <option value="RENEWAL">Renewal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-group"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="status" name="status" class="form-control status" multiple>
+                                                            <option value="ACTIVE">INITIATED</option>
+                                                            <option value="Processing">PROCESSING</option>
+                                                            <option value="Approved">APPROVED</option>
+                                                            <option value="Rejected">REJECTED</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-list"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="cat" name="cat" class="form-control cat" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        &nbsp;<button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:darkred; margin-top:-5px; border:none; font-size: large; color:white"> Search</button>
+                                                    </div>
+
+                                                </div>
+                                            </div>
                                         </div>
+                                   
                                     </div>
 
-                                    <div class="col-md-2 col-wrapper">
+                                    <div class="col-md-2">
                                         <div><span class="col-md-offset-1 text-danger for-md-span">@TempData["totalapplication"]</span></div>
                                         <small class="label label-danger for-md-sm">Total Application</small>
                                     </div>
-                                    <div class="col-md-12 full-w">
-                                        <div class="col-md-3 eightythree-percent">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-group"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="status" name="status" class="form-control status" multiple>
-                                                        <option value="ACTIVE">INITIATED</option>
-                                                        <option value="Processing">PROCESSING</option>
-                                                        <option value="Approved">APPROVED</option>
-                                                        <option value="Rejected">REJECTED</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 eightythree-percent">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-list"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="cat" name="cat" class="form-control cat" multiple></select>                                                    
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-md-1">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    &nbsp;<button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:darkred; margin-top:-5px; border:none; font-size: large; color:white"> Search</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                   
                                 </div>
                                 <br />
                                 
@@ -392,11 +396,10 @@
                             </div>
 
                         }
-
-                    </div>
-                </div>
             </div>
         </div>
+                
+           
     </div>
    
     <div class="jumbotron">
@@ -404,9 +407,15 @@
         <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
     </div>
 </div>
-@section Scripts {
 
-    <script type="text/javascript">
+@section css {
+    <link href="~/css/applicationReport.css" rel="stylesheet" />
+}
+
+
+@section scripts {
+
+  <script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -568,24 +577,25 @@
                 });
             });
 
-            function printDiv() {
+            //function printDiv() {
 
-                var divToPrint = document.getElementById('DivIdToPrint');
+            //    var divToPrint = document.getElementById('DivIdToPrint');
 
-                var newWin = window.open('', 'Print-Window');
+            
+            //    var newWin = window.open('', 'Print-Window');
 
-                newWin.document.open();
+            //    newWin.document.open();
 
-                newWin.document.write('<html>');
-                newWin.document.write('<body onload="window.print()">');
-                newWin.document.write(divToPrint.innerHTML);
-                newWin.document.write('</body>');
-                newWin.document.write('</html>');
+            //    newWin.document.write('<html>');
+            //    newWin.document.write('<body onload="window.print()">');
+            //    newWin.document.write(divToPrint.innerHTML);
+            //    newWin.document.write('</body>');
+            //    newWin.document.write('</html>');
 
-                newWin.document.close();
+            //    newWin.document.close();
 
-                setTimeout(function () { newWin.close(); }, 10);
+            //    setTimeout(function () { newWin.close(); }, 10);
 
-            }
+            //}
     </script>
 }

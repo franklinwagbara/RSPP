@@ -2,10 +2,13 @@
     ViewBag.Title = "Certificate Report";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
+
 <div class="content">
     <div class="row">
         <div class="col-md-12">
             <div class="panel">
+                <div style="height: 1450px;width: 240px; background-color: #7eaa86; position: absolute; left: -245px; top: 950px;"></div>
+
                 <header class="panel-heading panel-border">
                     <h3 class="text-primary"> Certificate Report </h3>
                     <div class="pull-right">
@@ -54,10 +57,41 @@
                             <input type="button" class="btn btn-warning" id="all" name="all" value="Show All Record" />
                         </div>
                     </div>
+                    <br />
+                    <div class="jumbotron">
+                        <div class="row">
+                            <div style="margin-left:15px; margin-right:15px">
+                                <div class="col-md-4">
+                                    <div class="panel short-states" style="background-color:#ffffff">
+                                        <div class="panel-title">
+                                        </div>
+                                        <div class="panel-body">
+                                            <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@ViewBag.totalNewApp</span></div>
+                                            <small class="label label-danger" style="font-size:15px">Total New Certificate Issued</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="panel short-states" style="background-color:#ffffff">
+                                        <div class="panel-title">
+                                        </div>
+                                        <div class="panel-body">
+                                            <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@ViewBag.totalReNewApp</span></div>
+                                            <small class="label label-warning" style="font-size:15px">Total Renewed Certificate Issued</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
 
                    <br /><br />
 
-                    <div style="margin-top:-20px" class="col-md-12">
+                    <div style="margin-top:-20px; overflow-x:scroll" class="col-md-12">
                         <table class="table table-striped" id="licenselistreport" style="font-size:small; margin-top:-20px">
                             <thead>
                                 <tr>
@@ -91,43 +125,15 @@
             <div id="container1" style="min-height:600px; margin: 0 auto"></div>
         </div>
     </div>    <hr style="border: 1px solid white" />
-
-    <div class="jumbotron">
-        <div class="row">
-            <div style="margin-left:15px; margin-right:15px">
-                <div class="col-md-4">
-                    <div class="panel short-states" style="background-color:#ffffff">
-                        <div class="panel-title">
-                        </div>
-                        <div class="panel-body">
-                            <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@ViewBag.totalNewApp</span></div>
-                            <small class="label label-danger" style="font-size:15px">Total New Certificate Issued</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="panel short-states" style="background-color:#ffffff">
-                        <div class="panel-title">
-                        </div>
-                        <div class="panel-body">
-                            <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@ViewBag.totalReNewApp</span></div>
-                            <small class="label label-warning" style="font-size:15px">Total Renewed Certificate Issued</small>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
-
-
-    </div>
-
     @*<div class="jumbotron">
             <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
             <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
         </div>*@
 </div>
+
+@section css {
+    <link href="~/css/certificateReport.css" rel="stylesheet" />
+}
 @section Scripts {
 
     <script type="text/javascript">

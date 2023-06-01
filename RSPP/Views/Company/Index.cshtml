@@ -1,7 +1,4 @@
-﻿@using RSPP.Controllers;
-@using RSPP.Models;
-
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 }
@@ -32,7 +29,7 @@
             <div class="row row-lg">
 
                 <div class="col-sm-3">
-                    <div class="FirstDashCount">
+                    <div class="FirstDashCount" >
                         <b>@ViewBag.ApplicationCount</b>
                     </div>
                     <div class="DashCount">
@@ -67,7 +64,7 @@
                     </div>
                     <div class="DashCount">
                         <br />
-                        Days to expiration
+                        Expiring in 60 days
                     </div>
                 </div>
             </div>
@@ -107,7 +104,7 @@
 
     <br />
 
-    <div style="width:50%; margin: 0 auto;" class="hide-for-mobile">
+    <div style="width:60%; margin: 0 auto;" class="hide-for-mobile">
         <div class="padd-s">
             <div class="btn-group btn-group-lg btn-toolbar" style="display:flex;justify-content:center">
                 <a class="btn btn-success round" role="button" href="@Url.Action("ApplicationForm")"><i class="fas fa-book  fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;Apply For Certificate</a>
@@ -156,17 +153,17 @@
 
     if (ViewBag.AllApplicationStageDetails.Count > 0)
     {
+       int i = 0;
         foreach (var item in ViewBag.AllApplicationStageDetails)
-
         {
-           @* 
-           will resolve this shortly    
-           if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
+            if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
             {
-                <div class="col-md-12">
+                <div class="col-md-12 c_@i">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-book-reader fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('ApplicationForm','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE FORM AND UPLOAD/CHANGE REQUIRED LICENSE/APPROVAL DOCUMENTS
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
@@ -174,11 +171,13 @@
 
             if (item.CurrentStageId == 2)
             {
-                <div class="col-md-12">
-                    <div class="alert alert-warning alert-dismissible center-block" role="alert" align="center">
-                        `
+                <div class="col-md-12 c_@i">
+                    <div class="alert alert-warning alert-dismissible center-block" role="alert" align="center" style="position:relative">
+                     
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('GenerateRRR','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO FINALIZE APPLICATION
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
@@ -186,14 +185,16 @@
 
             if (item.CurrentStageId == 3 && TempData["Acceptcomment"] != null && TempData["Acceptcomment"].ToString() != "Reject")
             {
-                <div class="col-md-12">
+                <div class="col-md-12 c_@i">
                     <div class="alert btn-warning alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('DocumentUpload','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE REQUIRED CERTIFICATE DOCUMENTS
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+
                     </div>
                 </div>
                 <br />
-            }*@
+            }
 
             @*if (item.Value == 3 && ((TempData["Acceptcomment"].ToString() == "Reject")))
                 {
@@ -208,25 +209,24 @@
 
 
 
-            @*
-            will resolve this shortly
             if (item.CurrentStageId == 4)
             {
-                <div class="col-md-12 hide-for-mobile">
+                <div class="col-md-12 hide-for-mobile c_@i">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-file-alt fa-2x" aria-hidden="true"></i>
                         YOUR APPLICATION WITH THE REFERENCE NUMBER @item.ApplicationId IS BEING PROCCESSED AT THE MOMENT, YOU WILL BE NOTIFIED WHEN NECCESSAY.
+                        <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
                     </div>
                 </div>
                 <br />
-            }*@
-
+            }
+            i++;
 
         }
     }
     <br />
     <br />
-    <div class="row xrow remove-margin">
+    <div class="row xrow">
         <div class="col-md-9 col-sm-12">
             <div class="row">
                 <div class="col-md-12">
@@ -278,13 +278,13 @@
                             }
                         </tbody>
                         @*<tfoot>
-                    <tr>
-                    <th></th>
-                    <th>Type</th>
-                    <th>Message</th>
-                    <th>Elapsed Time</th>
-                    </tr>
-                    </tfoot>*@
+                            <tr>
+                                <th></th>
+                                <th>Type</th>
+                                <th>Message</th>
+                                <th>Elapsed Time</th>
+                            </tr>
+                        </tfoot>*@
                     </table>
                 </div>
             </div>
@@ -300,20 +300,8 @@
                     @*<a href="https://ems.dpr.gov.ng/Tickets/New" target="_blank" class="flash list-group-item"><span style="color:seagreen">Complain/Enquiries</span></a>*@
                     <a href="#" class="list-group-item">FAQs</a>
                     <a href="#" class="list-group-item">Video Guide</a>
-                    @*<a href="#" class="list-group-item">Live Chat</a>*@ @*live chat commented out as requested in issues error log document*@
-                    Guide Lines
-                    @foreach (FileModel file in ViewBag.UserGuides)
-                    {
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <a href="@Url.Action(nameof(CompanyController.ViewFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-info" target="_blank">View Guide</a>
-                            </div>
-                            <div class="col-sm-6">
-                                <a href="@Url.Action(nameof(CompanyController.DownloadFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-success">Download Guide</a>
-                            </div>
-                            
-                        </div>                        
-                    }
+                    <a href="#" class="list-group-item">Live Chat</a>
+                    <a href="#" class="list-group-item">Guide Lines</a>
                 </div>
             </div>
         </div>
@@ -401,12 +389,17 @@ else
     .btn.round {
         border-radius: 50px;
     }
+
+    .close {
+        opacity: 0;
+        transition:all 0.5ms ease-out;
+    }
 </style>
 
 
 @section scripts{
     <script type="text/javascript">
-        // $("#approvedlegacy").delay(30000).fadeOut(500);
+       // $("#approvedlegacy").delay(30000).fadeOut(500);
 
 
 
@@ -425,7 +418,7 @@ else
 
 
         function MoveToAction(ActionName, ApplicationID) {
-            debugger;
+             debugger;
             var r = confirm("Are you sure you Want To Continue?");
             if (r == true) {
 
@@ -437,32 +430,39 @@ else
         }
 
 
-        function showMessageDetail(applicationId, notificationid) {
-            $(".loadingImage").show('fast');
+                    function showMessageDetail(applicationId, notificationid) {
+                        $(".loadingImage").show('fast');
             var url = '@Url.Action("GetMessageDetail")';
             $.get(url, { ApplicationId: applicationId, MessageId: notificationid })
-                .fail(function (data) {
-                    alert("Network Error");
-                })
-                .done(function (data) {
-                    if (data.Status == "success") {
-                        $('#notmodalheader').text("Message Details");
-                        $('#notLicenseType').val(data.LicenseDesc);
-                        $('#notTxnDate').val(data.MessageDate);
-                        $('#notMessage').val(data.Message);
+         .fail(function (data) {
+             alert("Network Error");
+         })
+        .done(function (data) {
+            if (data.Status == "success") {
+                $('#notmodalheader').text("Message Details");
+                $('#notLicenseType').val(data.LicenseDesc);
+                $('#notTxnDate').val(data.MessageDate);
+                $('#notMessage').val(data.Message);
 
-                        $("#notificationModal").modal('show');
-                        $(".loadingImage").hide('fast');
-                    }
-                    else {
-                        console.debug("here");
-                        console.debug(data.Status);
-                        console.debug(data.Message);
-                        console.debug(data.AppDescription);
-                        alert(data.Message);
-                        $(".loadingImage").hide('fast');
-                    }
-                });
+                $("#notificationModal").modal('show');
+                $(".loadingImage").hide('fast');
+            }
+            else {
+                console.debug("here");
+                console.debug(data.Status);
+                console.debug(data.Message);
+                console.debug(data.AppDescription);
+                alert(data.Message);
+                $(".loadingImage").hide('fast');
+            }
+        });
+        }
+
+        function closeNotification(x){
+            console.log(x);
+            $('.c_'+ x).addClass('d-none');
+            console.log('' + x);
+           // document.getElementById('notification').classList.add('close')
         }
 
 
