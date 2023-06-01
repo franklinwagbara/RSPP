@@ -281,7 +281,7 @@
                         var message = data.message;
                         if (status === "failed") {
                             $(".loadingImage").hide();
-                            $('#modalResendEmailConfirmation .modal-body').append(message);
+                            $('#modalResendEmailConfirmation .modal-body').html(message);
                             $('#modalResendEmailConfirmation #emailToResend').val(email);
                             $('#modalResendEmailConfirmation').modal('show');
                         } else if (status === "success" && message === "Company") {
