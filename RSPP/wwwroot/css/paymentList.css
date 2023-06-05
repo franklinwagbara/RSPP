@@ -26,6 +26,18 @@
     visibility:visible!important
 }
 
+.payment-wrapper::before {
+    content: "";
+    display: block;
+    height: 900px;
+    width: 235px;
+    background-color: #7eaa86;
+    position: absolute;
+    left: 0px;
+    top: 1050px;
+    visibility: visible !important
+}
+
 .panel-wrapper {
     width: 50%;
     margin: 0 auto;
@@ -56,9 +68,12 @@
     }
 } 
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 768px) {
     .row {
         padding: 15px 15px 0px 15px;
+    }
+    .payment-wrapper::before{
+        display:none;
     }
 
     .jumbotron {
@@ -87,5 +102,24 @@
 @media screen and (max-width: 420px) {
     .adjust {
         width: 94% !important;
+    }
+    .all-payment-title {
+        font-size: 25px !important;
+        text-align: center;
+    }
+    .all-permits-title {
+        font-size: 25px!important;
+        text-align:center;
+    }
+    .pull-right{
+        float:none!important;
+        margin:0 auto!important;
+    }
+    .algin-for-mobile{
+        text-align:center;
+        margin-top:-30px
+    }
+    .margin-for-mobile{
+        margin-bottom:10px!important
     }
 } 
