@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Rotativa.AspNetCore;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
@@ -888,7 +889,6 @@ namespace RSPP.Controllers
         }
 
         [ValidateAntiForgeryToken]
-
         public ActionResult UpdateCompanyRecord(CompanyProfileModel model)
         {
             string status = "failed";
@@ -897,7 +897,7 @@ namespace RSPP.Controllers
             string actionType = Request.Form["actionType"];
 
             var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
-            if(companydetails is null)
+            if (companydetails is null)
             {
                 return Json(new
                 {
@@ -1229,8 +1229,8 @@ namespace RSPP.Controllers
                 responseWrapper = _workflowHelper.processAction(appRequest.ApplicationId, myaction, email, (mycomment == "=> " || mycomment == "") ? "Application was proccessed by " + email : mycomment);
                 if (!responseWrapper.status)
                 {
-                    response = responseWrapper.value;
-                    log.Error(response);
+                    log.Error(responseWrapper.value);
+                    response = "You are not authorized to process this application!";
                     return Json(new
                     {
                         status = "failure",
@@ -2537,8 +2537,11 @@ namespace RSPP.Controllers
                 var expirydate = (from a in _context.ApplicationRequestForm where a.CompanyEmail == appRequest.CompanyEmail && a.LicenseReference != null select a.LicenseExpiryDate).ToList().LastOrDefault();
 
                 var ReceivedFrom = (from a in _context.ActionHistory where a.ApplicationId == applicationId select a).ToList().LastOrDefault();
-                ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
-                ViewBag.LastMessage = ReceivedFrom.Message;
+                if (ReceivedFrom != null)
+                {
+                    ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
+                    ViewBag.LastMessage = ReceivedFrom.Message;
+                }
                 ViewBag.ReceivedDate = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a.ModifiedDate).FirstOrDefault();
                 var CurrentDesk = appRequest.LastAssignedUser;
                 ViewBag.Applicationstatus = appRequest.Status;
@@ -2662,7 +2665,13 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            return _helpersController.ViewCertificate(id, Host);
+            //return _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+            };
         }
 
 

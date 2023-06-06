@@ -435,14 +435,17 @@ namespace RSPP.Configurations
         {
 
             Apprequest = new List<ApplicationRequestForm>();
+            var unReadApplications = _context.ApplicationRequestForm
+                .Where(c => (c.CompanyEmail.Trim() == useremail.Trim()) && !(bool)c.IsRead)
+                .ToList();
 
-            foreach (ApplicationRequestForm b in _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == useremail.Trim())).ToList())
+            foreach (var app in unReadApplications)
             {
 
                 Apprequest.Add(new ApplicationRequestForm()
                 {
-                    ApplicationId = b.ApplicationId,
-                    CurrentStageId = b.CurrentStageId,
+                    ApplicationId = app.ApplicationId,
+                    CurrentStageId = app.CurrentStageId,
                 });
 
 
@@ -467,7 +470,8 @@ namespace RSPP.Configurations
 
             try
             {
-                foreach (ApplicationRequestForm b in _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == userId.Trim())).ToList())
+                var applications = _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == userId.Trim())).ToList();
+                foreach (ApplicationRequestForm b in applications)
                 {
                     //ALL
                     totalAppCount = totalAppCount + 1;
@@ -1224,7 +1228,7 @@ namespace RSPP.Configurations
 
 
 
-        public ViewAsPdf ViewCertificate(string id, string Host)
+        public List<PermitModels> ViewCertificate(string id, string Host)
         {
 
             List<PermitModels> permitmodel = new List<PermitModels>();
@@ -1236,7 +1240,6 @@ namespace RSPP.Configurations
                            join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
                            where a.ApplicationId == id
                            select new { a.CompanyEmail, u.CompanyName, a.ApplicationId, a.LicenseReference, a.LicenseExpiryDate, a.LicenseIssuedDate, a.AgencyName }).FirstOrDefault();
-
 
 
             var absolutUrl = Host + "/Verify/VerifyPermitQrCode?id=" + id;
@@ -1269,12 +1272,7 @@ namespace RSPP.Configurations
 
             }
 
-            return new ViewAsPdf("ViewCertificate", permitmodel.ToList())
-            {
-                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4,
-                FileName = id + ".pdf"
-
-            };
+            return permitmodel;                        
         }
 
 
