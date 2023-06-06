@@ -70,7 +70,8 @@
                     {
                         "render": function (data, type, row) {
 
-                            return "<button class='btn-xs btn-success' onclick=\"ViewPermit('" + row['applicationId'] + "')\"> Download </button>";
+                            return "<button class='btn-xs btn-primary' onclick=\"ViewPermit('" + row['applicationId'] + "')\"> View </button>" +
+                                "<button class='btn-xs btn-success' onclick=\"DownloadPermit('" + row['applicationId'] + "')\"> Download </button>";
 
                         }
                     }
@@ -86,6 +87,10 @@
 
         function ViewPermit(appdetails) {
             window.open('/Company/ViewCertificate/' + appdetails, '_blank');
+        }
+        
+        function DownloadPermit(appdetails) {
+            window.open('/Company/DownloadCertificate/' + appdetails, '_blank');
         }
     </script>
 }
