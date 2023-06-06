@@ -86,6 +86,7 @@
     <Build Include="dbo\Tables\LineOfBusiness.sql" />
     <Build Include="dbo\Tables\CertificateSerialNumber.sql" />
     <Build Include="dbo\Tables\UserOfPortService.sql" />
+    <Build Include="dbo\Tables\__EFMigrationsHistory.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="RSPP_Database.refactorlog" />
