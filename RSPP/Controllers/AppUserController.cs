@@ -18,6 +18,7 @@ namespace RSPP.Controllers
 
         private const string PDF_MIME_TYPE = "application/pdf";
 
+        protected const string VIDEO_GUIDES_COMPANY_PATH = "UserGuides/Video/";
         protected const string USER_GUIDES_COMPANY_PATH = "UserGuides/Company/";
         protected const string USER_GUIDES_ADMIN_PATH = "UserGuides/Admin/";
         protected const string USER_TYPE_COMPANY = "COMPANY";
@@ -83,6 +84,11 @@ namespace RSPP.Controllers
                 FileDownloadName = fileName
             };
 
+        }
+
+        public string VideoUserGuide()
+        {
+            return "~/"+VIDEO_GUIDES_COMPANY_PATH+"user_guide.mp4";
         }
     }
 }

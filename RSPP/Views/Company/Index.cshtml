@@ -1,4 +1,7 @@
-﻿@{
+﻿@using RSPP.Controllers;
+@using RSPP.Models;
+
+@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 }
@@ -20,7 +23,7 @@
                 <h2>Welcome</h2>
                 <hr />
             </div>
-            
+
             <b class="DashCompanyName">@ViewBag.CompanyName.ToUpper()</b>
         </div>
 
@@ -29,7 +32,7 @@
             <div class="row row-lg">
 
                 <div class="col-sm-3">
-                    <div class="FirstDashCount" >
+                    <div class="FirstDashCount">
                         <b>@ViewBag.ApplicationCount</b>
                     </div>
                     <div class="DashCount">
@@ -64,7 +67,7 @@
                     </div>
                     <div class="DashCount">
                         <br />
-                        Expiring in 60 days
+                        Days to expiration
                     </div>
                 </div>
             </div>
@@ -85,11 +88,11 @@
                         <b>@ViewBag.TotalPermitCount</b>
                         <i class="fa fa-certificate fa-lg" aria-hidden="true"></i>
 
-                        </div>
+                    </div>
                     <div class="FirstDashCount">
                         <b>@ViewBag.PermitExpiringCount</b>
                         <i class="fa fa-hourglass fa-lg" aria-hidden="true"></i>
-                    </div>    
+                    </div>
                 </div>
 
             </div>
@@ -149,11 +152,11 @@
     }
 
 
-
+    @Html.AntiForgeryToken()
 
     if (ViewBag.AllApplicationStageDetails.Count > 0)
     {
-       int i = 0;
+        int i = 0;
         foreach (var item in ViewBag.AllApplicationStageDetails)
         {
             if ((item.CurrentStageId == 1 && TempData["Acceptcomment"].ToString() != "Reject"))
@@ -163,7 +166,7 @@
                         <i class="fas fa-book-reader fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('ApplicationForm','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE FORM AND UPLOAD/CHANGE REQUIRED LICENSE/APPROVAL DOCUMENTS
                         <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
-
+                        <div class="hide-app-id">@item.ApplicationId</div>
                     </div>
                 </div>
                 <br />
@@ -173,11 +176,11 @@
             {
                 <div class="col-md-12 c_@i">
                     <div class="alert alert-warning alert-dismissible center-block" role="alert" align="center" style="position:relative">
-                     
+
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('GenerateRRR','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO FINALIZE APPLICATION
                         <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
-
+                        <div class="hide-app-id">@item.ApplicationId</div>
                     </div>
                 </div>
                 <br />
@@ -190,7 +193,7 @@
                         <i class="fas fa-money-bill-alt fa-2x" aria-hidden="true"></i>
                         KINDLY PROCEED WITH APPLICATION REFERENCE <a href="javascript:MoveToAction('DocumentUpload','@item.ApplicationId')" class="alert-link">@item.ApplicationId</a> TO COMPLETE THE REQUIRED CERTIFICATE DOCUMENTS
                         <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
-
+                        <div class="hide-app-id">@item.ApplicationId</div>
                     </div>
                 </div>
                 <br />
@@ -211,11 +214,12 @@
 
             if (item.CurrentStageId == 4)
             {
-                <div class="col-md-12 hide-for-mobile c_@i">
+                <div class="col-md-12 c_@i">
                     <div class="alert alert-info alert-dismissible center-block" role="alert" align="center">
                         <i class="fas fa-file-alt fa-2x" aria-hidden="true"></i>
                         YOUR APPLICATION WITH THE REFERENCE NUMBER @item.ApplicationId IS BEING PROCCESSED AT THE MOMENT, YOU WILL BE NOTIFIED WHEN NECCESSAY.
                         <div onclick="closeNotification(@i)" style="position: absolute; top: 3px; right: 3px; width: 20px; height: 20px; background-color:#9ac2d6; border-radius: 50%;font-size: 11px; display:grid; place-items:center;cursor:pointer">X</div>
+                        <div class="hide-app-id">@item.ApplicationId</div>
                     </div>
                 </div>
                 <br />
@@ -278,13 +282,13 @@
                             }
                         </tbody>
                         @*<tfoot>
-                            <tr>
-                                <th></th>
-                                <th>Type</th>
-                                <th>Message</th>
-                                <th>Elapsed Time</th>
-                            </tr>
-                        </tfoot>*@
+                    <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Message</th>
+                    <th>Elapsed Time</th>
+                    </tr>
+                    </tfoot>*@
                     </table>
                 </div>
             </div>
@@ -292,17 +296,26 @@
         <div class="col-md-3">
             <div>
                 <div id="mobSwitch"></div>
-                <h4 class="pad-t">Need Help?</h4>
-                <div class="list-group">
-                    <a href="#" class="list-group-item active">
-                        Enquiry
-                    </a>
-                    @*<a href="https://ems.dpr.gov.ng/Tickets/New" target="_blank" class="flash list-group-item"><span style="color:seagreen">Complain/Enquiries</span></a>*@
-                    <a href="#" class="list-group-item">FAQs</a>
-                    <a href="#" class="list-group-item">Video Guide</a>
-                    <a href="#" class="list-group-item">Live Chat</a>
-                    <a href="#" class="list-group-item">Guide Lines</a>
-                </div>
+                <h4 class="pad-t">User Guides</h4>
+                @foreach (FileModel file in ViewBag.UserGuides)
+                {
+                    <div class="row">
+                        <div class="col-sm">
+                            <a href="@Url.Action(nameof(CompanyController.ViewFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-primary" target="_blank">View Pdf</a> &nbsp;
+                        </div>
+                        <div class="col-sm">
+                            <a href="@Url.Action(nameof(CompanyController.DownloadFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-success">Download Pdf</a>
+                        </div>
+
+                    </div>
+                }
+            </div>
+            <div style="margin-top: 1em;">
+                <video width="320" height="240" controls>
+                    <source src="@Url.Content(@ViewBag.VideoGuide)" type="video/mp4">
+                    <source src="movie.ogg" type="video/ogg">
+                    Your browser does not support the video tag.
+                </video>
             </div>
         </div>
     </div>
@@ -320,15 +333,6 @@ else
         </div>
     </div>
 }
-
-
-
-
-
-
-
-
-
 
 
 <div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -370,10 +374,6 @@ else
     </div>
 </div>
 
-
-
-
-
 <div style="display:none" class="loadingImage">
     <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
         <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
@@ -392,16 +392,17 @@ else
 
     .close {
         opacity: 0;
-        transition:all 0.5ms ease-out;
+        transition: all 0.5ms ease-out;
+    }
+
+    .hide-app-id {
+        display: none;
     }
 </style>
 
 
 @section scripts{
     <script type="text/javascript">
-       // $("#approvedlegacy").delay(30000).fadeOut(500);
-
-
 
         function hideAndResetModal(modalID) {
             $(modalID).modal('hide');
@@ -414,11 +415,8 @@ else
             window.location.replace = web;
         }
 
-
-
-
         function MoveToAction(ActionName, ApplicationID) {
-             debugger;
+            debugger;
             var r = confirm("Are you sure you Want To Continue?");
             if (r == true) {
 
@@ -429,40 +427,58 @@ else
             }
         }
 
-
-                    function showMessageDetail(applicationId, notificationid) {
-                        $(".loadingImage").show('fast');
+        function showMessageDetail(applicationId, notificationid) {
+            $(".loadingImage").show('fast');
             var url = '@Url.Action("GetMessageDetail")';
             $.get(url, { ApplicationId: applicationId, MessageId: notificationid })
-         .fail(function (data) {
-             alert("Network Error");
-         })
-        .done(function (data) {
-            if (data.Status == "success") {
-                $('#notmodalheader').text("Message Details");
-                $('#notLicenseType').val(data.LicenseDesc);
-                $('#notTxnDate').val(data.MessageDate);
-                $('#notMessage').val(data.Message);
+                .fail(function (data) {
+                    alert("Network Error");
+                })
+                .done(function (data) {
+                    if (data.Status == "success") {
+                        $('#notmodalheader').text("Message Details");
+                        $('#notLicenseType').val(data.LicenseDesc);
+                        $('#notTxnDate').val(data.MessageDate);
+                        $('#notMessage').val(data.Message);
 
-                $("#notificationModal").modal('show');
-                $(".loadingImage").hide('fast');
-            }
-            else {
-                console.debug("here");
-                console.debug(data.Status);
-                console.debug(data.Message);
-                console.debug(data.AppDescription);
-                alert(data.Message);
-                $(".loadingImage").hide('fast');
-            }
-        });
+                        $("#notificationModal").modal('show');
+                        $(".loadingImage").hide('fast');
+                    }
+                    else {
+                        console.debug("here");
+                        console.debug(data.Status);
+                        console.debug(data.Message);
+                        console.debug(data.AppDescription);
+                        alert(data.Message);
+                        $(".loadingImage").hide('fast');
+                    }
+                });
         }
 
-        function closeNotification(x){
-            console.log(x);
-            $('.c_'+ x).addClass('d-none');
-            console.log('' + x);
-           // document.getElementById('notification').classList.add('close')
+        function closeNotification(notificationBoxId) {
+            var notificationBoxClassId = '.c_' + notificationBoxId;
+            var selectedAppId = $(notificationBoxClassId).find(".hide-app-id").text();
+
+            $.ajax({
+                type: "POST",
+                url: "/Company/UpdateReadApplications",
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    applicationId: selectedAppId
+                },
+                success: function (response) {
+
+                    if (response.status)
+                        $(notificationBoxClassId).addClass('d-none');
+                },
+                failure: function (response) {
+                    //console.log(response.responseText);
+                },
+                error: function (response) {
+                    //console.log(response.responseText);
+                }
+            });
+
         }
 
 

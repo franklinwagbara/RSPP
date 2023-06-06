@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using SendGrid;
+using Rotativa.AspNetCore;
 
 namespace RSPP.Controllers
 {
@@ -36,6 +37,9 @@ namespace RSPP.Controllers
         protected readonly ILogger<CompanyController> _logger;
 
         private readonly IWebHostEnvironment _hostingEnv;
+
+        private const string FAILED_UPDATE_RESPONSE = "Update Failed";
+        private const string SUCCESS_UPDATE_RESPONSE = "Update Successful";
 
 
         [Obsolete]
@@ -121,6 +125,7 @@ namespace RSPP.Controllers
                 }
 
                 ViewBag.UserGuides = this.GetUserGuides(USER_TYPE_COMPANY, USER_GUIDES_COMPANY_PATH);
+                ViewBag.VideoGuide = this.VideoUserGuide();
 
                 ViewBag.AllMessages = _helpersController.GetCompanyMessages(_context, userMaster);
 
@@ -159,6 +164,47 @@ namespace RSPP.Controllers
             }
 
             return View();
+        }
+
+        /// <summary>
+        /// Updates application notifications whose messages have been read by the company
+        /// </summary>
+        /// <param name="applicationId">the application id to be updated</param>
+        /// <returns>A BasicResponse indicating success or failure of this operation</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult UpdateReadApplications(string applicationId)
+        {
+            var response = new BasicResponse() { Message = FAILED_UPDATE_RESPONSE };
+            try
+            {
+
+                // provide better applicationId validation later
+                if (!string.IsNullOrWhiteSpace(applicationId))
+                {
+                    var companyemail = _helpersController.getSessionEmail();
+                    var selectedApplication = _context.ApplicationRequestForm
+                        .FirstOrDefault(app => app.ApplicationId == applicationId && app.CompanyEmail == companyemail);
+                    if (selectedApplication != null)
+                    {
+                        selectedApplication.IsRead = true;
+                        _context.ApplicationRequestForm.Update(selectedApplication);
+                        _context.SaveChanges();
+
+                        response.Status = true;
+                        response.Message = SUCCESS_UPDATE_RESPONSE;
+                    }
+                }
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                response.Message += " - " + ex.Message;
+                return Json(response);
+                //throw;
+            }
+
         }
 
 
@@ -1254,7 +1300,25 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            return _helpersController.ViewCertificate(id, Host);
+            var pdf= _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+            };
+        }
+        
+        public ActionResult DownloadCertificate(string id)
+        {
+            var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
+
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4,
+                FileName = id + ".pdf"
+            };
         }
 
 
