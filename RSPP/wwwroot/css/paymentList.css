@@ -62,9 +62,9 @@
     }
 }
 
-@media screen and (max-width: 820px){
-    .adjust{
-        width:98%!important;
+@media screen and (max-width: 820px) {
+    .adjust {
+        width: 98% !important;
     }
 } 
 
@@ -121,5 +121,8 @@
     }
     .margin-for-mobile{
         margin-bottom:10px!important
+    }
+    .width-for-mobile {
+        width: 350px
     }
 } 
