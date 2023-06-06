@@ -547,14 +547,15 @@
                 //   // docval = selectedvalue; DocId: docval 
                 //}
                 $.post('@Url.Action("ApplicationAcceptDecline")', { applicationId: $(".ApplicationId").val(), myaction: action, mycomment: comments}, function (data) {
-                        console.log('before console');
                         var status = data.status;
-                        console.log(status);
+                        //console.log(status);
 
                         hideAndResetModals('.approvalModal');
                         debugger;
                     if (status == 'success') {
                         $(".loadingImage").hide('fast');
+                            //console.log("message success " + data.message);
+
                         alert(data.message);
                         window.location.href = "/Admin/MyDesk";
                             //bootbox.alert({
@@ -663,6 +664,7 @@
                 }
             });
         }
+
         function showAcceptDeclineBox(applicationId, useraction, reason) {
             debugger;
              var checkextrapayment = '@ViewBag.ExtraPayment';

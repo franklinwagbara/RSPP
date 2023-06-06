@@ -224,11 +224,6 @@
 
                 if ($("#ResendEmailConfirmationFormid").valid()) {
 
-                    //var email = $("#modalResendEmailConfirmation #emailToResend").val();
-                    ////console.log('the selected email is ' + email);
-                    //var antiForgeryToken = $('input[name="__RequestVerificationToken"]').val();
-
-
                     $.ajax({
                         type: "POST",
                         url: "/Account/ResendEmailConfirmation",
