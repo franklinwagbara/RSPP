@@ -2179,9 +2179,11 @@ namespace RSPP.Controllers
                             apprequest.LastAssignedUser = newassigned;
                             apprequest.ModifiedDate = DateTime.Now;
                             _context.SaveChanges();
-                            var subject = "Re-Routed Application";
-                            string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
-                            generalClass.SendStaffEmailMessage(newassigned, subject, content);
+
+                            /* this is no more required*/
+                            //var subject = "Re-Routed Application";
+                            //string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
+                            //generalClass.SendStaffEmailMessage(newassigned, subject, content);
 
                         }
                         if (apphistry != null)
