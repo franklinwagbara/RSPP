@@ -13,24 +13,27 @@
             <a href="@Url.Action("ViewApplication", new { applicationId = ViewBag.ApplicationID })" class="btn btn-default" style="float:right">Back</a>
     </div>
     <hr class="clear" />
-            <table class="table dataTable">
-                <thead>
-                    <tr>
-                        <th width="5%">#</th>
-                        <th width="10%">Date</th>
-                        <th width="10%">Action</th>
-                        <th width="15%">Role Processed</th>
-                        <th width="15%">Role Received</th>
-                        <th width="10%">Processed By</th>
-                        <th width="10%">Received By</th>
-                        <th width="85%">Message</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{int i = 1;}
+    <div style="overflow-x:scroll">
+        <table class="table dataTable">
+            <thead>
+                <tr>
+                    <th width="5%">#</th>
+                    <th width="10%">Date</th>
+                    <th width="10%">Action</th>
+                    <th width="15%">Role Processed</th>
+                    <th width="15%">Role Received</th>
+                    <th width="10%">Processed By</th>
+                    <th width="10%">Received By</th>
+                    <th width="85%">Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 1;
+                }
 
-                    @foreach (RSPP.Models.DB.ActionHistory n in Model)
-                    {
+                @foreach (RSPP.Models.DB.ActionHistory n in Model)
+                {
                     <tr>
                         <td>@(i++)</td>
                         <td>@n.ActionDate.Value.ToString("yyyy-MMM-dd HH:mm")</td>
@@ -41,9 +44,10 @@
                         <td>@n.TargetedTo</td>
                         <td style="background-color:#7eaa86; color:white; text-align:left">@n.Message</td>
                     </tr>
-                    }
-                </tbody>
-            </table>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section scripts{

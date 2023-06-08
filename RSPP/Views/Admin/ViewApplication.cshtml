@@ -24,13 +24,13 @@
         }
         else
         {
-            <div class="col-md-9" id="showPart">
+            <div class="col-md-12" id="showPart">
                 <div class="mypanel-2leaf-h">
                     <div class="left-side">
                         <div class="padd">
-                            <dl class="dl-horizontal lt">
+                            <dl class="dl-horizontal lt" style="overflow-x:scroll">
                                 <dt>Company Email</dt>
-                                <dd><a href="/Admin/CompanyProfile?CompanyEmail=@ViewBag.AppRequest.CompanyEmail"><span class="text-info">@ViewBag.AppRequest.CompanyEmail</span></a></dd>
+                                <dd><a href="/Admin/CompanyProfile?CompanyEmail=@ViewBag.AppRequest.CompanyEmail"><span class="text-info"><abbr style="text-decoration:none" title="@ViewBag.AppRequest.CompanyEmail">@ViewBag.AppRequest.CompanyEmail</abbr></span></a></dd>
 
                                 <dt>Application Type</dt>
                                 <dd>@ViewBag.appRequest.ApplicationTypeId</dd>
@@ -166,7 +166,7 @@
                             </table>
                         </div>
                         <hr class="marg50" />
-                        <div>
+                        <div class="width-for-mobile">
                             <div class="panel panel-primary">
                                 <div class="panel-heading">
                                     <p class="panel-title text-white">Application History (Last 5)</p>
@@ -232,7 +232,7 @@
                     <div class="clear"></div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4 col-sm-5 col-xs-6">
                 <div class="pad">
                     <h3>Action Panel</h3>
                     @if (ViewBag.LoggedInUserRole == "OFFICER")
