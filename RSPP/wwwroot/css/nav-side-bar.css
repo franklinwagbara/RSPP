@@ -12,10 +12,9 @@
 @media only screen and (max-width: 768px){
     .ctrl-sidebar{
         width: 100%;
-        background-color: red !important;
     }
 
-    .content{
+    .content {
         background-color: red;
         margin-left: 0px !important;
     }

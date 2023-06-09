@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Rotativa.AspNetCore;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
@@ -18,11 +20,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RSPP.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : AppUserController
     {
 
 
@@ -37,12 +40,16 @@ namespace RSPP.Controllers
 
         private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
 
-        [Obsolete]
-        private readonly IHostingEnvironment _hostingEnv;
+        private readonly IWebHostEnvironment _hostingEnv;
+
+        private const string SUPERVISOR = "SUPERVISOR";
+        private const string REGISTRAR = "REGISTRAR";
+        private const string OFFICER = "OFFICER";
+        private const string COMPANY = "COMPANY";
 
 
         [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
+        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnv) : base(hostingEnv)
         {
             _context = context;
             _configuration = configuration;
@@ -50,12 +57,7 @@ namespace RSPP.Controllers
             _hostingEnv = hostingEnv;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
-
         }
-
-
-
-
 
 
         public ActionResult Index()
@@ -66,6 +68,7 @@ namespace RSPP.Controllers
             String errorMessage = null;
 
             ViewBag.LoggedInRole = _helpersController.getSessionRoleName();
+            ViewBag.UserGuides = this.GetUserGuides(USER_TYPE_ADMIN, USER_GUIDES_ADMIN_PATH);
 
             try
             {
@@ -399,7 +402,7 @@ namespace RSPP.Controllers
 
             apps = (from a in _context.ApplicationRequestForm
                     join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
-                    join p in _context.PaymentLog on a.ApplicationId equals p.ApplicationId
+                    //join p in _context.PaymentLog on a.ApplicationId equals p.ApplicationId
                     join w in _context.WorkFlowState on a.CurrentStageId equals w.StateId
                     where a.IsLegacy == "NO"
                     orderby a.AddedDate descending
@@ -407,7 +410,7 @@ namespace RSPP.Controllers
                     {
                         ApplicationId = a.ApplicationId,
                         CompanyEmail = a.CompanyEmail,
-                        AmountPaid = p.TxnAmount,
+                        AmountPaid = 0,
                         CompanyName = u.CompanyName,
                         AgencyName = a.AgencyName,
                         Status = a.Status,
@@ -516,16 +519,20 @@ namespace RSPP.Controllers
         public ActionResult ApplicationDetails(string applicationId)
         {
             MyApplicationRequestForm br = null;
-            br = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail where p.ApplicationId == applicationId select new MyApplicationRequestForm {
-                ApplicationId = p.ApplicationId,
-                AgencyId = p.AgencyId,
-                AgencyName = p.AgencyName,
-                CompanyAddress = p.CompanyAddress,
-                CompanyEmail = p.CompanyEmail,
-                CompanyName = u.CompanyName,
-                CompanyWebsite = p.CompanyWebsite,
-                DateofEstablishment = p.DateofEstablishment
-            }).FirstOrDefault();
+            br = (from p in _context.ApplicationRequestForm
+                  join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+                  where p.ApplicationId == applicationId
+                  select new MyApplicationRequestForm
+                  {
+                      ApplicationId = p.ApplicationId,
+                      AgencyId = p.AgencyId,
+                      AgencyName = p.AgencyName,
+                      CompanyAddress = p.CompanyAddress,
+                      CompanyEmail = p.CompanyEmail,
+                      CompanyName = u.CompanyName,
+                      CompanyWebsite = p.CompanyWebsite,
+                      DateofEstablishment = p.DateofEstablishment
+                  }).FirstOrDefault();
             if (br != null)
             {
                 ViewBag.MyAgencyId = br.AgencyId;
@@ -869,8 +876,82 @@ namespace RSPP.Controllers
             var companydetails = (from a in _context.UserMaster where a.UserEmail == CompanyEmail select a).FirstOrDefault();
 
             ViewBag.AllCompanyDocument = _helpersController.CompanyDocument(CompanyEmail);
+            var companyProfileForUpdate = new CompanyProfileModel
+            {
+                UserEmail = CompanyEmail,
+                EmailForUpdate = CompanyEmail,
+                CompanyName = companydetails.CompanyName,
+                PhoneNum = companydetails.PhoneNum,
+                CompanyAddress = companydetails.CompanyAddress,
+            };
 
-            return View(companydetails);
+            return View(companyProfileForUpdate);
+        }
+
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateCompanyRecord(CompanyProfileModel model)
+        {
+            string status = "failed";
+            string message = "unable to update company details";
+            string emailResponseMessage = string.Empty;
+            string actionType = Request.Form["actionType"];
+
+            var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
+            if (companydetails is null)
+            {
+                return Json(new
+                {
+                    Status = status,
+                    Message = "User Not found"
+                });
+            }
+
+            if (actionType.Contains("UPDATE_PROFILE"))
+            {
+                companydetails.CompanyName = model.CompanyName;
+                companydetails.PhoneNum = model.PhoneNum;
+                if (companydetails.UserEmail != model.EmailForUpdate)
+                {
+                    companydetails.UserEmail = model.EmailForUpdate;
+
+                    // send email
+                    string token = companydetails.EmailConfirmationToken;
+                    var emailMessage = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+                    var emailResponse = Emailer.SendEmail(
+                        companydetails.CompanyName,
+                        companydetails.UserEmail,
+                        "Email Confirmation",
+                        emailMessage);
+                    if (!emailResponse.Status)
+                    {
+                        return Json(new
+                        {
+                            Status = status,
+                            emailResponse.Message
+                        });
+                    }
+                    emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
+                }
+            }
+            else if (actionType.Contains("ADDRESS"))
+            {
+                companydetails.CompanyAddress = model.CompanyAddress;
+            }
+
+
+            if (_context.SaveChanges() > 0)
+            {
+
+                status = "success";
+                message = "Company details updated. " + emailResponseMessage;
+            };
+
+            return Json(new
+            {
+                Status = status,
+                Message = message
+            });
         }
 
 
@@ -1061,7 +1142,9 @@ namespace RSPP.Controllers
             int totalRecords = 0;
             var today = DateTime.Now.Date;
 
-            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail orderby p.LicenseReference descending
+            var staff = (from p in _context.ApplicationRequestForm
+                         join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+                         orderby p.LicenseReference descending
                          where p.LicenseReference != null && p.IsLegacy == "NO"
 
                          select new
@@ -1146,8 +1229,8 @@ namespace RSPP.Controllers
                 responseWrapper = _workflowHelper.processAction(appRequest.ApplicationId, myaction, email, (mycomment == "=> " || mycomment == "") ? "Application was proccessed by " + email : mycomment);
                 if (!responseWrapper.status)
                 {
-                    response = responseWrapper.value;
-                    log.Error(response);
+                    log.Error(responseWrapper.value);
+                    response = "You are not authorized to process this application!";
                     return Json(new
                     {
                         status = "failure",
@@ -1167,7 +1250,7 @@ namespace RSPP.Controllers
         }
 
 
-        
+
         [HttpGet]
 
         public ActionResult WorkFlow()
@@ -1440,7 +1523,8 @@ namespace RSPP.Controllers
             int skip = start != null ? Convert.ToInt32(start) : 0;
             int totalRecords = 0;
             var today = DateTime.Now.Date;
-            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+            var staff = (from p in _context.ApplicationRequestForm
+                         join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                          where p.LicenseReference != null && p.LicenseReference != ""
 
                          select new
@@ -1491,16 +1575,21 @@ namespace RSPP.Controllers
 
         }
 
-
+        /// <summary>
+        /// Fetches applications on a user's desk
+        /// </summary>
+        /// <returns>A view with the users' tasks</returns>
         [HttpGet]
         public ActionResult MyDesk()
         {
             String errorMessage = null;
-            List<ApplicationRequestForm> appRequestList = new List<ApplicationRequestForm>();
+            var applicationsOnMyDesk = new List<MyDeskModel>();
+            //List<ApplicationRequestForm> applicationsOnMyDesk = new List<ApplicationRequestForm>();
             try
             {
-                appRequestList = _helpersController.GetApprovalRequest(out errorMessage);
-                log.Info("Application Returned Count =>" + appRequestList.Count);
+                //applicationsOnMyDesk = _helpersController.GetApprovalRequest(out errorMessage);
+                applicationsOnMyDesk = _helpersController.GetMyDeskApplications(out errorMessage);
+                log.Info("Application Returned Count =>" + applicationsOnMyDesk.Count);
                 ViewBag.ErrorMessage = errorMessage;
             }
             catch (Exception ex)
@@ -1509,7 +1598,7 @@ namespace RSPP.Controllers
                 ViewBag.ErrorMessage = "Error Occured when calling MyDesk, Please try again Later";
             }
 
-            return View(appRequestList);
+            return View(applicationsOnMyDesk);
         }
 
 
@@ -1878,10 +1967,10 @@ namespace RSPP.Controllers
 
             var generatedapplicationid = generalClass.GenerateApplicationNo();
             var status = _helpersController.ApplicationForm(model, MyTerminals, "YES", generatedapplicationid);
-            if(status == "success")
+            if (status == "success")
             {
                 string subject = "Legacy Application Added";
-                string content = "Your legacy application with the certificate reference number "+ model.LicenseReference+ " was successfully added to the system.";
+                string content = "Your legacy application with the certificate reference number " + model.LicenseReference + " was successfully added to the system.";
                 generalClass.SendStaffEmailMessage(model.CompanyEmail, subject, content);
             }
             return Json(new { Status = status });
@@ -1909,7 +1998,7 @@ namespace RSPP.Controllers
 
 
             var staff = (from p in _context.PaymentLog
-                         
+
                          join r in _context.ApplicationRequestForm on p.ApplicationId equals r.ApplicationId
                          join u in _context.UserMaster on r.CompanyEmail equals u.UserEmail
                          where p.Status == "AUTH"
@@ -1963,44 +2052,89 @@ namespace RSPP.Controllers
 
         }
 
-        [Authorize ]
-        [HttpGet]
+        /// <summary>
+        /// Fetches the details for staff (with lower hierarchy) together with the number of applications on their desk
+        /// </summary>
+        /// <returns>A view with the staff desk model</returns>
         public ActionResult StaffDesk()
         {
-            var userMaster = (from u in _context.UserMaster select u).FirstOrDefault();
-            string ErrorMessage = "";
-            StaffDeskModel model = new StaffDeskModel();
-            List<StaffDesk> staffDeskList = new List<StaffDesk>();
-            var desk = _context.UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT").ToList();
-            if (userMaster.UserRole != "Officer")
-                //{
+            var model = new StaffDeskModel();
+            model.StaffDeskList = new List<StaffDesk>();
 
-                //}
-                //else
-                //{
-                //    ErrorMessage = "You do not have access to view this page as an Officer";
-                //    ViewBag.ErrorMessage = ErrorMessage;    
+            var currentAdminRole = _helpersController.getSessionRoleName();
+            if (currentAdminRole != OFFICER && currentAdminRole != COMPANY)
+            {
 
-                //}
+                IQueryable<UserMaster> query = _context.UserMaster;
 
-                foreach (UserMaster up in desk)
+                if (currentAdminRole == SUPERVISOR)
+                    query = query.Where(q => q.UserRole == OFFICER);
+
+                if (currentAdminRole == REGISTRAR)
+                    query = query.Where(q => q.UserRole == SUPERVISOR || q.UserRole == OFFICER);
+
+                foreach (var staff in query.ToList())
                 {
-                    staffDeskList.Add(new StaffDesk()
-                    {
-                        Role = up.UserRole,
-                        StaffEmail = up.UserEmail,
-                        StaffName = up.FirstName,
-                        status = up.Status,
-                        OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
-                    });
+                    var onDesk = _context.ApplicationRequestForm
+                        .Where(app => app.LastAssignedUser == staff.UserEmail).Count();
 
+                    model.StaffDeskList.Add(new StaffDesk()
+                    {
+                        Role = staff.UserRole,
+                        StaffEmail = staff.UserEmail,
+                        StaffName = staff.FirstName,
+                        status = staff.Status,
+                        OnDesk = onDesk
+                    });
                 }
 
-            model.StaffDeskList = staffDeskList;
-            ViewBag.ErrorMessage = ErrorMessage;
-            ViewBag.UserRole = _helpersController.getSessionRoleName();
-            return View(staffDeskList);
+            }
+
+            ViewBag.UserRole = currentAdminRole;
+            return View(model);
         }
+
+        //[Authorize ]
+        //[HttpGet]
+        //public ActionResult StaffDesk1()
+        //{
+        //    var userMaster = (from u in _context.UserMaster select u).FirstOrDefault();
+        //    string ErrorMessage = "";
+        //    StaffDeskModel model = new StaffDeskModel();
+        //    List<StaffDesk> staffDeskList = new List<StaffDesk>();
+        //    // select all users who are not company, superadmin, & ict
+        //    var desk = _context
+        //        .UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT")
+        //        .ToList();
+        //    //if (userMaster.UserRole != "Officer")
+        //    //{
+
+        //    //}
+        //    //else
+        //    //{
+        //    //    ErrorMessage = "You do not have access to view this page as an Officer";
+        //    //    ViewBag.ErrorMessage = ErrorMessage;    
+
+        //    //}
+
+        //    foreach (UserMaster up in desk)
+        //    {
+        //        staffDeskList.Add(new StaffDesk()
+        //        {
+        //            Role = up.UserRole,
+        //            StaffEmail = up.UserEmail,
+        //            StaffName = up.FirstName,
+        //            status = up.Status,
+        //            OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
+        //        });
+
+        //    }
+
+        //    model.StaffDeskList = staffDeskList;
+        //    ViewBag.ErrorMessage = ErrorMessage;
+        //    ViewBag.UserRole = _helpersController.getSessionRoleName();
+        //    return View(model);
+        //}
 
         [HttpGet]
         public ActionResult StaffTaskAssignment(string userid, string role)
@@ -2045,9 +2179,11 @@ namespace RSPP.Controllers
                             apprequest.LastAssignedUser = newassigned;
                             apprequest.ModifiedDate = DateTime.Now;
                             _context.SaveChanges();
-                            var subject = "Re-Routed Application";
-                            string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
-                            generalClass.SendStaffEmailMessage(newassigned, subject, content);
+
+                            /* this is no more required*/
+                            //var subject = "Re-Routed Application";
+                            //string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
+                            //generalClass.SendStaffEmailMessage(newassigned, subject, content);
 
                         }
                         if (apphistry != null)
@@ -2403,8 +2539,11 @@ namespace RSPP.Controllers
                 var expirydate = (from a in _context.ApplicationRequestForm where a.CompanyEmail == appRequest.CompanyEmail && a.LicenseReference != null select a.LicenseExpiryDate).ToList().LastOrDefault();
 
                 var ReceivedFrom = (from a in _context.ActionHistory where a.ApplicationId == applicationId select a).ToList().LastOrDefault();
-                ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
-                ViewBag.LastMessage = ReceivedFrom.Message;
+                if (ReceivedFrom != null)
+                {
+                    ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
+                    ViewBag.LastMessage = ReceivedFrom.Message;
+                }
                 ViewBag.ReceivedDate = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a.ModifiedDate).FirstOrDefault();
                 var CurrentDesk = appRequest.LastAssignedUser;
                 ViewBag.Applicationstatus = appRequest.Status;
@@ -2528,7 +2667,13 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            return _helpersController.ViewCertificate(id, Host);
+            //return _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+            };
         }
 
 

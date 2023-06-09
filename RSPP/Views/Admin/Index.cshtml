@@ -1,4 +1,7 @@
-﻿@{
+﻿@using RSPP.Controllers;
+@using RSPP.Models;
+
+@{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
@@ -7,7 +10,7 @@
 
     <div class="page-title">
         <div class="title_left">
-            <h2 class="text-info">DashBoard</h2>
+            <h2 class="text-info hidden-sm-down hidden-xl-up">DashBoard</h2>
         </div>
     </div>
     <div class="clearfix"></div>
@@ -87,6 +90,24 @@
             </div>
         </div>
 
+
+    </div>
+
+    <div class="row">
+
+        Guide Lines
+        @foreach (FileModel file in ViewBag.UserGuides)
+        {
+            <div class="row">
+                <div class="col-sm-6">
+                    <a href="@Url.Action(nameof(AdminController.ViewFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-info" target="_blank">View Guide</a>
+                </div>
+                <div class="col-sm-6">
+                    <a href="@Url.Action(nameof(AdminController.DownloadFile), new { userType=file.UserType, fileName = file.FileName })" class="btn btn-xs btn-success">Download Guide</a>
+                </div>
+
+            </div>
+        }
 
     </div>
     <div class="row" style="display:none">

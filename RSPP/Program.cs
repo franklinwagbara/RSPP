@@ -19,7 +19,7 @@ namespace RSPP
             CreateHostBuilder(args).Build().Run();
 
             var host = new WebHostBuilder()
-       .UseKestrel()
+            .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration()
             .UseStartup<Startup>()
@@ -32,15 +32,17 @@ namespace RSPP
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                }).ConfigureServices(services => {
+                }).ConfigureServices(services =>
+                {
                     services.AddHostedService<PaymentConfirmationService>();
-                    services.AddHostedService<ExpiryCertificateReminderService>();});
+                    services.AddHostedService<ExpiryCertificateReminderService>();
+                });
 
 
-                    //.ConfigureServices(services =>
-                    //       services.AddHostedService<PaymentConfirmationService>());
+        //.ConfigureServices(services =>
+        //       services.AddHostedService<PaymentConfirmationService>());
 
-                    //.UseShutdownTimeout(TimeSpan.FromSeconds(10))
+        //.UseShutdownTimeout(TimeSpan.FromSeconds(10))
 
-                }
+    }
 }

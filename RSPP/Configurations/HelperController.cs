@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace RSPP.Configurations
@@ -17,11 +18,14 @@ namespace RSPP.Configurations
     public class HelperController : Controller
     {
 
+        private static readonly log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
         public RSPPdbContext _context;
         IHttpContextAccessor _httpContextAccessor;
         public IConfiguration _configuration;
         GeneralClass generalClass = new GeneralClass();
-        private static readonly log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const int GOVERNMENT_AGENCYID = 1;
 
         public HelperController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
@@ -55,9 +59,68 @@ namespace RSPP.Configurations
             return _httpContextAccessor.HttpContext.Session.GetString(AccountController.sessionCompanyName);
         }
 
+        /// <summary>
+        /// Fetches applications assigned to an admin
+        /// </summary>
+        /// <param name="errorMessage">string data that indicates the success or failure of this operation</param>
+        /// <returns>A list of applications for the current admin to work on</returns>
+
+        public List<MyDeskModel> GetMyDeskApplications(out String errorMessage)
+        {
+            errorMessage = "SUCCESS";
+            var applicationsOnMyDesk = new List<MyDeskModel>();
+
+            try
+            {
+                var adminEmail = getSessionEmail();
+                var adminRole = getSessionRoleName();
+                var stageIdsForCurrentUserRole = _context.WorkFlowNavigation.Where(w => w.ActionRole.Equals(adminRole))
+                    .Select(s => s.CurrentStageId)
+                    .Distinct()
+                    .ToList();
+
+                var applicationRequestsForSelectedStages = (from appReqForm in _context.ApplicationRequestForm
+                                                           join users in _context.UserMaster
+                                                           on appReqForm.CompanyEmail equals users.UserEmail
+                                                           where stageIdsForCurrentUserRole.Contains((short)appReqForm.CurrentStageId)
+                                                           && appReqForm.LastAssignedUser == adminEmail
+                                                           select new
+                                                           {
+                                                               ApplicationId = appReqForm.ApplicationId,
+                                                               ApplicationType = appReqForm.ApplicationTypeId,
+                                                               AddedDate = appReqForm.AddedDate,
+                                                               AgencyId = appReqForm.AgencyId,
+                                                               CompanyName = users.CompanyName,
+                                                               CompanyAddress = users.CompanyAddress,
+                                                               CompanyEmail = users.UserEmail
+                                                           }).ToList();
 
 
+                foreach (var appRequest in applicationRequestsForSelectedStages)
+                {
+                    if (isPaymentMade(appRequest.ApplicationId, out errorMessage) || appRequest.AgencyId == GOVERNMENT_AGENCYID)
+                    {
+                        applicationsOnMyDesk.Add(new MyDeskModel
+                        {
+                            ApplicationId = appRequest.ApplicationId,
+                            ApplicationType = appRequest.ApplicationType,
+                            AddedDate = appRequest.AddedDate,
+                            CompanyName = appRequest.CompanyName,
+                            CompanyAddress = appRequest.CompanyAddress,
+                            CompanyEmail = appRequest.CompanyEmail
+                        });
+                    }
+                }
 
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.StackTrace);
+                errorMessage = "Error Occured When Searching For Applications on my desk, Please try again Later";
+            }
+            return applicationsOnMyDesk;
+        }
 
 
 
@@ -70,11 +133,20 @@ namespace RSPP.Configurations
             try
             {
                 List<string> UserRoles = getSessionRoleName().Split(',').ToList();
+                //fetch workflownavigations whose actionRole match the current user's userRole; select 
+                //d workflownavigation currentStageId save as allstages
                 List<short> AllStages = _context.WorkFlowNavigation.Where(c => UserRoles.Contains(c.ActionRole)).Select(c => c.CurrentStageId).Distinct().ToList();
                 Logger.Info("User Stages =>" + string.Join(",", AllStages.ToArray()));
                 //ApplicationRequestForm appmaster = _context.ApplicationRequestForm.Where(c => c.ApplicationId.Trim() == allRequest.FirstOrDefault().ApplicationId).FirstOrDefault();
+
+                // fetch the first  applications that were assisgned to the current user --not used so remove
                 var currentstage = (from u in _context.ApplicationRequestForm where u.LastAssignedUser == getSessionEmail() select new { u.CurrentStageId }).FirstOrDefault();
 
+                // fetch the applications that fall within the previously selected stages
+                // foreach application, if payment was made or is an application from Government agency
+                // if the application's currentStage matches any of the previous selected stages & the application is owned by the current user
+                // & the user is either an officer, a supervisor, and a registrar
+                // then add that application to the list
                 foreach (ApplicationRequestForm appRequest in _context.ApplicationRequestForm.Where(a => AllStages.Contains((short)a.CurrentStageId)).ToList())
                 {
 
@@ -363,14 +435,17 @@ namespace RSPP.Configurations
         {
 
             Apprequest = new List<ApplicationRequestForm>();
+            var unReadApplications = _context.ApplicationRequestForm
+                .Where(c => (c.CompanyEmail.Trim() == useremail.Trim()) && !(bool)c.IsRead)
+                .ToList();
 
-            foreach (ApplicationRequestForm b in _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == useremail.Trim())).ToList())
+            foreach (var app in unReadApplications)
             {
 
                 Apprequest.Add(new ApplicationRequestForm()
                 {
-                    ApplicationId = b.ApplicationId,
-                    CurrentStageId = b.CurrentStageId,
+                    ApplicationId = app.ApplicationId,
+                    CurrentStageId = app.CurrentStageId,
                 });
 
 
@@ -387,9 +462,7 @@ namespace RSPP.Configurations
             int totalPermitCount = 0;
             int permitExpiringCount = 0;
             responseMessage = "SUCCESS";
-            Dictionary<string,
-             int> appStatisticsTable = new Dictionary<string,
-             int>();
+            Dictionary<string, int> appStatisticsTable = new Dictionary<string, int>();
             List<int> workFlowStagesToWork = new List<int> { 1, 2, 3, 4, 5, 10, 46, 25, 27, 47 };
 
             applicationStageReference = new Dictionary<string, int>();
@@ -397,7 +470,8 @@ namespace RSPP.Configurations
 
             try
             {
-                foreach (ApplicationRequestForm b in _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == userId.Trim())).ToList())
+                var applications = _context.ApplicationRequestForm.Where(c => (c.CompanyEmail.Trim() == userId.Trim())).ToList();
+                foreach (ApplicationRequestForm b in applications)
                 {
                     //ALL
                     totalAppCount = totalAppCount + 1;
@@ -506,9 +580,9 @@ namespace RSPP.Configurations
                 appdetails.NameOfAssociation = model.NameOfAssociation;
                 appdetails.CacregNum = model.CacregNum;
                 appdetails.LineOfBusinessId = Convert.ToInt32(_httpContextAccessor.HttpContext.Request.Form["lineofbusinessid"]);
-                if(islegacy == "YES")
+                if (islegacy == "YES")
                 {
-                    if(checkappexist != null)
+                    if (checkappexist != null)
                     {
                         status = "alreadyexist";
                         return status;
@@ -541,7 +615,7 @@ namespace RSPP.Configurations
                     if (model.AgencyId == 1)//government Agency
                     {
                         govagencydetails.ApplicationId = appid;
-                        govagencydetails.ServicesProvidedInPort =_httpContextAccessor.HttpContext.Request.Form["ServicesProvidedInPort"].ToString();
+                        govagencydetails.ServicesProvidedInPort = _httpContextAccessor.HttpContext.Request.Form["ServicesProvidedInPort"].ToString();
                         govagencydetails.AnyOtherRelevantInfo = _httpContextAccessor.HttpContext.Request.Form["AnyOtherRelevantInfo"].ToString();
 
                         if (model.ApplicationId == null)
@@ -681,8 +755,16 @@ namespace RSPP.Configurations
 
             try
             {
-                var actionhistory = (from a in _context.ActionHistory join app in dbCtxt.ApplicationRequestForm on a.ApplicationId equals app.ApplicationId where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46) && app.CompanyEmail == userMaster.UserEmail orderby app.AddedDate ascending select new { a, app }).ToList();
+                // fetch actionhistory & appRequestForm data
+                var actionhistory = (from a in _context.ActionHistory
+                                     join app in dbCtxt.ApplicationRequestForm
+                                     on a.ApplicationId equals app.ApplicationId
+                                     where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46)
+                                     && app.CompanyEmail == userMaster.UserEmail
+                                     orderby app.AddedDate ascending
+                                     select new { a, app }).ToList();
 
+                // get messages from the above collection
                 if (actionhistory.Count > 0)
                 {
                     foreach (var item in actionhistory)
@@ -788,7 +870,8 @@ namespace RSPP.Configurations
         {
             var today = DateTime.Now.Date;
             var Appinfo = new List<MyApplicationRequestForm>();
-            var Appinfoagency = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+            var Appinfoagency = (from p in _context.ApplicationRequestForm
+                                 join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                                  where p.ApplicationId == applicationId
                                  select new
                                  {
@@ -1145,7 +1228,7 @@ namespace RSPP.Configurations
 
 
 
-        public ViewAsPdf ViewCertificate(string id, string Host)
+        public List<PermitModels> ViewCertificate(string id, string Host)
         {
 
             List<PermitModels> permitmodel = new List<PermitModels>();
@@ -1153,11 +1236,10 @@ namespace RSPP.Configurations
 
             var signature = (from c in _context.Configuration where c.ParamId == "Signature" select c.ParamValue).FirstOrDefault();
 
-           var details = (from a in _context.ApplicationRequestForm
+            var details = (from a in _context.ApplicationRequestForm
                            join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
                            where a.ApplicationId == id
                            select new { a.CompanyEmail, u.CompanyName, a.ApplicationId, a.LicenseReference, a.LicenseExpiryDate, a.LicenseIssuedDate, a.AgencyName }).FirstOrDefault();
-
 
 
             var absolutUrl = Host + "/Verify/VerifyPermitQrCode?id=" + id;
@@ -1190,12 +1272,7 @@ namespace RSPP.Configurations
 
             }
 
-            return new ViewAsPdf("ViewCertificate", permitmodel.ToList())
-            {
-                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4,
-                FileName = id + ".pdf"
-
-            };
+            return permitmodel;                        
         }
 
 
@@ -1227,126 +1304,126 @@ namespace RSPP.Configurations
                 if (appdetails.AgencyId == 1)
                 {
                     appdetail = (from a in _context.ApplicationRequestForm
-                                       join g in _context.GovernmentAgency on a.ApplicationId equals g.ApplicationId
-                                       where a.ApplicationId == ApplicationId
-                                       select new MyApplicationRequestForm
-                                       {
-                                           ApplicationId = a.ApplicationId,
-                                           AgencyId = a.AgencyId,
-                                           LineOfBusinessId = a.LineOfBusinessId,
-                                           DateofEstablishment = a.DateofEstablishment,
-                                           CompanyEmail = a.CompanyEmail,
-                                           CompanyWebsite = a.CompanyWebsite,
-                                           AgencyName = a.AgencyName,
-                                           PostalAddress = a.PostalAddress,
-                                           PhoneNum = a.PhoneNum,
-                                           CompanyAddress = a.CompanyAddress,
-                                           CacregNum = a.CacregNum,
-                                           NameOfAssociation = a.NameOfAssociation,
-                                           ServicesProvidedInPort = g.ServicesProvidedInPort,
-                                           AnyOtherRelevantInfo = g.AnyOtherRelevantInfo,
-                                           ApplicationTypeId = a.ApplicationTypeId
-                                       }).ToList().LastOrDefault();
+                                 join g in _context.GovernmentAgency on a.ApplicationId equals g.ApplicationId
+                                 where a.ApplicationId == ApplicationId
+                                 select new MyApplicationRequestForm
+                                 {
+                                     ApplicationId = a.ApplicationId,
+                                     AgencyId = a.AgencyId,
+                                     LineOfBusinessId = a.LineOfBusinessId,
+                                     DateofEstablishment = a.DateofEstablishment,
+                                     CompanyEmail = a.CompanyEmail,
+                                     CompanyWebsite = a.CompanyWebsite,
+                                     AgencyName = a.AgencyName,
+                                     PostalAddress = a.PostalAddress,
+                                     PhoneNum = a.PhoneNum,
+                                     CompanyAddress = a.CompanyAddress,
+                                     CacregNum = a.CacregNum,
+                                     NameOfAssociation = a.NameOfAssociation,
+                                     ServicesProvidedInPort = g.ServicesProvidedInPort,
+                                     AnyOtherRelevantInfo = g.AnyOtherRelevantInfo,
+                                     ApplicationTypeId = a.ApplicationTypeId
+                                 }).ToList().LastOrDefault();
 
 
                 }
                 else if (appdetails.AgencyId == 2)
                 {
                     appdetail = (from a in _context.ApplicationRequestForm
-                                       join g in _context.LogisticsServiceProvider on a.ApplicationId equals g.ApplicationId
-                                       where a.ApplicationId == ApplicationId
-                                       select new MyApplicationRequestForm
-                                       {
-                                           ApplicationId = a.ApplicationId,
-                                           AgencyId = a.AgencyId,
-                                           LineOfBusinessId = a.LineOfBusinessId,
-                                           DateofEstablishment = a.DateofEstablishment,
-                                           CompanyEmail = a.CompanyEmail,
-                                           CompanyWebsite = a.CompanyWebsite,
-                                           AgencyName = a.AgencyName,
-                                           PostalAddress = a.PostalAddress,
-                                           CompanyAddress = a.CompanyAddress,
-                                           AnyOtherInfo = g.AnyOtherInfo,
-                                           CrffnRegistrationNum = g.CrffnRegistrationNum,
-                                           CrffnRegistratonExpiryDate = g.CrffnRegistratonExpiryDate,
-                                           CustomLicenseExpiryDate = g.CustomLicenseExpiryDate,
-                                           CustomLicenseNum = g.CustomLicenseNum,
-                                           LineOfBusiness = g.LineOfBusiness,
-                                           PhoneNum = a.PhoneNum,
-                                           OtherLicense = g.OtherLicense,
-                                           NameOfAssociation = a.NameOfAssociation,
-                                           CacregNum = a.CacregNum,
-                                           OtherLicenseExpiryDate = g.OtherLicenseExpiryDate,
-                                           ApplicationTypeId = a.ApplicationTypeId
-                                       }).ToList().LastOrDefault();
+                                 join g in _context.LogisticsServiceProvider on a.ApplicationId equals g.ApplicationId
+                                 where a.ApplicationId == ApplicationId
+                                 select new MyApplicationRequestForm
+                                 {
+                                     ApplicationId = a.ApplicationId,
+                                     AgencyId = a.AgencyId,
+                                     LineOfBusinessId = a.LineOfBusinessId,
+                                     DateofEstablishment = a.DateofEstablishment,
+                                     CompanyEmail = a.CompanyEmail,
+                                     CompanyWebsite = a.CompanyWebsite,
+                                     AgencyName = a.AgencyName,
+                                     PostalAddress = a.PostalAddress,
+                                     CompanyAddress = a.CompanyAddress,
+                                     AnyOtherInfo = g.AnyOtherInfo,
+                                     CrffnRegistrationNum = g.CrffnRegistrationNum,
+                                     CrffnRegistratonExpiryDate = g.CrffnRegistratonExpiryDate,
+                                     CustomLicenseExpiryDate = g.CustomLicenseExpiryDate,
+                                     CustomLicenseNum = g.CustomLicenseNum,
+                                     LineOfBusiness = g.LineOfBusiness,
+                                     PhoneNum = a.PhoneNum,
+                                     OtherLicense = g.OtherLicense,
+                                     NameOfAssociation = a.NameOfAssociation,
+                                     CacregNum = a.CacregNum,
+                                     OtherLicenseExpiryDate = g.OtherLicenseExpiryDate,
+                                     ApplicationTypeId = a.ApplicationTypeId
+                                 }).ToList().LastOrDefault();
                 }
                 else if (appdetails.AgencyId == 3)
                 {
                     appdetail = (from a in _context.ApplicationRequestForm
-                                       where a.ApplicationId == ApplicationId
-                                       select new MyApplicationRequestForm
-                                       {
-                                           ApplicationId = a.ApplicationId,
-                                           AgencyId = a.AgencyId,
-                                           LineOfBusinessId = a.LineOfBusinessId,
-                                           DateofEstablishment = a.DateofEstablishment,
-                                           CompanyEmail = a.CompanyEmail,
-                                           CompanyWebsite = a.CompanyWebsite,
-                                           AgencyName = a.AgencyName,
-                                           PostalAddress = a.PostalAddress,
-                                           CompanyAddress = a.CompanyAddress,
-                                           PhoneNum = a.PhoneNum,
-                                           ApplicationTypeId = a.ApplicationTypeId
-                                           //Terminal = (from t in _context.PortOffDockTerminalOperator where t.ApplicationId == ApplicationId select t).ToList(),
-                                       }).ToList().LastOrDefault();
+                                 where a.ApplicationId == ApplicationId
+                                 select new MyApplicationRequestForm
+                                 {
+                                     ApplicationId = a.ApplicationId,
+                                     AgencyId = a.AgencyId,
+                                     LineOfBusinessId = a.LineOfBusinessId,
+                                     DateofEstablishment = a.DateofEstablishment,
+                                     CompanyEmail = a.CompanyEmail,
+                                     CompanyWebsite = a.CompanyWebsite,
+                                     AgencyName = a.AgencyName,
+                                     PostalAddress = a.PostalAddress,
+                                     CompanyAddress = a.CompanyAddress,
+                                     PhoneNum = a.PhoneNum,
+                                     ApplicationTypeId = a.ApplicationTypeId
+                                     //Terminal = (from t in _context.PortOffDockTerminalOperator where t.ApplicationId == ApplicationId select t).ToList(),
+                                 }).ToList().LastOrDefault();
                 }
                 else if (appdetails.AgencyId == 4)
                 {
                     appdetail = (from a in _context.ApplicationRequestForm
-                                       join g in _context.ShippingAgency on a.ApplicationId equals g.ApplicationId
-                                       where a.ApplicationId == ApplicationId
-                                       select new MyApplicationRequestForm
-                                       {
-                                           ApplicationId = a.ApplicationId,
-                                           AgencyId = a.AgencyId,
-                                           LineOfBusinessId = a.LineOfBusinessId,
-                                           DateofEstablishment = a.DateofEstablishment,
-                                           CompanyEmail = a.CompanyEmail,
-                                           CompanyWebsite = a.CompanyWebsite,
-                                           AgencyName = a.AgencyName,
-                                           PostalAddress = a.PostalAddress,
-                                           PhoneNum = a.PhoneNum,
-                                           CompanyAddress = a.CompanyAddress,
-                                           AnyOtherInfo = g.AnyOtherInfo,
-                                           CargoType = g.CargoType,
-                                           LineOfBusiness = g.LineOfBusiness,
-                                           VesselLinesRepresentedInNigeria = g.VesselLinesRepresentedInNigeria,
-                                           Nparegnum = g.Nparegnum,
-                                           Nimasaregnum = g.Nimasaregnum,
-                                           ApplicationTypeId = a.ApplicationTypeId
-                                       }).ToList().LastOrDefault();
+                                 join g in _context.ShippingAgency on a.ApplicationId equals g.ApplicationId
+                                 where a.ApplicationId == ApplicationId
+                                 select new MyApplicationRequestForm
+                                 {
+                                     ApplicationId = a.ApplicationId,
+                                     AgencyId = a.AgencyId,
+                                     LineOfBusinessId = a.LineOfBusinessId,
+                                     DateofEstablishment = a.DateofEstablishment,
+                                     CompanyEmail = a.CompanyEmail,
+                                     CompanyWebsite = a.CompanyWebsite,
+                                     AgencyName = a.AgencyName,
+                                     PostalAddress = a.PostalAddress,
+                                     PhoneNum = a.PhoneNum,
+                                     CompanyAddress = a.CompanyAddress,
+                                     AnyOtherInfo = g.AnyOtherInfo,
+                                     CargoType = g.CargoType,
+                                     LineOfBusiness = g.LineOfBusiness,
+                                     VesselLinesRepresentedInNigeria = g.VesselLinesRepresentedInNigeria,
+                                     Nparegnum = g.Nparegnum,
+                                     Nimasaregnum = g.Nimasaregnum,
+                                     ApplicationTypeId = a.ApplicationTypeId
+                                 }).ToList().LastOrDefault();
                 }
                 else if (appdetails.AgencyId == 5)
                 {
                     appdetail = (from a in _context.ApplicationRequestForm
-                                       join g in _context.OtherPortServiceProvider on a.ApplicationId equals g.ApplicationId
-                                       where a.ApplicationId == ApplicationId
-                                       select new MyApplicationRequestForm
-                                       {
-                                           ApplicationId = a.ApplicationId,
-                                           AgencyId = a.AgencyId,
-                                           LineOfBusinessId = a.LineOfBusinessId,
-                                           DateofEstablishment = a.DateofEstablishment,
-                                           CompanyEmail = a.CompanyEmail,
-                                           CompanyWebsite = a.CompanyWebsite,
-                                           AgencyName = a.AgencyName,
-                                           PostalAddress = a.PostalAddress,
-                                           PhoneNum = a.PhoneNum,
-                                           CompanyAddress = a.CompanyAddress,
-                                           AnyOtherInfo = g.AnyOtherInfo,
-                                           LineOfBusiness = g.LineOfBusiness,
-                                           ApplicationTypeId = a.ApplicationTypeId
-                                       }).ToList().LastOrDefault();
+                                 join g in _context.OtherPortServiceProvider on a.ApplicationId equals g.ApplicationId
+                                 where a.ApplicationId == ApplicationId
+                                 select new MyApplicationRequestForm
+                                 {
+                                     ApplicationId = a.ApplicationId,
+                                     AgencyId = a.AgencyId,
+                                     LineOfBusinessId = a.LineOfBusinessId,
+                                     DateofEstablishment = a.DateofEstablishment,
+                                     CompanyEmail = a.CompanyEmail,
+                                     CompanyWebsite = a.CompanyWebsite,
+                                     AgencyName = a.AgencyName,
+                                     PostalAddress = a.PostalAddress,
+                                     PhoneNum = a.PhoneNum,
+                                     CompanyAddress = a.CompanyAddress,
+                                     AnyOtherInfo = g.AnyOtherInfo,
+                                     LineOfBusiness = g.LineOfBusiness,
+                                     ApplicationTypeId = a.ApplicationTypeId
+                                 }).ToList().LastOrDefault();
                 }
 
                 else if (appdetails.AgencyId == 6)

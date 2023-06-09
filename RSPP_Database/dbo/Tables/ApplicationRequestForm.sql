@@ -22,6 +22,7 @@
     [CACRegNum] VARCHAR(100) NULL, 
     [NameOfAssociation] VARCHAR(500) NULL, 
     [IsLegacy] VARCHAR(5) NULL, 
+    [IsRead] BIT NOT NULL DEFAULT 0, 
     CONSTRAINT [PK_ApplicationRequestForm_1] PRIMARY KEY CLUSTERED ([ApplicationId] ASC),
     CONSTRAINT [FK_ApplicationRequestForm_Agency] FOREIGN KEY ([AgencyId]) REFERENCES [dbo].[Agency] ([AgencyId])
 );

@@ -8,13 +8,14 @@
 
 
     <div class="content">
-        <h2 class="lefty">All Applications</h2>
+        <h2 class="lefty" style="font-size:25px">All Applications</h2>
         <hr class="clear" />
         <div class="row">
 
-           
 
+        <div style="max-height:995px;overflow-y:scroll;overflow-x:scroll;width:100%;padding-left:22px">
             <table class="table table-striped table-hover dataTable">
+
                 <thead>
                     <tr>
                         <th>Application Ref</th>
@@ -32,71 +33,74 @@
                 <tbody>
                     @foreach (var br in Model)
                     {
-                    <tr>
-                        
-                        <td class="nr">@br.ApplicationId</td>
-                        <td>
-                            <a href="@Url.Action("ApplicationDetails", new { applicationId = br.ApplicationId })">@br.CompanyName
-                            </a>
-                        </td>
-                        <td>@br.AgencyName</td>
+                        <tr>
 
-                        <td>
-                            <span>@br.AmountPaid</span>
-                        </td>
+                            <td class="nr">@br.ApplicationId</td>
+                            <td>
+                                <a href="@Url.Action("ApplicationDetails", new { applicationId = br.ApplicationId })">
+                                    @br.CompanyName
+                                </a>
+                            </td>
+                            <td>@br.AgencyName</td>
 
-                        <td>
-                            @if (br.Status == "Approved")
-                            {
-                                <div class="alert alert-mini alert-success">
-                                    <button type="button" class="use-address media btn btn-success btn-xs"><strong>Certificate Issued</strong> <i class="fa fa-eye"></i></button>
-                                </div>
-                            }
+                            <td>
+                                <span>@br.AmountPaid</span>
+                            </td>
 
-                            else
-                            {
-                                <div class="alert alert-mini alert-info">
-                                    <strong>@br.CurrentStage</strong>
-                                </div>
-                            }
-                        </td>
-                        <td>
-                            @{
-                                if (br.Status == "Rejected")
+                            <td>
+                                @if (br.Status == "Approved")
                                 {
-                                    <div class="btn btn-danger">Rejected</div>
+                                    <div class="alert alert-mini alert-success">
+                                        <button type="button" class="use-address media btn btn-success btn-xs"><strong>Certificate Issued</strong> <i class="fa fa-eye"></i></button>
+                                    </div>
                                 }
-                                else if (br.Status == "Processing")
+
+                                else
                                 {
-                                    <div class="btn btn-warning">Processing</div>
+                                    <div class="alert alert-mini alert-info">
+                                        <strong>@br.CurrentStage</strong>
+                                    </div>
                                 }
-                                else if (br.Status == "Approved")
-                                {
-                                    <div class="btn btn-success">Approved</div>
+                            </td>
+                            <td>
+                                @{
+                                    if (br.Status == "Rejected")
+                                    {
+                                        <div class="btn btn-danger">Rejected</div>
+                                    }
+                                    else if (br.Status == "Processing")
+                                    {
+                                        <div class="btn btn-warning">Processing</div>
+                                    }
+                                    else if (br.Status == "Approved")
+                                    {
+                                        <div class="btn btn-success">Approved</div>
+                                    }
+                                    else if (br.CurrentStageId == 2)
+                                    {
+                                        <div class="btn btn-warning">Payment Pending</div>
+                                    }
                                 }
-                                else if (br.CurrentStageId == 2)
-                                {
-                                    <div class="btn btn-warning">Payment Pending</div>
+                            </td>
+                            <td>
+                                @{
+                                    var date = br.AddedDate == null ? "" : br.AddedDate.Value.ToString("dd-MMM-yyyy");
+                                    <div>@date</div>
                                 }
-                            }
-                        </td>
-                        <td>
-                            @{
-                                var date = br.AddedDate == null ? "" : br.AddedDate.Value.ToString("dd-MMM-yyyy");
-                                <div>@date</div>
-                            }
-                        </td>
-                        <td><div class="badge"><b style="font-size:large">@br.AppProgress</b></div></td>
-                        <td>
-                            <a href="@Url.Action("ViewApplication", new { applicationId = br.ApplicationId})" class="btn btn-xs btn-info">View <i class="fa fa-eye"></i></a>
-                        </td>
-                        <td>
-                            <a href="@Url.Action("TransitionHistory", new { applicationId = br.ApplicationId})" class="btn btn-xs btn-primary">App History <i class="fa fa-eye"></i></a>
-                        </td>
-                    </tr>
+                            </td>
+                            <td><div class="badge"><b style="font-size:large">@br.AppProgress</b></div></td>
+                            <td>
+                                <a href="@Url.Action("ViewApplication", new { applicationId = br.ApplicationId})" class="btn btn-xs btn-info">View <i class="fa fa-eye"></i></a>
+                            </td>
+                            <td>
+                                <a href="@Url.Action("TransitionHistory", new { applicationId = br.ApplicationId})" class="btn btn-xs btn-primary">App History <i class="fa fa-eye"></i></a>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
+        </div>
+       
         </div></div>
 
         @section scripts

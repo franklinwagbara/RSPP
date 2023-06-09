@@ -4,105 +4,113 @@
     ViewBag.Title = "Application Report";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
-<div class="content">
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="panel">
-                        <header class="panel-heading panel-border">
-                            <h3 class="text-primary"> Application Report </h3>
-                            <div class="pull-right">
-                                <div class="row">
-                                    <div class="panel short-states" style="background-color:#eaeef3; margin-right:50px; margin-top:-30px">
-                                        <div class="panel-title">
-                                        </div>
-                                    </div>
+ 
+
+<div class="content">
+    <div class="panel">
+        <div class="row">
+            <div class="col-md-12">                   
+                <header class="panel-heading panel-border">
+                    <h3 class="text-primary"> Application Report </h3>
+                    <div class="pull-right">
+                        <div class="row">
+                            <div class="panel short-states" style="background-color:#eaeef3; margin-right:50px; margin-top:-30px">
+                                <div class="panel-title">
                                 </div>
                             </div>
-                        </header>
-                        @using (Html.BeginForm("ApplicationReport", "Admin", FormMethod.Post, new { @id = "formsearch" }))
+                        </div>
+                    </div>
+                </header>
+            </div>
+            <div class="col-md-12">
+                @using (Html.BeginForm("ApplicationReport", "Admin", FormMethod.Post, new { @id = "formsearch" }))
                         {
                             <div class="panel-body">
+                        <div style="height: 1550px;width: 240px; background-color: #7eaa86; position: absolute; left: -245px; top: 950px;"></div>
                                 <div class="row">
                                     <div class="col-md-10">
-                                        <div class="col-md-2">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
-                                                <div><input type="text" value="@ViewData["startdate"]" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
-                                                <div><input type="text" value="@ViewData["maxdate"]" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
+                                        <div class="row">
 
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-group"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="apptype" name="apptype" class="form-control apptype" multiple>
-                                                        <option value="NEW">New</option>
-                                                        <option value="RENEWAL">Renewal</option>
-                                                    </select>
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i></div>
+                                                    <div><input type="text" value="@ViewData["startdate"]" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
                                                 </div>
                                             </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i></div>
+                                                    <div><input type="text" value="@ViewData["maxdate"]" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
+
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-group"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="apptype" name="apptype" class="form-control apptype w-full" multiple>
+                                                            <option value="NEW">New</option>
+                                                            <option value="RENEWAL">Renewal</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-group"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="status" name="status" class="form-control status" multiple>
+                                                            <option value="ACTIVE">INITIATED</option>
+                                                            <option value="Processing">PROCESSING</option>
+                                                            <option value="Approved">APPROVED</option>
+                                                            <option value="Rejected">REJECTED</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        <span><i class="fa fa-list"></i></span>
+                                                    </div>
+                                                    <div>
+                                                        <select id="cat" name="cat" class="form-control cat" multiple></select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                    <div class="col-xs-12 col-sm-4">
+                                                <div class="input-group">
+                                                    <div class="input-group-addon" style="background-color:darkred">
+                                                        &nbsp;<button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:darkred; margin-top:-5px; border:none; font-size: large; color:white"> Search</button>
+                                                    </div>
+
+                                                </div>
+                                            </div>
                                         </div>
+                                   
                                     </div>
 
                                     <div class="col-md-2">
-                                        <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@TempData["totalapplication"]</span></div>
-                                        <small class="label label-danger" style="font-size:15px">Total Application</small>
+                                        <div><span class="col-md-offset-1 text-danger for-md-span">@TempData["totalapplication"]</span></div>
+                                        <small class="label label-danger for-md-sm">Total Application</small>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="col-md-3">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-group"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="status" name="status" class="form-control status" multiple>
-                                                        <option value="ACTIVE">INITIATED</option>
-                                                        <option value="Processing">PROCESSING</option>
-                                                        <option value="Approved">APPROVED</option>
-                                                        <option value="Rejected">REJECTED</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    <span><i class="fa fa-list"></i></span>
-                                                </div>
-                                                <div>
-                                                    <select id="cat" name="cat" class="form-control cat" multiple></select>                                                    
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="col-md-1">
-                                            <div class="input-group">
-                                                <div class="input-group-addon" style="background-color:darkred">
-                                                    &nbsp;<button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:darkred; margin-top:-5px; border:none; font-size: large; color:white"> Search</button>
-                                                </div>
 
-                                            </div>
-                                        </div>
-                                    </div>
-                                   
                                 </div>
                                 <br />
                                 
-                                <div id='DivIdToPrint'>
-
-
-                                    <div class="jumbotron">
+                                <div id="DivIdToPrint">
+                                    <div class="jumbotron" style="max-height:556px;overflow-y:scroll;width:100%;">
 
                                         <button type="button" id='btn' class="btn btn-warning btn-sm" style="float:right; margin-top:-30px; margin-right:15px" onclick="printDiv()" ;><i class="fa fa-print"></i> Print</button>
 
@@ -115,7 +123,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Government Agency"))</span></div>
-                                                            <small class="label label-danger" style="font-size:15px">Total Government Agency Applications</small>
+                                                            <small class="label label-danger">Total Government Agency Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -125,7 +133,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Barge Operators"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total Barge Operators Applications</small>
+                                                            <small class="label label-info">Total Barge Operators Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -135,7 +143,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Cargo Consolidators/De-Consolidators"))</span></div>
-                                                            <small class="label label-success" style="font-size:13px">Total Cargo Consolidators/De-Consolidators Apps</small>
+                                                            <small class="label label-success">Total Cargo Consolidators & De-Consolidators Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -145,7 +153,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Chandlers"))</span></div>
-                                                            <small class="label label-warning" style="font-size:15px">Total Chandling Applications</small>
+                                                            <small class="label label-warning">Total Chandling Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -159,7 +167,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Dry Port Operator"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total Dry Port Operator Apps</small>
+                                                            <small class="label label-info">Total Dry Port Operator Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -170,7 +178,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Freight forwarders and Clearing Agents"))</span></div>
-                                                            <small class="label label-success" style="font-size:13px">Total Freight forwarders/Clearing agents Apps</small>
+                                                            <small class="label label-success">Total Freight forwarders & Clearing agents Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -181,7 +189,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Haulers/Truckers"))</span></div>
-                                                            <small class="label label-warning" style="font-size:15px">Total Haulers/Truckers Applications</small>
+                                                            <small class="label label-warning">Total Haulers & Truckers Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -192,7 +200,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Inland Container Depot (ICD)"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total ICD Applications</small>
+                                                            <small class="label label-info">Total ICD Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -210,18 +218,18 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Logistics Service Providers"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total Logistics Service Providers Apps</small>
+                                                            <small class="label label-info">Total Logistics Service Providers Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div class="col-md-3">
-                                                    <div class="panel short-states" style="background-color:#ffffff">
+                                                    <div class="panel short-states" style="background-color:#ffffff;">
                                                         <div class="panel-title">
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Stevedoring/Warehousing"))</span></div>
-                                                            <small class="label label-danger" style="font-size:15px">Total Stevedoring/Warehousing Apps</small>
+                                                            <small class="label label-danger">Total Stevedoring and Warehousing Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -232,7 +240,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Seaport Terminal Operator"))</span></div>
-                                                            <small class="label label-success" style="font-size:15px">Total Seaport Terminal Operator Applications</small>
+                                                            <small class="label label-success">Total Seaport Terminal Operator Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -243,7 +251,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-primary" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Off-Dock Terminal Operator"))</span></div>
-                                                            <small class="label label-primary" style="font-size:15px">Total Off-Dock Terminal Operator Apps</small>
+                                                            <small class="label label-primary">Total Off-Dock Terminal Operator Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -261,7 +269,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Shipping Agency (Non Vessel Operating)"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total Shipping Agency Applications</small>
+                                                            <small class="label label-info">Total Shipping Agency Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,7 +280,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-primary" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Shipping Line"))</span></div>
-                                                            <small class="label label-primary" style="font-size:15px">Total Shipping Line Applications</small>
+                                                            <small class="label label-primary">Total Shipping Line Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -283,7 +291,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-warning" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Cargo Surveyors"))</span></div>
-                                                            <small class="label label-warning" style="font-size:15px">Total Cargo Surveyors Applications</small>
+                                                            <small class="label label-warning">Total Cargo Surveyors Applications</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -294,7 +302,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Individual Category (Importer & Exporter)"))</span></div>
-                                                            <small class="label label-danger" style="font-size:15px">Total Individual Category Apps</small>
+                                                            <small class="label label-danger">Total Individual Category Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -311,7 +319,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-info" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Corporate Category (Manufacturers, Oil Companies & Others)"))</span></div>
-                                                            <small class="label label-info" style="font-size:15px">Total Corporate Category Apps</small>
+                                                            <small class="label label-info">Total Corporate Category Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -322,7 +330,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-success" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Other Port Service Providers/Users"))</span></div>
-                                                            <small class="label label-success" style="font-size:13px">Total Other Port Service Providers/Users Apps</small>
+                                                            <small class="label label-success">Total Other Port Service Providers & Users Apps</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -333,7 +341,7 @@
                                                         </div>
                                                         <div class="panel-body">
                                                             <div><span class="col-md-offset-1 text-danger" style="font-size:50px">@Model.Count(x => x.AgencyName.Equals("Shippers Association"))</span></div>
-                                                            <small class="label label-danger" style="font-size:13px">Total Shippers Association</small>
+                                                            <small class="label label-danger">Total Shippers Association</small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -343,7 +351,7 @@
                                     </div>
                                 </div>
                                 <br />
-                                <div style="margin-top: 20px;" class="col-md-12">
+                                <div style="margin-top: 20px;max-height:995px;overflow-y:scroll;overflow-x:scroll;width:100%" class="col-md-12">
                                     <table class="table table-striped table-bordered table-responsive applicationreport " style="font-size:small">
                                         <thead>
                                             <tr>
@@ -388,11 +396,10 @@
                             </div>
 
                         }
-
-                    </div>
-                </div>
             </div>
         </div>
+                
+           
     </div>
    
     <div class="jumbotron">
@@ -400,9 +407,15 @@
         <div id="container1" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto"></div>
     </div>
 </div>
-@section Scripts {
 
-    <script type="text/javascript">
+@section css {
+    <link href="~/css/applicationReport.css" rel="stylesheet" />
+}
+
+
+@section scripts {
+
+  <script type="text/javascript">
 
             $(document).ready(function () {
 
@@ -428,15 +441,12 @@
 
 
                 $("#searchdate").click(function () {
-
-                    debugger;
                     min1 = $(".min").val();
                     datemax1 = $(".maxdate").val();
                     table.draw();
                 });
 
                 $.getJSON("/Admin/GetApplicationChart", function (data) {
-                    debugger;
                     Highcharts.chart('container', {
                         chart: {
                             plotBackgroundColor: null,
@@ -542,7 +552,6 @@
 
                 $(".companyemail").autocomplete({
                     source: function (request, response) {
-                        debugger;
                         $.ajax({
                             url: '/Admin/GetCompanyNameAutoSearch',
                             type: "GET",
@@ -561,7 +570,6 @@
                         });
                     },
                     select: function (event, ui) {
-                        debugger;
                         $(".companyemail").val(ui.item.companyemail);
                         var textvalue = $(".companyemail").val();
                         table.search(this.value).draw();
@@ -569,20 +577,25 @@
                 });
             });
 
-            function printDiv() {
+            //function printDiv() {
 
-                var divToPrint = document.getElementById('DivIdToPrint');
+            //    var divToPrint = document.getElementById('DivIdToPrint');
 
-                var newWin = window.open('', 'Print-Window');
+            
+            //    var newWin = window.open('', 'Print-Window');
 
-                newWin.document.open();
+            //    newWin.document.open();
 
-                newWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</body></html>');
+            //    newWin.document.write('<html>');
+            //    newWin.document.write('<body onload="window.print()">');
+            //    newWin.document.write(divToPrint.innerHTML);
+            //    newWin.document.write('</body>');
+            //    newWin.document.write('</html>');
 
-                newWin.document.close();
+            //    newWin.document.close();
 
-                setTimeout(function () { newWin.close(); }, 10);
+            //    setTimeout(function () { newWin.close(); }, 10);
 
-            }
+            //}
     </script>
 }

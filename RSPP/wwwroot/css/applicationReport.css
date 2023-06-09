@@ -1,0 +1,58 @@
+﻿
+.label {
+    display: block !important;
+    white-space:inherit;
+}
+
+
+.for-md-span {
+    font-size: 50px;
+}
+
+.for-md-sm {
+    font-size: 15px;
+}
+
+
+@media screen and (max-width: 1194px) {
+    .col-wrapper {
+        position: absolute !important;
+        top: -50px;
+        right: 12px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .label {
+        font-size: 10px;
+    }
+}
+    
+
+@media screen and (max-width: 769px) {
+    .col-wrapper {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 554px) {
+    .panel-body {
+        text-align: center;
+    }
+
+    .label {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 525px){
+    .text-primary {
+        text-align: center !important;
+    }
+}
+
+@media screen and (max-width: 379px){
+    .label {
+        font-size: 10px;
+    }
+}

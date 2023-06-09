@@ -25,11 +25,12 @@
     <environment include="Development">
         <link href="~/ela/css/style.css" rel="stylesheet" />
         <link href="~/css/bootstrap.css" rel="stylesheet" />
-
+        <link href="~/css/bootstrap-theme.min.css" rel="stylesheet" />
         <link href="~/css/MainStyle.css" rel="stylesheet" />
         <link href="~/css/otherStyle.css" rel="stylesheet" />
         <link href="~/css/jquery-ui.css" rel="stylesheet" />
         <link href="~/css/select2.min.css" rel="stylesheet" />
+        
 
         @*<link rel="stylesheet" type="text/css" href="https: //cdn.datatables.net/1.11.2/css/jquery.dataTables.css">*@
 
@@ -44,8 +45,15 @@
         <link href="~/css/nav-side-bar.css" rel="stylesheet" />
 
         <link href="~/css/navbar.css" rel="stylesheet" />
-    </environment>
 
+        <link href="~/css/paymentList.css" rel="stylesheet" />
+
+    </environment>
+    
+    <script src="~/js/jquery-3.3.1.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery-ui.min.js"></script>
+    <script src="~/js/select2.min.js"></script>
 
    
     <style>
@@ -139,7 +147,7 @@
 
     </style>
 
-    @*@RenderSection("css", false)*@
+    @RenderSection("css", false)
 </head>
 <body>
 
@@ -149,7 +157,7 @@
     <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86; height: 70px !important" role="navigation">
         <div class="navbar-header" style="float:left">
             <div class="navbar-brand navbar-left">
-                <a href="#">
+                <a href="/Admin/Index">
                     <img src="@Url.Content("~/images/nsclogos.jpeg")" width="150" style="margin-top:10px" />
                 </a>
             </div>
@@ -186,16 +194,16 @@
         </div>
     </div>
 
-    <div  id="appContainer" class="d-flex flex-column flex-md-row" style="background-color:#7eaa86">
+    <div  id="appContainer" class="d-flex flex-column flex-md-row" style="background-color:#7eaa86;">
 
 
         
         <br />
-        <div class="ctrl-sidebar" style="background-color:red !important">
-            <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll">
+        <div class="ctrl-sidebar">
+            <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll;">
                 <br />
 
-                <ul class="parent" style="background-color:#7eaa86; color:white">
+                <ul class="parent" style="background-color:#7eaa86;color:white;margin-top:-17px;">
                     <li>
                         <a href="#" class="nav-link" aria-current="page">
                             <small class="text-white">@rolename</small>
@@ -554,17 +562,15 @@
                 crossorigin="anonymous"
                 integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
         </script>*@
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        @*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
 
-        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+       @* <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>
-        <script src="~/js/jquery-3.3.1.js"></script>
-        <script src="~/js/bootstrap.min.js"></script>
-        <script src="~/js/jquery-ui.min.js"></script>
+        </script>*@
+        
 
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
@@ -578,8 +584,8 @@
         @*<script src="~/js/sidebarmenu.js"></script>*@
         <script src="~/js/jquery.datetimepicker.full.min.js"></script>
         <script src="~/js/bootbox.min.js"></script>
+        <script src="~/js/jquery.ui.widget.js"></script>
         <script src="~/js/jquery.multiselect.js"></script>
-        <script src="~/js/select2.min.js"></script>
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script src="https://code.highcharts.com/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/modules/export-data.js"></script>

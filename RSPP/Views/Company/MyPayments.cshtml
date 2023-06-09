@@ -19,7 +19,7 @@
 <br /><br />
 @if (ViewBag.MyPaymentsResponseMessage == "SUCCESS")
 {
-    <div class="row xrow">
+    <div class="row xrow" style="overflow-x:scroll">
         <div class="col-md-12">
             <table class="table dataTable">
                 <thead>
@@ -45,7 +45,7 @@
                         <td>@paymentlog.TxnAmount</td>
                         @if (paymentlog.Status.Contains("INIT"))
                         {
-                            <td><span class="badge badge-warning">Payment Pending</span></td>
+                            <td><span class="badge badge-warning" style="padding: 10px">Payment Pending</span></td>
                         }
                         else
                         {
