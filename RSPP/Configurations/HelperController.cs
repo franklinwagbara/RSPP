@@ -761,7 +761,7 @@ namespace RSPP.Configurations
                                      on a.ApplicationId equals app.ApplicationId
                                      where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46)
                                      && app.CompanyEmail == userMaster.UserEmail
-                                     orderby app.AddedDate ascending
+                                     orderby app.AddedDate descending
                                      select new { a, app }).ToList();
 
                 // get messages from the above collection
