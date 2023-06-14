@@ -1,11 +1,9 @@
 ﻿using MimeKit;
 using MailKit.Security;
-using MailKit.Net.Smtp;
 using System.Text.RegularExpressions;
 using System;
-using Microsoft.AspNetCore.Mvc;
 using RSPP.Models;
-using log4net.Repository.Hierarchy;
+using MailKit.Net.Smtp;
 
 namespace RSPP.Helpers
 {
@@ -74,7 +72,7 @@ namespace RSPP.Helpers
                 //var smtpPassword = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_PASSWORD")))
                 //? Environment.GetEnvironmentVariable("SMTP_PASSWORD") : _configuration["SMTP_PASSWORD"];
 
-                smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.StartTls);
+                smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.Auto);
 
                 smtp.Authenticate(smtpUsername, smtpPassword);
                 smtp.Send(email);

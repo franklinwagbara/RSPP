@@ -264,7 +264,7 @@ namespace RSPP.Controllers
         private string SendConfirmationEmail(string email, string token)
         {
             string result;
-            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng"); //new MailAddress("quadrymustaqeem@gmail.com","Mustaqeem Quadry");
+            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng");
             var toAddress = new MailAddress(email);
             const string fromPassword = "nsc2018#";
             const string subject = "Confirm your email address";

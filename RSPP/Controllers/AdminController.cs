@@ -924,12 +924,12 @@ namespace RSPP.Controllers
                         companydetails.UserEmail,
                         "Email Confirmation",
                         emailMessage);
-                    if (!emailResponse.Result.Status)
+                    if (!emailResponse.Status)
                     {
                         return Json(new
                         {
                             Status = status,
-                            emailResponse.Result.Message
+                            emailResponse.Message
                         });
                     }
                     emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
