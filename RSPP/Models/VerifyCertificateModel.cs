@@ -5,8 +5,8 @@ namespace RSPP.Models
     public class VerifyCertificateModel
     {
         [Required]
-        [StringLength(30, ErrorMessage ="Please enter a valid certificate id")]
-        public string CertificateId { get; set; }
-        public string ErrorMessage { get; set; } = null;
+        [RegularExpression(@"^(NSC\/RRPSPU\/)\d{3}\/\d{4}$",ErrorMessage ="Invalid certificate id provided")]
+        public string LicenseReference { get; set; } = string.Empty;
+        public string ErrorMessage { get; set; } = string.Empty;
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Rotativa.AspNetCore;
 using RSPP.Controllers;
 using RSPP.Helpers;
 using RSPP.Models;
@@ -10,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Policy;
-using System.Threading.Tasks;
 
 namespace RSPP.Configurations
 {

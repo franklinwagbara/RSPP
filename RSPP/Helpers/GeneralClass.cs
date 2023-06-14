@@ -1,9 +1,6 @@
 ﻿using log4net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
-using RSPP.Configurations;
-using RSPP.Controllers;
 using RSPP.Models.DB;
 using System;
 using System.Collections.Generic;
@@ -14,7 +11,6 @@ using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RSPP.Helpers
 {

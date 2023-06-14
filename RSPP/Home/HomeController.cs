@@ -6,9 +6,7 @@ using RSPP.Configurations;
 using RSPP.Models;
 using RSPP.Models.DB;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace RSPP.Home
 {
@@ -34,13 +32,14 @@ namespace RSPP.Home
 
         public ActionResult VerifyCertificate()
         {
-            return View();
+            var model = new VerifyCertificateModel();
+            return View(model);
         }
 
         /// <summary>
-        /// Displays a certificate in the browser, if the permit number is found
+        /// Displays a certificate in the browser, if the certificate license reference number is found
         /// </summary>
-        /// <param name="id">the permit number</param>
+        /// <param name="certificate">the verify certificate model</param>
         /// <returns>A pdf or an error response</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -52,26 +51,30 @@ namespace RSPP.Home
                 return View("VerifyCertificate", certificate);
             }
 
-            if (!certificate.CertificateId.All(Char.IsDigit))
-                return View("VerifyCertificate", certificate);
-
-            certificate.ErrorMessage = "Unable to verify certificate";
+            certificate.ErrorMessage = "Unable to verify provided certificate id";
 
             try
             {
-
                 var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-                var pdf = _helpersController.ViewCertificate(certificate.CertificateId.ToString(), Host);
+                var applicationId = (from app in _context.ApplicationRequestForm
+                                     where app.LicenseReference == certificate.LicenseReference
+                                     select app.ApplicationId).FirstOrDefault();
 
-                if (pdf != null)
+                if (applicationId != null)
                 {
-                    certificate.ErrorMessage = "";
 
-                    return new ViewAsPdf("ViewCertificate", pdf)
+                    var pdf = _helpersController.ViewCertificate(applicationId, Host);
+
+                    if (pdf != null)
                     {
-                        PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
-                    };
+                        certificate.ErrorMessage = "";
+
+                        return new ViewAsPdf("ViewCertificate", pdf)
+                        {
+                            PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+                        };
+                    }
                 }
 
             }

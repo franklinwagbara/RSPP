@@ -59,8 +59,12 @@
                             <div class="">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa text-dark"></i>Certificate ID</span>
-                                    @Html.TextBoxFor(v => v.CertificateId, new { @class = "form-control", @placeholder = "Enter Certificate Id", @type = "text", @autocomplete = "off" })
-                                    @Html.ValidationMessageFor(p => p.CertificateId,"", new {@class="text-danger"})
+                                    @Html.TextBoxFor(v => v.LicenseReference, new { @class = "form-control", @placeholder = "Enter Certificate Id", @type = "text", @autocomplete = "off" })
+                                    @Html.ValidationMessageFor(p => p.LicenseReference,"", new {@class="text-danger"})
+                                    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                                    {
+                                    @Html.ValidationMessageFor(p => p.LicenseReference,Model.ErrorMessage, new {@class="text-danger"})                                        
+                                    }
                                 </div>
 
                             </div>
