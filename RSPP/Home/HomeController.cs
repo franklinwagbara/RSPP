@@ -55,6 +55,8 @@ namespace RSPP.Home
             if (!certificate.CertificateId.All(Char.IsDigit))
                 return View("VerifyCertificate", certificate);
 
+            certificate.ErrorMessage = "Unable to verify certificate";
+
             try
             {
 
@@ -64,6 +66,7 @@ namespace RSPP.Home
 
                 if (pdf != null)
                 {
+                    certificate.ErrorMessage = "";
 
                     return new ViewAsPdf("ViewCertificate", pdf)
                     {
@@ -76,7 +79,8 @@ namespace RSPP.Home
             {
                 throw ex;
             }
-            return View("Home");
+
+            return View("VerifyCertificate", certificate);
         }
     }
 }
