@@ -802,10 +802,10 @@ namespace RSPP.Controllers
             try
             {
                 AppResponse appResponse = _helpersController.ChangePassword(_helpersController.getSessionEmail(), model.OldPassword, model.NewPassword);
-                log.Info("Response from Elps =>" + appResponse.message);
+                log.Info("Response from shippers council =>" + appResponse.message);
                 if (appResponse.message.Trim() != "SUCCESS")
                 {
-                    responseMessage = "An Error Message occured during Service Call to Elps Server, Please try again Later";
+                    responseMessage = "An Error occurred, Please try again Later";
                 }
                 else
                 {
@@ -910,6 +910,7 @@ namespace RSPP.Controllers
             {
                 companydetails.CompanyName = model.CompanyName;
                 companydetails.PhoneNum = model.PhoneNum;
+
                 if (companydetails.UserEmail != model.EmailForUpdate)
                 {
                     companydetails.UserEmail = model.EmailForUpdate;
@@ -923,12 +924,12 @@ namespace RSPP.Controllers
                         companydetails.UserEmail,
                         "Email Confirmation",
                         emailMessage);
-                    if (!emailResponse.Status)
+                    if (!emailResponse.Result.Status)
                     {
                         return Json(new
                         {
                             Status = status,
-                            emailResponse.Message
+                            emailResponse.Result.Message
                         });
                     }
                     emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
@@ -945,6 +946,10 @@ namespace RSPP.Controllers
 
                 status = "success";
                 message = "Company details updated. " + emailResponseMessage;
+            }
+            else
+            {
+                message = "No updates were made.";
             };
 
             return Json(new

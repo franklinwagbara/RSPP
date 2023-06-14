@@ -1081,7 +1081,7 @@ namespace RSPP.Configurations
 
             try
             {
-                Logger.Info("About to ChangePassword On Elps with Email User => " + useremail);
+                Logger.Info("About to ChangePassword with Email User => " + useremail);
 
                 var oldpass = generalClass.Encrypt(oldPassword);
                 var newpass = generalClass.Encrypt(newPassword);
