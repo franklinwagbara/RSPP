@@ -1,6 +1,5 @@
 
 //using BHP.Controllers.RequestProposal;
-using RSPP.Helpers;
 using RSPP.Models.DB;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -14,12 +13,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Rotativa.AspNetCore;
 using System;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
-using RSPP.Controllers;
-using RSPP.Job;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace RSPP
 {

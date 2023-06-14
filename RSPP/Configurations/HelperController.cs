@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Rotativa.AspNetCore;
 using RSPP.Controllers;
 using RSPP.Helpers;
 using RSPP.Models;
@@ -10,8 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Policy;
-using System.Threading.Tasks;
 
 namespace RSPP.Configurations
 {
@@ -761,7 +758,7 @@ namespace RSPP.Configurations
                                      on a.ApplicationId equals app.ApplicationId
                                      where (a.NextStateId == 1 || a.NextStateId == 2 || a.NextStateId == 3 || a.NextStateId == 4 || a.NextStateId == 10 || a.NextStateId == 21 || a.NextStateId == 46)
                                      && app.CompanyEmail == userMaster.UserEmail
-                                     orderby app.AddedDate ascending
+                                     orderby app.AddedDate descending
                                      select new { a, app }).ToList();
 
                 // get messages from the above collection
@@ -1081,7 +1078,7 @@ namespace RSPP.Configurations
 
             try
             {
-                Logger.Info("About to ChangePassword On Elps with Email User => " + useremail);
+                Logger.Info("About to ChangePassword with Email User => " + useremail);
 
                 var oldpass = generalClass.Encrypt(oldPassword);
                 var newpass = generalClass.Encrypt(newPassword);

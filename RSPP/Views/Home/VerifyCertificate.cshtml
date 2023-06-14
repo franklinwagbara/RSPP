@@ -1,0 +1,117 @@
+﻿@model RSPP.Models.VerifyCertificateModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>RSPP | Verify Certificate</title>
+
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/ogisp_style/font.css" rel="stylesheet" />
+    <link href="~/css/simple-line-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/weather-icons.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/solid.css" integrity="sha384-+0VIRx+yz1WBcCTXBkVQYIBVNEFH1eP6Zknm16roZCyeNg2maWEpk/l/KsyFKs7G" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+
+
+    <style>
+        .container {
+            bottom: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.5);
+            color: black;
+            float: left;
+            min-height: 100%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
+
+    @using (Html.BeginForm("ViewCertificate", "Home", FormMethod.Post, new { @id = "formid" }))
+    {
+        @Html.AntiForgeryToken()
+
+
+        <div class="container">
+
+            <center>
+
+                <div style="margin-top: 175px">
+
+                    <div style="background-color:white; max-width: 400px; padding:30px; border-radius:4px; box-shadow: 0 17px 50px 0 rgba(0,0,0,0.19),0 12px 15px 0 rgba(0,0,0,0.24); overflow: hidden; opacity:0.9" class="text-left">
+
+                        <div class="logo"><big><b class="text-info"></b> </big>  <img src="~/images/nsclogo.png" height="100" width="120" style="margin-left:110px" /></div>
+                        <br />
+                        <div class="form-group">
+                            <div class="">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa text-dark"></i>Certificate ID</span>
+                                    @Html.TextBoxFor(v => v.LicenseReference, new { @class = "form-control", @placeholder = "Enter Certificate Id", @type = "text", @autocomplete = "off" })
+                                    @Html.ValidationMessageFor(p => p.LicenseReference,"", new {@class="text-danger"})
+                                    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                                    {
+                                    @Html.ValidationMessageFor(p => p.LicenseReference,Model.ErrorMessage, new {@class="text-danger"})                                        
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <br />
+
+
+
+                        <div id="RegDiv">
+                            <button class="col-lg-12 col-sm-12 col-xs-12 btn btn-success" id="btnVerify" type="submit" style="height:45px;"> Verify </button>
+                            <button class="col-lg-12 col-sm-12 col-xs-12 btn btn-info" id="btnBackToHome" style="height:45px;margin:1em auto;"> Back to Home </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </center>
+        </div>
+
+        <div style="display:none" id="loadingImage" class="loadingImage">
+            <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+                <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+            </div>
+        </div>
+    }
+
+
+    <script src="~/js/jquery-3.3.1.js"></script>
+    <script src="~/js/bootstrap.min.js"></script>
+    <script src="~/js/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $("#btnBackToHome").click(function (e) {
+                e.preventDefault();
+                window.location.href = "@Url.Action("Index", "Home")";
+
+            });
+
+        });
+
+    </script>
+
+
+</body>
+
+
+</html>

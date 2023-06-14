@@ -239,13 +239,13 @@
 
                 <!-- Modal body -->
                 <div class="modal-body" style="font-weight:500;font-size:large;">
-                    Are u sure you want to continue with this update. This action will send a reset password link to the company's provided email.
+                    
                 </div>
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
 
-                    <button type="button" class="btn btn-success" type="submit" id="btnUpdateCompanyDetailsAndSendLink">Update & Send Confirmation Link</button>
+                    <button type="button" class="btn btn-success" type="submit" id="btnUpdateCompanyDetailsAndSendLink">Update</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
 
@@ -413,6 +413,13 @@
             $('#updateProfile').click(function (e) {
                 e.preventDefault();
                 if ($("#profileform").valid()) {
+                    var message = "Are you sure you want to continue with this update.";
+                    var companyEmail = $('#Profile #UserEmail').val();
+                    var emailForUpdate = $('#Profile #EmailForUpdate').val();
+                    if(companyEmail != emailForUpdate){
+                        message += " This action will send a reset password link to the updated email.";
+                    }
+                    $('#modalConfirmCompanyUpdate .modal-body').html(message);
                     $('#modalConfirmCompanyUpdate').modal('show');
                 }
             });

@@ -1165,10 +1165,10 @@ namespace RSPP.Controllers
             try
             {
                 AppResponse appResponse = _helpersController.ChangePassword(_helpersController.getSessionEmail(), model.OldPassword, model.NewPassword);
-                log.Info("Response from Elps =>" + appResponse.message);
+                log.Info("Response from Shippers council =>" + appResponse.message);
                 if (appResponse.message.Trim() != "SUCCESS")
                 {
-                    responseMessage = "An Error Message occured during Service Call to Elps Server, Please try again Later";
+                    responseMessage = "An Error occured, Please try again Later";
                 }
                 else
                 {
