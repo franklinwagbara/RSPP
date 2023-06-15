@@ -68,6 +68,7 @@ namespace RSPP.Controllers
                     permit.DateIssued = Convert.ToDateTime(details.LicenseIssuedDate);
                     permit.ApprefNo = details.ApplicationId;
                     permit.Amountpaid = Convert.ToDecimal(details.TxnAmount);
+                    permit.AgencyName = details.AgencyName;
                 }
 
             }
