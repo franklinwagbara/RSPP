@@ -599,7 +599,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Logs\" />
     <Folder Include="wwwroot\js\HighChart\" />
     <Folder Include="wwwroot\UploadedFiles\" />
     <Folder Include="wwwroot\UserGuides\Admin\" />
