@@ -1,9 +1,10 @@
-﻿using MimeKit;
-using MailKit.Security;
+﻿//using MimeKit;
 using System.Text.RegularExpressions;
 using System;
 using RSPP.Models;
-using MailKit.Net.Smtp;
+using System.Net.Mail;
+using log4net;
+using System.Reflection;
 
 namespace RSPP.Helpers
 {
@@ -15,14 +16,16 @@ namespace RSPP.Helpers
     {
 
         private const string SENDER_NAME = "Nigerian Shippers Council";
-        private const string SENDER_EMAIL_ADDRESS = "rprspu-noreply@nscregistration.gov.ng";
+        private const string SENDER_EMAIL_ADDRESS = "nscregistration@shipperscouncil.gov.ng";
         private const string SMTP_HOST = "webmail.shipperscouncil.gov.ng";
         private const string MAIL_PASSWORD = "nsc2018#"; // remove this later
         private const int SMTP_PORT = 587;
-        private const string MSG_INVALID_PARAMERTERS= "Invalid email parameters provided";
-        private const string MSG_INVALID_EMAIL_FORMAT= "Email has invalid format";
-        private const string MSG_MESSAGE_SENDING_SUCCESSFUL= "Email sent successfully";
-        private const string MSG_MESSAGE_SENDING_FAILED= "Email sent failed";
+        private const string MSG_INVALID_PARAMERTERS = "Invalid email parameters provided";
+        private const string MSG_INVALID_EMAIL_FORMAT = "Email has invalid format";
+        private const string MSG_MESSAGE_SENDING_SUCCESSFUL = "Email sent successfully";
+        private const string MSG_MESSAGE_SENDING_FAILED = "Email sent failed";
+
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
         /// <summary>
@@ -35,6 +38,7 @@ namespace RSPP.Helpers
         /// <returns>A basic response</returns>
         public static BasicResponse SendEmail(string receiverName, string receiverEmail, string subject, string htmlMessage)
         {
+
             var response = new BasicResponse { Status = false, Message = MSG_MESSAGE_SENDING_FAILED };
 
             if (String.IsNullOrWhiteSpace(receiverName)
@@ -53,38 +57,99 @@ namespace RSPP.Helpers
                 return response;
             }
 
-            var email = new MimeMessage();
-            email.From.Add(new MailboxAddress(SENDER_NAME, SENDER_EMAIL_ADDRESS));
-            email.To.Add(new MailboxAddress(receiverName, receiverEmail));
-            email.Subject = $"{SENDER_NAME} - {subject}";
-            email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+            var password = MAIL_PASSWORD;
+            var username = SENDER_EMAIL_ADDRESS;
+            var emailFrom = SENDER_EMAIL_ADDRESS;
+            var Host = SMTP_HOST;
+            var Port = SMTP_PORT;
+
+            MailMessage _mail = new MailMessage();
+            SmtpClient client = new SmtpClient(Host, Port);
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Credentials = new System.Net.NetworkCredential(username, password);
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+
+            _mail.From = new MailAddress(emailFrom);
+            _mail.To.Add(new MailAddress(receiverEmail));
+            _mail.Subject = subject;
+
+            _mail.Body = htmlMessage;
+            _mail.IsBodyHtml = true;
+            try
             {
-                Text = htmlMessage
-            };
-
-            using (var smtp = new SmtpClient())
-            {
-                var smtpUsername = SENDER_EMAIL_ADDRESS;
-                //var smtpUsername = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_USERNAME")))
-                //? Environment.GetEnvironmentVariable("SMTP_USERNAME") : _configuration["SMTP_USERNAME"];
-
-                var smtpPassword = MAIL_PASSWORD;
-                //var smtpPassword = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_PASSWORD")))
-                //? Environment.GetEnvironmentVariable("SMTP_PASSWORD") : _configuration["SMTP_PASSWORD"];
-
-                smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.Auto);
-
-                smtp.Authenticate(smtpUsername, smtpPassword);
-                smtp.Send(email);
-                smtp.Disconnect(true);
-
+                client.Send(_mail);
                 response.Status = true;
                 response.Message = MSG_MESSAGE_SENDING_SUCCESSFUL;
             }
-
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
             return response;
-
         }
+
+
+        /// <summary>
+        /// Sends an email
+        /// </summary>
+        /// <param name="receiverName">receiver's name</param>
+        /// <param name="receiverEmail">receiver's email</param>
+        /// <param name="subject">subject of the email</param>
+        /// <param name="htmlMessage">body of the email</param>
+        /// <returns>A basic response</returns>
+        //public static BasicResponse SendEmailOld(string receiverName, string receiverEmail, string subject, string htmlMessage)
+        //{
+        //    var response = new BasicResponse { Status = false, Message = MSG_MESSAGE_SENDING_FAILED };
+
+        //    if (String.IsNullOrWhiteSpace(receiverName)
+        //        || String.IsNullOrWhiteSpace(receiverEmail)
+        //        || String.IsNullOrWhiteSpace(subject)
+        //        || String.IsNullOrWhiteSpace(htmlMessage)
+        //        )
+        //    {
+        //        response.Message = MSG_INVALID_PARAMERTERS;
+        //        return response;
+        //    }
+
+        //    if (!IsValidFormat(receiverEmail))
+        //    {
+        //        response.Message = MSG_INVALID_EMAIL_FORMAT;
+        //        return response;
+        //    }
+
+        //    var email = new MimeMessage();
+        //    email.From.Add(new MailboxAddress(SENDER_NAME, SENDER_EMAIL_ADDRESS));
+        //    email.To.Add(new MailboxAddress(receiverName, receiverEmail));
+        //    email.Subject = $"{SENDER_NAME} - {subject}";
+        //    email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
+        //    {
+        //        Text = htmlMessage
+        //    };
+
+        //    using (var smtp = new SmtpClient())
+        //    {
+        //        var smtpUsername = SENDER_EMAIL_ADDRESS;
+        //        //var smtpUsername = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_USERNAME")))
+        //        //? Environment.GetEnvironmentVariable("SMTP_USERNAME") : _configuration["SMTP_USERNAME"];
+
+        //        var smtpPassword = MAIL_PASSWORD;
+        //        //var smtpPassword = (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("SMTP_PASSWORD")))
+        //        //? Environment.GetEnvironmentVariable("SMTP_PASSWORD") : _configuration["SMTP_PASSWORD"];
+
+        //        smtp.Connect(SMTP_HOST, SMTP_PORT, SecureSocketOptions.Auto);
+
+        //        smtp.Authenticate(smtpUsername, smtpPassword);
+        //        smtp.Send(email);
+        //        smtp.Disconnect(true);
+
+        //        response.Status = true;
+        //        response.Message = MSG_MESSAGE_SENDING_SUCCESSFUL;
+        //    }
+
+        //    return response;
+
+        //}
 
         /// <summary>
         /// Validates an email by checking its pattern

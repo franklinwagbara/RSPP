@@ -289,7 +289,6 @@ namespace RSPP.Controllers
             GeneralClass gen = new GeneralClass();
             result = "success";
             result = gen.ConfirmationEmailMessage(body, toAddress, subject);
-            //smtp.Send(message);
             return result;
         }
 
