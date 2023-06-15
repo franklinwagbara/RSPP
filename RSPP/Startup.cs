@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Rotativa.AspNetCore;
 using System;
+using RSPP.Exceptions;
 
 namespace RSPP
 {
@@ -78,9 +79,10 @@ namespace RSPP
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            
-            services.AddControllersWithViews().AddNewtonsoftJson(options =>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllersWithViews(options => options.Filters.Add(new ExceptionHandlingFilter()))
+                .AddRazorRuntimeCompilation();
+
+            services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -102,11 +104,26 @@ namespace RSPP
             }
             else
             {
-                //app.UseExceptionHandler("/Home/Error");
-                app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/Home/Error");
+                //app.UseDeveloperExceptionPage();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.Use(async (context, next) =>
+            {
+
+                await next();
+
+                if (context.Response.StatusCode == 404)
+                {
+                    var requestedPath = context.Request.Host + context.Request.Path;
+                    context.Request.Headers.Add("4o4Path", $" Method=> {context.Request.Method}  Path=>{requestedPath}");
+                    context.Request.Path = "/Home/Error";
+
+                    await next();
+                }
+            });
 
             app.UseSession();
             app.UseHttpsRedirection();

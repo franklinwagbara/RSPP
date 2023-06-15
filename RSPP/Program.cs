@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using RSPP.Job;
 using System.IO;
 
@@ -30,6 +31,10 @@ namespace RSPP
                 {
                     services.AddHostedService<PaymentConfirmationService>();
                     services.AddHostedService<ExpiryCertificateReminderService>();
+                }).ConfigureLogging(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Information);
+                    builder.AddLog4Net("Configurations/log4Net.config");
                 });
 
 
