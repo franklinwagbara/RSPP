@@ -91,9 +91,6 @@ namespace RSPP
         }
 
 
-
-
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         [Obsolete]
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Microsoft.AspNetCore.Hosting.IHostingEnvironment env2)
@@ -104,7 +101,7 @@ namespace RSPP
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/Error404");
                 //app.UseDeveloperExceptionPage();
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
@@ -119,7 +116,7 @@ namespace RSPP
                 {
                     var requestedPath = context.Request.Host + context.Request.Path;
                     context.Request.Headers.Add("4o4Path", $" Method=> {context.Request.Method}  Path=>{requestedPath}");
-                    context.Request.Path = "/Home/Error";
+                    context.Request.Path = "/Home/Error404";
 
                     await next();
                 }
