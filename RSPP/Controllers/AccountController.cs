@@ -2,23 +2,20 @@
 using Microsoft.AspNetCore.Mvc;
 using log4net;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using log4net.Repository;
 using RSPP.Helpers;
 using RSPP.Models.DB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using RSPP.Configurations;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 using System.Net.Mail;
-using System.Web;
 using System.Net;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
+using RSPP.Models.DTOs;
 
 namespace RSPP.Controllers
 {
@@ -30,14 +27,21 @@ namespace RSPP.Controllers
         IHttpContextAccessor _httpContextAccessor;
         HelperController _helpersController;
         GeneralClass generalClass = new GeneralClass();
-        //Emailer emailer = new Emailer();
         public static string roleid;
         public string body;
         public const string sessionEmail = "_sessionEmail";
         public const string sessionStaffName = "_sessionStaffName";
         public const string sessionRoleName = "_sessionRoleName";
         public const string sessionCompanyName = "_sessionCompanyName";
-        private static readonly log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private const string LOGIN_SUCCESSFUL = "Login successful";
+        private const string LOGIN_FAILED = "Login failed - Invalid username or password";
+        private const string AUTHENTICATION_FAILED = "Authentication failed - Invalid username or password";
+        private const string AUTHENTICATION_SUCCESSFUL = "Authentication successful";
+        private const string COMPANY = "COMPANY";
+        private const string ADMIN = "ADMIN";
+        private const string USER_DOES_NOT_EXIST = "User does not exist";
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
@@ -57,84 +61,65 @@ namespace RSPP.Controllers
             return View();
         }
 
-        [AllowAnonymous]
+        /// <summary>
+        /// Authenticates a user
+        /// </summary>
+        /// <param name="request">AuthenticationRequest request holding email and password</param>
+        /// <returns>A basic response</returns>
+
         [HttpPost]
-        public JsonResult Login(string Email, string Password)
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public JsonResult Login(AuthenticationRequest request)
         {
-            string responseMessage = string.Empty;
-            string status = string.Empty;
-            string message = string.Empty;
+            /*
+             * validate modelstate
+             * get user from db
+             * if exists chk if email is not confirmed, issue appr response
+             * else initialize session data, store user details in obj & return response
+             */
+            var response = new AuthenticationResponse(false, LOGIN_FAILED);
+            if (!ModelState.IsValid)
+                return Json(response);
+
             try
             {
 
-
-                Logger.Info("Coming To Login User with Email =>" + Email);
-
-                var userMaster = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
-
-                Logger.Info("Client IpAddress =>" + HttpContext.GetRemoteIPAddress().ToString());
-                string validateResult = validateUser(Email, Password, HttpContext.GetRemoteIPAddress().ToString());
-
-                Logger.Info("Validate User Result =>" + validateResult);
-
-                if (validateResult == "SUCCESS" && userMaster != null)
+                var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail select u).FirstOrDefault();
+                if (userMaster != null)
                 {
 
-                    //var identity = new ClaimsIdentity(new[]{new Claim(ClaimTypes.Role, userMaster.UserRole),}, CookieAuthenticationDefaults.AuthenticationScheme);
-                    //var principal = new ClaimsPrincipal(identity);
-                    //var getin = HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                    var authenticationResult = AuthenticateUser(request.UserEmail, request.Password, HttpContext.GetRemoteIPAddress().ToString());
 
-
-                    HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
-                    HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
-
-                    //status = "failed";
-                    //return Json(new { Status = status, Message = "The registered email : <strong>" + Email + "</strong> has not been activated. Kindly check your email for an activation link or click the resend button below." });
-
-                    if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == true)
+                    if (authenticationResult.Success)
                     {
+                        response.Success = true;
+                        if (userMaster.EmailConfirmed == false)
+                        {
+                            response.ResultMessage = $"The registered email <strong>{request.UserEmail}</strong> has not been activated. <br>Kindly check your email for an activation link or click the resend button below";
+                            return Json(response);
+                        }
 
-                        status = "success";
-                        message = "Company";
-                        HttpContext.Session.SetString(sessionCompanyName, userMaster.CompanyName);
+                        HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
+                        HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
+                        if (userMaster.UserType == COMPANY)
+                            HttpContext.Session.SetString(sessionCompanyName, userMaster.CompanyName);
+                        else if (userMaster.UserType == ADMIN)
+                            HttpContext.Session.SetString(sessionStaffName, userMaster.FirstName.ToString() + " " + userMaster.LastName.ToString());
 
-                        return Json(new { Status = status, Message = message });
+                        response.IsEmailConfirmed = true;
+                        response.UserType = userMaster.UserType;
+                        response.ResultMessage = LOGIN_SUCCESSFUL;
+                        return Json(response);
                     }
-                    else if (userMaster.UserType.Contains("COMPANY") && userMaster.EmailConfirmed == false)
-                    {
-                        status = "failed";
-                        //var token = userMaster.EmailConfirmationToken;
-                        //SendConfirmationEmail(Email, token);
-                        return Json(new { Status = status, Message = "The registered email : " + Email + " has not been activated. Kindly check your email for an activation link or click the resend button below" });
-                        //return Json(new { Status = status, Message = "User with this email: " + Email+ " is registered on the portal. A mail has been sent to you to confirm your email address!!!"});
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetString(sessionStaffName, userMaster.FirstName.ToString() + " " + userMaster.LastName.ToString());
-
-                        status = "success";
-                        message = "Admin";
-                        return Json(new { Status = status, Message = message });
-                    }
-
-
-
                 }
-                else
-                {
-                    status = "failed";
-                    message = "Login failed!! please check your login credentials";
-                    return Json(new { Status = status, Message = message }); //Content("<html><head><script>alert(\"" + validateResult + "\");window.location.replace('LogOff')</script></head></html>");
-                }
-
-
+                response.ResultMessage = USER_DOES_NOT_EXIST;
+                return Json(response);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.StackTrace);
-                status = "failed";
-                message = ex.Message;
-                return Json(new { Status = status, Message = message });//Content("<html><head><script>alert(\"" + ex.Message + "\");window.location.replace('LogOff')</script></head></html>");
+                _logger.Error(ex.StackTrace);
+                return Json(response);
             }
         }
 
@@ -160,12 +145,12 @@ namespace RSPP.Controllers
                     userMaster.UserEmail,
                     "Email Confirmation",
                     emailMessage);
-                if (!emailResponse.Status)
+                if (!emailResponse.Success)
                 {
                     return Json(new
                     {
                         Status = status,
-                        emailResponse.Message
+                        emailResponse.ResultMessage
                     });
                 }
 
@@ -175,7 +160,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.StackTrace);
+                _logger.Error(ex.StackTrace);
                 status = "failed";
                 message = ex.Message;
                 return Json(new { Status = status, Message = message });
@@ -200,30 +185,25 @@ namespace RSPP.Controllers
         //}
 
         #region Helpers
-        private string validateUser(string email, string password, string ipAddress)
-        {
 
+        /// <summary>
+        /// Validates a user's credentials
+        /// </summary>
+        /// <param name="email">user's email</param>
+        /// <param name="password">user's password</param>
+        /// <param name="ipAddress">the user's ip address</param>
+        /// <returns>A basic response</returns>
+        private BasicResponse AuthenticateUser(string email, string password, string ipAddress)
+        {
+            var response = new BasicResponse(false, AUTHENTICATION_FAILED);
             try
             {
+
                 password = generalClass.Encrypt(password);
-                string responseMessage = string.Empty;
-                Logger.Info("Coming To validateUser User =>" + email);
-                if (string.IsNullOrEmpty(email))
-                {
-                    return "UserId should Not be Empty";
-                }
-
-                Logger.Info("About To Acquire Database Conection for Queries");
-
-                Logger.Info("About To Retrieve UserMaster Details from the System");
-                UserMaster userMaster = _context.UserMaster.Where(c => c.UserEmail.Trim() == email.Trim() && c.Password == password).FirstOrDefault();
-                Logger.Info("User Details => " + userMaster);
-
-
+                var userMaster = _context.UserMaster.Where(c => c.UserEmail.Trim() == email.Trim() && c.Password == password).FirstOrDefault();
 
                 if (userMaster != default(UserMaster))
                 {
-                    Logger.Info("User Master Status => " + userMaster.Status);
                     UserLogin userLogin = new UserLogin();
                     userLogin.UserEmail = userMaster.UserEmail;
                     userLogin.UserType = userMaster.UserType;
@@ -235,24 +215,16 @@ namespace RSPP.Controllers
                     _context.UserLogin.Add(userLogin);
                     _context.SaveChanges();
 
-                    Logger.Info("About To Maintain User on Session");
-
-                    Logger.Info("Done With Session");
-
-                    return "SUCCESS";
+                    response.Success = true;
+                    response.ResultMessage = AUTHENTICATION_SUCCESSFUL;
                 }
-                else
-                {
-                    return responseMessage;
-                }
-
-                //}
+                return response;
 
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.StackTrace);
-                return "An Error Occured Validating User,Please try again Later";
+                _logger.Error(ex.StackTrace);
+                return response;
             }
         }
 

@@ -18,6 +18,7 @@ using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
 using SendGrid;
 using Rotativa.AspNetCore;
+using RSPP.Models.DTOs;
 
 namespace RSPP.Controllers
 {
@@ -175,7 +176,7 @@ namespace RSPP.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult UpdateReadApplications(string applicationId)
         {
-            var response = new BasicResponse() { Message = FAILED_UPDATE_RESPONSE };
+            var response = new BasicResponse(false, FAILED_UPDATE_RESPONSE);
             try
             {
 
@@ -191,8 +192,8 @@ namespace RSPP.Controllers
                         _context.ApplicationRequestForm.Update(selectedApplication);
                         _context.SaveChanges();
 
-                        response.Status = true;
-                        response.Message = SUCCESS_UPDATE_RESPONSE;
+                        response.Success = true;
+                        response.ResultMessage = SUCCESS_UPDATE_RESPONSE;
                     }
                 }
 
@@ -200,7 +201,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                response.Message += " - " + ex.Message;
+                response.ResultMessage += " - " + ex.Message;
                 return Json(response);
                 //throw;
             }

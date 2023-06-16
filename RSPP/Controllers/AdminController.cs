@@ -22,6 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using static QRCoder.PayloadGenerator;
 
 namespace RSPP.Controllers
 {
@@ -896,6 +897,8 @@ namespace RSPP.Controllers
             string emailResponseMessage = string.Empty;
             string actionType = Request.Form["actionType"];
 
+            //var companyDetails = _context.UserMaster.Include(user => user.App)
+
             var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
             if (companydetails is null)
             {
@@ -913,23 +916,27 @@ namespace RSPP.Controllers
 
                 if (companydetails.UserEmail != model.EmailForUpdate)
                 {
+                    var applicationsForThisUser = _context.ApplicationRequestForm
+                        .Where(app => app.CompanyEmail == companydetails.UserEmail).ToList();
+                    foreach (var app in applicationsForThisUser)
+                    {
+                        app.CompanyEmail = model.EmailForUpdate;
+                    }
                     companydetails.UserEmail = model.EmailForUpdate;
 
-                    // send email
-                    string token = companydetails.EmailConfirmationToken;
-                    var emailMessage = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+                    var emailMessage = GenerateEmailBodyForCompanyEmailUpdate(companydetails.UserEmail);
 
                     var emailResponse = Emailer.SendEmail(
                         companydetails.CompanyName,
                         companydetails.UserEmail,
-                        "Email Confirmation",
+                        "Password Reset Confirmation",
                         emailMessage);
-                    if (!emailResponse.Status)
+                    if (!emailResponse.Success)
                     {
                         return Json(new
                         {
                             Status = status,
-                            emailResponse.Message
+                            emailResponse.ResultMessage
                         });
                     }
                     emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
@@ -939,6 +946,8 @@ namespace RSPP.Controllers
             {
                 companydetails.CompanyAddress = model.CompanyAddress;
             }
+
+            //_context.UserMaster.Update(companydetails);
 
 
             if (_context.SaveChanges() > 0)
@@ -957,6 +966,21 @@ namespace RSPP.Controllers
                 Status = status,
                 Message = message
             });
+        }
+
+        private string GenerateEmailBodyForCompanyEmailUpdate(string userEmail)
+        {
+            Random rnd = new Random();
+            int value = rnd.Next(100000, 999999);
+            string password = "nsc-" + value;
+            password = generalClass.Encrypt(password);
+
+            string content = "Your New Password is " + password;
+            string subject = "Reset Password Activation Link";
+
+            var msgBody = generalClass.ForgotPasswordTemplate(userEmail, subject, content, password);
+
+            return msgBody;
         }
 
 
