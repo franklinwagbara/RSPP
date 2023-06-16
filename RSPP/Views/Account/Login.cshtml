@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>RSPP | Login</title>
+    <title>RRPSPU | Login</title>
 
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
@@ -39,7 +39,7 @@
 </head>
 
 <body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
-    
+
     @using (Html.BeginForm("ForgotPassword", "Account", FormMethod.Post, new { @id = "forgotpasswordformid" }))
     {
         @Html.AntiForgeryToken()
@@ -79,11 +79,9 @@
     }
 
 
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "formid" }))
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "loginFormid" }))
     {
         @Html.AntiForgeryToken()
-
-
         <div class="container">
 
             <center>
@@ -141,7 +139,7 @@
     <div class="modal" id="modalResendEmailConfirmation">
         @using (Html.BeginForm("Login", "ResendEmailConfirmation", FormMethod.Post, new { @id = "ResendEmailConfirmationFormid" }))
         {
-            @Html.AntiForgeryToken()
+            @*@Html.AntiForgeryToken()*@
             <div class="modal-dialog">
                 <div class="modal-content">
 
@@ -184,7 +182,32 @@
 
                 <!-- Modal footer -->
                 <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Other errors response Modal -->
+    <div class="modal" id="modalGeneralResponse">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Login Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;"></div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
                 </div>
 
             </div>
@@ -261,30 +284,44 @@
             $("#btnlogin").click(function (e) {
                 e.preventDefault();
 
-                if ($("#formid").valid()) {
+                if ($("#loginFormid").valid()) {
                     $(".loadingImage").show();
-                    var email = $("#UserEmail").val();
-                    var passwrd = $("#Password").val();
+                    var email = $("#loginFormid #UserEmail").val();
+                    var formData = $("#loginFormid").serialize();
 
-                    $.post("/Account/Login", { Email: email, Password: passwrd }, function (data) {
-                        var status = data.status;
-                        var message = data.message;
-                        if (status === "failed") {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Account/Login",
+                        data: formData,
+                        success: function (response) {
                             $(".loadingImage").hide();
-                            $('#modalResendEmailConfirmation .modal-body').html(message);
-                            $('#modalResendEmailConfirmation #emailToResend').val(email);
-                            $('#modalResendEmailConfirmation').modal('show');
-                        } else if (status === "success" && message === "Company") {
-                            window.location = "/Company/Index";
-                        }
-                        else if (status === "success" && message === "Admin") {
-                            window.location = "/Admin/Index";
-                        } else {
-                            $(".loadingImage").hide();
-                            alert(message);
-                        }
 
+                            if (response.success === false) {
+                                $('#modalGeneralResponse .modal-body').html(response.resultMessage);
+                                $('#modalGeneralResponse').modal('show');
+                            }
+                            else {
+                                if (response.isEmailConfirmed) {
+                                    if (response.userType === "COMPANY")
+                                        window.location = "/Company/Index";
+                                    else
+                                        window.location = "/Admin/Index";
+                                } else {
+                                    $('#modalResendEmailConfirmation .modal-body').html(response.resultMessage);
+                                    $('#modalResendEmailConfirmation #emailToResend').val(email);
+                                    $('#modalResendEmailConfirmation').modal('show');
+                                }
+                            }
+                        },
+                        failure: function (response) {
+                            $(".loadingImage").hide();
+                        },
+                        error: function (response) {
+                            $(".loadingImage").hide();
+                        }
                     });
+
+
                 } else {
                     $(".loadingImage").hide();
                 }
