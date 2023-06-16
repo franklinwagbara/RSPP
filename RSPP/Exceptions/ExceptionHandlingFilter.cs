@@ -1,22 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
+﻿using log4net;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Reflection;
 
 namespace RSPP.Exceptions
 {
     public class ExceptionHandlingFilter : ExceptionFilterAttribute
     {
-        private readonly ILogger<ExceptionHandlingFilter> _logger;
-
-        public ExceptionHandlingFilter()
-        {
-            var loggerFactory = new LoggerFactory();
-            _logger = loggerFactory.CreateLogger<ExceptionHandlingFilter>();
-        }
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public override void OnException(ExceptionContext context)
         {
-            _logger.LogError($"OnException() - {context.Exception.Message}");
+            _logger.Error($"OnException() - {context.Exception.Message}");
             context.ExceptionHandled = true;
+
+            context.Result = new ViewResult
+            {
+                ViewName = "~/Views/Shared/Error.cshtml"
+            };
+
         }
     }
 }
