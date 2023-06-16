@@ -1,10 +1,9 @@
-﻿//using MimeKit;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System;
-using RSPP.Models;
 using System.Net.Mail;
 using log4net;
 using System.Reflection;
+using RSPP.Models.DTOs;
 
 namespace RSPP.Helpers
 {
@@ -39,7 +38,7 @@ namespace RSPP.Helpers
         public static BasicResponse SendEmail(string receiverName, string receiverEmail, string subject, string htmlMessage)
         {
 
-            var response = new BasicResponse { Status = false, Message = MSG_MESSAGE_SENDING_FAILED };
+            var response = new BasicResponse(false, MSG_MESSAGE_SENDING_FAILED);
 
             if (String.IsNullOrWhiteSpace(receiverName)
                 || String.IsNullOrWhiteSpace(receiverEmail)
@@ -47,30 +46,24 @@ namespace RSPP.Helpers
                 || String.IsNullOrWhiteSpace(htmlMessage)
                 )
             {
-                response.Message = MSG_INVALID_PARAMERTERS;
+                response.ResultMessage = MSG_INVALID_PARAMERTERS;
                 return response;
             }
 
             if (!IsValidFormat(receiverEmail))
             {
-                response.Message = MSG_INVALID_EMAIL_FORMAT;
+                response.ResultMessage = MSG_INVALID_EMAIL_FORMAT;
                 return response;
             }
 
-            var password = MAIL_PASSWORD;
-            var username = SENDER_EMAIL_ADDRESS;
-            var emailFrom = SENDER_EMAIL_ADDRESS;
-            var Host = SMTP_HOST;
-            var Port = SMTP_PORT;
-
             MailMessage _mail = new MailMessage();
-            SmtpClient client = new SmtpClient(Host, Port);
+            SmtpClient client = new SmtpClient(SMTP_HOST, SMTP_PORT);
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.Credentials = new System.Net.NetworkCredential(username, password);
+            client.Credentials = new System.Net.NetworkCredential(SENDER_EMAIL_ADDRESS, MAIL_PASSWORD);
             client.UseDefaultCredentials = false;
             client.EnableSsl = true;
 
-            _mail.From = new MailAddress(emailFrom);
+            _mail.From = new MailAddress(SENDER_EMAIL_ADDRESS);
             _mail.To.Add(new MailAddress(receiverEmail));
             _mail.Subject = subject;
 
@@ -79,8 +72,8 @@ namespace RSPP.Helpers
             try
             {
                 client.Send(_mail);
-                response.Status = true;
-                response.Message = MSG_MESSAGE_SENDING_SUCCESSFUL;
+                response.Success = true;
+                response.ResultMessage = MSG_MESSAGE_SENDING_SUCCESSFUL;
             }
             catch (Exception ex)
             {
