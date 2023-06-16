@@ -973,9 +973,9 @@ namespace RSPP.Controllers
             Random rnd = new Random();
             int value = rnd.Next(100000, 999999);
             string password = "nsc-" + value;
+            string content = "Your New Password is " + password;
             password = generalClass.Encrypt(password);
 
-            string content = "Your New Password is " + password;
             string subject = "Reset Password Activation Link";
 
             var msgBody = generalClass.ForgotPasswordTemplate(userEmail, subject, content, password);
