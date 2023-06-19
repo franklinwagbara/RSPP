@@ -10,6 +10,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace RSPP.Home
 {
@@ -47,6 +48,12 @@ namespace RSPP.Home
 
         /// <summary>
         /// Displays a certificate in the browser, if the certificate license reference number is found
+        /// Matches the following patterns
+        /// NSC/RRPSPU/029/2023
+        /// nsc/rrpspu/023/2022
+        /// nsc/rprspu/022/2021
+        /// NSC/RPRSPU/022/2021
+        /// Nsc/Rprspu/023/2022
         /// </summary>
         /// <param name="certificate">the verify certificate model</param>
         /// <returns>A pdf or an error response</returns>
@@ -62,12 +69,18 @@ namespace RSPP.Home
 
             certificate.ErrorMessage = "Unable to verify provided certificate id";
 
+            string pattern = @"^(NSC\/((RRPSPU)|(RPRSPU))\/)\d{3}\/\d{4}$";
+            if (!Regex.IsMatch(certificate.LicenseReference, pattern, RegexOptions.IgnoreCase))
+                return View("VerifyCertificate", certificate);
+
+            var selectedCertificateReference = certificate.LicenseReference.ToUpper();
+
             try
             {
                 var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
                 var applicationId = (from app in _context.ApplicationRequestForm
-                                     where app.LicenseReference == certificate.LicenseReference
+                                     where app.LicenseReference == selectedCertificateReference
                                      select app.ApplicationId).FirstOrDefault();
 
                 if (applicationId != null)
