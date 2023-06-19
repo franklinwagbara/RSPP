@@ -88,8 +88,7 @@ namespace RSPP.Controllers
             {
 
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail 
-                                  && u.Status == ACTIVE_USER select u)
-                                  .FirstOrDefault();
+                                  && u.Status == ACTIVE_USER select u).FirstOrDefault();
                 if (userMaster != null)
                 {
 
@@ -178,16 +177,6 @@ namespace RSPP.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //[HttpPost]
-        //public ActionResult LogOff()
-        //{
-        //    var elpsLogOffUrl = Request.PathBase + "/Account/RemoteLogOff";
-        //    var returnUrl = Url.Action("Index", "Home", null, Request.Scheme);
-        //    //var returnUrl = Request.Url.GetLeftPart(UriPartial.Authority) + Request.ApplicationPath;
-        //    var frm = "<form action='" + elpsLogOffUrl + "' id='frmTest' method='post'>" + "<input type='hidden' name='returnUrl' value='" + returnUrl + "' />"+ "</form>" + "<script>document.getElementById('frmTest').submit();</script>";
-        //    return Content(frm, "text/html");
-        //}
-
         #region Helpers
 
         /// <summary>
@@ -234,69 +223,6 @@ namespace RSPP.Controllers
 
         #endregion
         public IActionResult AccountRegister()
-        {
-            return View();
-        }
-        private string SendConfirmationEmail(string email, string token)
-        {
-            string result;
-            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng");
-            var toAddress = new MailAddress(email);
-            const string fromPassword = "nsc2018#";
-            const string subject = "Confirm your email address";
-            //string callBackURL = 
-            body = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
-
-            var smtp = new SmtpClient
-            {
-                Host = "webmail.shipperscouncil.gov.ng", //"smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
-                Timeout = 20000
-            };
-
-            var message = new MailMessage();
-            message.From = fromAddress;
-            message.To.Add(toAddress);
-            message.Subject = subject;
-            message.Body = body;
-            GeneralClass gen = new GeneralClass();
-            result = "success";
-            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
-            return result;
-        }
-
-        public ActionResult ConfirmEmail(string token)
-        {
-            var user = (from u in _context.UserMaster where u.EmailConfirmationToken == token select u).FirstOrDefault();
-
-
-
-            if (user != null)
-            {
-                // Update the user's account to confirm their email address
-                user.EmailConfirmed = true;
-                user.EmailConfirmationToken = null;
-                _context.SaveChanges();
-
-                // Redirect the user to a "confirmation success" page
-                return RedirectToAction("ConfirmationSuccess");
-            }
-            else
-            {
-                // Redirect the user to a "confirmation error" page
-                return RedirectToAction("ConfirmationError");
-            }
-        }
-        public ActionResult ConfirmationSuccess()
-        {
-            return RedirectToAction("Login");
-        }
-
-        // GET: Account/ConfirmationError
-        public ActionResult ConfirmationError()
         {
             return View();
         }
@@ -374,6 +300,69 @@ namespace RSPP.Controllers
             return Json(new { Status = status, Message = message });
         }
 
+        private string SendConfirmationEmail(string email, string token)
+        {
+            string result;
+            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng");
+            var toAddress = new MailAddress(email);
+            const string fromPassword = "nsc2018#";
+            const string subject = "Confirm your email address";
+            //string callBackURL = 
+            body = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+            var smtp = new SmtpClient
+            {
+                Host = "webmail.shipperscouncil.gov.ng", //"smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
+                Timeout = 20000
+            };
+
+            var message = new MailMessage();
+            message.From = fromAddress;
+            message.To.Add(toAddress);
+            message.Subject = subject;
+            message.Body = body;
+            GeneralClass gen = new GeneralClass();
+            result = "success";
+            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
+            return result;
+        }
+
+        public ActionResult ConfirmEmail(string token)
+        {
+            var user = (from u in _context.UserMaster where u.EmailConfirmationToken == token select u).FirstOrDefault();
+
+
+
+            if (user != null)
+            {
+                // Update the user's account to confirm their email address
+                user.EmailConfirmed = true;
+                user.EmailConfirmationToken = null;
+                _context.SaveChanges();
+
+                // Redirect the user to a "confirmation success" page
+                return RedirectToAction("ConfirmationSuccess");
+            }
+            else
+            {
+                // Redirect the user to a "confirmation error" page
+                return RedirectToAction("ConfirmationError");
+            }
+        }
+        public ActionResult ConfirmationSuccess()
+        {
+            return RedirectToAction("Login");
+        }
+
+        // GET: Account/ConfirmationError
+        public ActionResult ConfirmationError()
+        {
+            return View();
+        }
 
         [HttpPost]
         public JsonResult ForgotPassword(string Email)
