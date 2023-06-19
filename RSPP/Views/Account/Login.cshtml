@@ -106,7 +106,7 @@
 
                         <div class="">
                             <div class="input-group">
-                                <span class="input-group-addon" style=""><i class="fa fa-lock text-dark"></i></span>
+                                <span class="input-group-addon" style=""><i class="fa fa-eye text-dark" id="togglePassword" style="cursor: pointer;"></i></span>
                                 @Html.TextBoxFor(log => log.Password, new { @class = "form-control", @placeholder = "Enter Password", @type = "password", @autocomplete = "off" })
                             </div>
 
@@ -219,6 +219,17 @@
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.validate.min.js"></script>
     <script type="text/javascript">
+
+        const togglePassword = document.querySelector('#loginFormid #togglePassword');
+        const password = document.querySelector('#loginFormid #Password');
+
+        togglePassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
 
         $(document).ready(function () {
 

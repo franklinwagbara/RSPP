@@ -42,6 +42,8 @@ namespace RSPP.Controllers
         private const string COMPANY = "COMPANY";
         private const string ADMIN = "ADMIN";
         private const string USER_DOES_NOT_EXIST = "User does not exist";
+        private const string ACTIVE_USER = "ACTIVE";
+        private const string PASSIVE_USER = "PASSIVE";
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
@@ -85,7 +87,9 @@ namespace RSPP.Controllers
             try
             {
 
-                var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail select u).FirstOrDefault();
+                var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail 
+                                  && u.Status == ACTIVE_USER select u)
+                                  .FirstOrDefault();
                 if (userMaster != null)
                 {
 

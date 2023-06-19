@@ -897,8 +897,6 @@ namespace RSPP.Controllers
             string emailResponseMessage = string.Empty;
             string actionType = Request.Form["actionType"];
 
-            //var companyDetails = _context.UserMaster.Include(user => user.App)
-
             var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
             if (companydetails is null)
             {
@@ -916,6 +914,16 @@ namespace RSPP.Controllers
 
                 if (companydetails.UserEmail != model.EmailForUpdate)
                 {
+                    var existingUser = (from u in _context.UserMaster where u.UserEmail == model.EmailForUpdate select u).FirstOrDefault();
+                    if (existingUser != null)
+                    {
+                        return Json(new
+                        {
+                            Status = status,
+                            Message="Unable to update company details because the provided email already exists"
+                        });
+                    }
+
                     var applicationsForThisUser = _context.ApplicationRequestForm
                         .Where(app => app.CompanyEmail == companydetails.UserEmail).ToList();
                     foreach (var app in applicationsForThisUser)
