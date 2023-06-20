@@ -16,6 +16,8 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
 using RSPP.Models.DTOs;
+using RSPP.UnitOfWorks;
+using RSPP.UnitOfWorks.Interfaces;
 
 namespace RSPP.Controllers
 {
@@ -35,32 +37,38 @@ namespace RSPP.Controllers
         public const string sessionCompanyName = "_sessionCompanyName";
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string LOGIN_SUCCESSFUL = "Login successful";
-        private const string LOGIN_FAILED = "Login failed - Invalid username or password";
-        private const string AUTHENTICATION_FAILED = "Authentication failed - Invalid username or password";
-        private const string AUTHENTICATION_SUCCESSFUL = "Authentication successful";
+        
         private const string COMPANY = "COMPANY";
         private const string ADMIN = "ADMIN";
         private const string USER_DOES_NOT_EXIST = "User does not exist";
-        private const string ACTIVE_USER = "ACTIVE";
-        private const string PASSIVE_USER = "PASSIVE";
+
+        private readonly IUnitOfWork _unitOfWork;
+        
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
 
 
-        public AccountController(RSPPdbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public AccountController(
+            RSPPdbContext context, 
+            IHttpContextAccessor httpContextAccessor, 
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
         }
 
+        /// <summary>
+        /// Displays the login page
+        /// </summary>
         [AllowAnonymous]
         public IActionResult Login()
         {
-            return View();
+            return View("Login");
         }
 
         /// <summary>
@@ -74,21 +82,17 @@ namespace RSPP.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Login(AuthenticationRequest request)
         {
-            /*
-             * validate modelstate
-             * get user from db
-             * if exists chk if email is not confirmed, issue appr response
-             * else initialize session data, store user details in obj & return response
-             */
-            var response = new AuthenticationResponse(false, LOGIN_FAILED);
+            
+            var response = new AuthenticationResponse(false, AppMessages.LOGIN_FAILED);
             if (!ModelState.IsValid)
                 return Json(response);
 
             try
             {
 
-                var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail 
-                                  && u.Status == ACTIVE_USER select u).FirstOrDefault();
+                var userMaster = _unitOfWork.UserMasterRepository
+                    .Get(u => u.UserEmail.Equals(request.UserEmail) && u.Status.Equals(AppMessages.ACTIVE_USER), null, "", null, null)
+                    .FirstOrDefault();
                 if (userMaster != null)
                 {
 
@@ -112,7 +116,7 @@ namespace RSPP.Controllers
 
                         response.IsEmailConfirmed = true;
                         response.UserType = userMaster.UserType;
-                        response.ResultMessage = LOGIN_SUCCESSFUL;
+                        response.ResultMessage = AppMessages.LOGIN_SUCCESSFUL;
                         return Json(response);
                     }
                 }
@@ -188,7 +192,7 @@ namespace RSPP.Controllers
         /// <returns>A basic response</returns>
         private BasicResponse AuthenticateUser(string email, string password, string ipAddress)
         {
-            var response = new BasicResponse(false, AUTHENTICATION_FAILED);
+            var response = new BasicResponse(false, AppMessages.AUTHENTICATION_FAILED);
             try
             {
 
@@ -209,7 +213,7 @@ namespace RSPP.Controllers
                     _context.SaveChanges();
 
                     response.Success = true;
-                    response.ResultMessage = AUTHENTICATION_SUCCESSFUL;
+                    response.ResultMessage = AppMessages.AUTHENTICATION_SUCCESSFUL;
                 }
                 return response;
 
