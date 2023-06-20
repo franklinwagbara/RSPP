@@ -9,6 +9,7 @@ namespace RSPP.Models.DTOs
         public string UserEmail { get; set; }
 
         [Required]
+        [MinLength(4)]
         public string Password { get; set; }
     }
 }
