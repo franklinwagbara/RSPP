@@ -4,14 +4,16 @@ using System.Net.Mail;
 using log4net;
 using System.Reflection;
 using RSPP.Models.DTOs;
+using RSPP.Services.Interfaces;
+using RSPP.Helpers;
 
-namespace RSPP.Helpers
+namespace RSPP.Services
 {
 
     /// <summary>
     /// Class for verifying & sending emails
     /// </summary>
-    public static class Emailer
+    public class Emailer : IEmailer
     {
 
         private const string SENDER_NAME = "Nigerian Shippers Council";
@@ -35,7 +37,7 @@ namespace RSPP.Helpers
         /// <param name="subject">subject of the email</param>
         /// <param name="htmlMessage">body of the email</param>
         /// <returns>A basic response</returns>
-        public static BasicResponse SendEmail(string receiverName, string receiverEmail, string subject, string htmlMessage)
+        public BasicResponse SendEmail(string receiverName, string receiverEmail, string subject, string htmlMessage)
         {
 
             var response = new BasicResponse(false, MSG_MESSAGE_SENDING_FAILED);
@@ -73,11 +75,12 @@ namespace RSPP.Helpers
             {
                 client.Send(_mail);
                 response.Success = true;
-                response.ResultMessage = MSG_MESSAGE_SENDING_SUCCESSFUL;
+                response.ResultMessage = $"{AppMessages.EMAIL} {AppMessages.SENDING} {AppMessages.SUCCESSFUL}";
             }
             catch (Exception ex)
             {
                 _logger.Error(ex);
+                response.ResultMessage = $"{AppMessages.EMAIL} {AppMessages.SENDING} {AppMessages.FAILED}";
             }
             return response;
         }

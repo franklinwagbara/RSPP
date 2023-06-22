@@ -16,6 +16,8 @@ using System;
 using RSPP.Exceptions;
 using RSPP.UnitOfWorks;
 using RSPP.UnitOfWorks.Interfaces;
+using RSPP.Services.Interfaces;
+using RSPP.Services;
 
 namespace RSPP
 {
@@ -80,6 +82,8 @@ namespace RSPP
             });
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailer, Emailer>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews(options => options.Filters.Add(new ExceptionHandlingFilter()))
                 .AddRazorRuntimeCompilation();
