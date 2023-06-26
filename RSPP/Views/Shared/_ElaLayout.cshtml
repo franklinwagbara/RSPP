@@ -1,5 +1,4 @@
-﻿
-@using RSPP.Helpers;
+﻿@using RSPP.Helpers;
 @using RSPP.Controllers;
 @using Microsoft.AspNetCore.Http;
 @using RSPP.Models.DB;
@@ -30,7 +29,7 @@
         <link href="~/css/otherStyle.css" rel="stylesheet" />
         <link href="~/css/jquery-ui.css" rel="stylesheet" />
         <link href="~/css/select2.min.css" rel="stylesheet" />
-        
+
 
         @*<link rel="stylesheet" type="text/css" href="https: //cdn.datatables.net/1.11.2/css/jquery.dataTables.css">*@
 
@@ -49,13 +48,13 @@
         <link href="~/css/paymentList.css" rel="stylesheet" />
 
     </environment>
-    
+
     <script src="~/js/jquery-3.3.1.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery-ui.min.js"></script>
     <script src="~/js/select2.min.js"></script>
 
-   
+
     <style>
         .center-cropped {
             width: 120px;
@@ -152,7 +151,7 @@
 <body>
 
     @*<div id="loading" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
-        <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/Images/spinning.gif" />
+    <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/Images/spinning.gif" />
     </div>*@
     <div class="navbar navbar-fixed-top og_Head" style="background-color:#7eaa86; height: 70px !important" role="navigation">
         <div class="navbar-header" style="float:left">
@@ -167,7 +166,7 @@
                 <input type="text" name="q" class="form-control" placeholder="Search for Application">
                 </div>
                 <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-        </form>*@
+                </form>*@
             </div>
         </div>
 
@@ -194,10 +193,10 @@
         </div>
     </div>
 
-    <div  id="appContainer" class="d-flex flex-column flex-md-row" style="background-color:#7eaa86;">
+    <div id="appContainer" class="d-flex flex-column flex-md-row" style="background-color:#7eaa86;">
 
 
-        
+
         <br />
         <div class="ctrl-sidebar">
             <div class="collapse navbar-collapse sidebar" style="overflow-y: scroll;">
@@ -216,7 +215,7 @@
                         <a href="#" class="has-arrow" aria-expanded="false">
                             <i class="fa fa-table"></i>
                             <span class="text-white"> Dashboard</span>
-                         
+
                             <span class="more"></span>
                             <span class="act"></span>
                         </a>
@@ -249,15 +248,16 @@
                                     <span class="text-white">My Desk</span>
                                 </a>
                             </li>
-                            @if(rolename != "OFFICER"){
+                            @if (rolename != "OFFICER")
+                            {
                                 <li>
-                                <a href="/Admin/StaffDesk" id="StaffDesk">
-                                    <i class="fa fa-users" aria-hidden="true"></i>
-                                    <span class="text-white">Staff Desks</span>
-                                </a>
+                                    <a href="/Admin/StaffDesk" id="StaffDesk">
+                                        <i class="fa fa-users" aria-hidden="true"></i>
+                                        <span class="text-white">Staff Desks</span>
+                                    </a>
                                 </li>
                             }
-                            
+
 
                         </ul>
                     </li>
@@ -370,7 +370,7 @@
                                 </a>
                             </li>
 
-                           
+
                             <li>
                                 <a href="/Admin/GiveValueList" id="GiveValueList">
                                     <i class="fa fa-edit" aria-hidden="true"></i>
@@ -450,7 +450,7 @@
                                         <span class="text-white">Legacy Application Form</span>
                                     </a>
                                 </li>
-                               
+
                             </ul>
                         </li>
 
@@ -472,7 +472,7 @@
                                     <span class="text-white">All Certificates</span>
                                 </a>
                             </li>
-                            
+
                         </ul>
                     </li>
                     <li class="more main-list">
@@ -544,9 +544,9 @@
         </div>
         <div class="clear"></div>
     </div>
-    
 
-    
+
+
 
     <div class="clear"></div>
     <div class="" style="color: #f7f7f7;">
@@ -556,21 +556,6 @@
 
     <environment include="Development">
 
-        @*<script src="https: //ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js"
-                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-        </script>*@
-        @*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
-
-       @* <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
-                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
-        </script>*@
-        
 
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
@@ -581,7 +566,6 @@
         <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
         <script src=" https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
         <script src="~/js/dataTables.checkboxes.min.js"></script>
-        @*<script src="~/js/sidebarmenu.js"></script>*@
         <script src="~/js/jquery.datetimepicker.full.min.js"></script>
         <script src="~/js/bootbox.min.js"></script>
         <script src="~/js/jquery.ui.widget.js"></script>
@@ -602,7 +586,6 @@
         window.setInterval(function () {
             $.post('/Admin/GetStaffEndOutofOffice', function (result) {
                 if (result == "done") {
-                    //console("triggered done end");
                 }
             });
         }, 30000);
@@ -616,25 +599,15 @@
         }, 30000);
 
         window.setInterval(function () {
-        $.post("/Session/CheckSession", function (response) {
+            $.post("/Session/CheckSession", function (response) {
 
-            if ($.trim(response) === "true") {
+                if ($.trim(response) === "true") {
 
-                var location = window.location.origin + "/Home/Index";
-                window.location.href = location;
-            }
-        });
+                    var location = window.location.origin + "/Home/Index";
+                    window.location.href = location;
+                }
+            });
         }, 12000);
-
-
-        //$(document).ready(function () {
-        //    $('#loading').hide().ajaxStart(function () {
-        //            $(this).show();
-        //        })
-        //        .ajaxStop(function () {
-        //            $(this).hide();
-        //        });
-        //})
 
 
 
@@ -682,41 +655,4 @@
 
 
 
-
-
-
-@*@Html.Partial("_ElaHeader.cshtml")
-
-    <body class="fix-header fix-sidebar">
-
-
-        <div class="preloader">
-            <svg class="circular" viewBox="25 25 50 50">
-                <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
-            </svg>
-        </div>
-        <div id="main-wrapper">
-
-            @Html.Partial("_ElaSideBar.cshtml")
-
-
-            <div class="page-wrapper">
-                <br />
-
-            </div>
-
-                <div class="container-fluid">
-
-                    @RenderBody()
-
-                </div>
-                @Html.Partial("_ElaFooter.cshtml")
-
-            </div>
-
-        </div>
-
-        @RenderSection("Scripts", required: false)
-
-    </body>*@
 
