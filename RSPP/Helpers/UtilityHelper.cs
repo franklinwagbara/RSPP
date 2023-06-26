@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +22,9 @@ namespace RSPP.Helpers
         GeneralClass generalClass = new GeneralClass();
 
         PaymentTransactionModel paymentRequest = new PaymentTransactionModel();
-        private static ILog log = log4net.LogManager.GetLogger(typeof(UtilityHelper));
+        //private static ILog log = log4net.LogManager.GetLogger(typeof(UtilityHelper));
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
 
         public UtilityHelper(RSPPdbContext context)
         {
@@ -46,7 +49,7 @@ namespace RSPP.Helpers
             sw.WriteLine(requestobj);
             sw.Dispose();
 
-            log.Info("This is the request OBJ :" + requestobj);
+            //_logger.Info("This is the request OBJ :" + requestobj);
             request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
             IRestResponse response = client.Execute(request);
             string content = response.Content;
@@ -72,43 +75,52 @@ namespace RSPP.Helpers
             return webResponse;
         }
 
-
+        // check status
         public WebResponse GetRemitaPaymentDetails(string APIHash, string rrr)
         {
             WebResponse webResponse = new WebResponse();
-
-            var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/"+rrr+"/"+ APIHash+"/status.reg");
-            client.Timeout = -1;
-            var request = new RestRequest(Method.GET);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
-            IRestResponse response = client.Execute(request);
-            if (response.IsSuccessful)
+            try
             {
-                webResponse.message = "Success";
-                webResponse.value = JsonConvert.DeserializeObject<GetPaymentResponse>(response.Content);
+
+                var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/" + rrr + "/" + APIHash + "/status.reg");
+                client.Timeout = -1;
+                var request = new RestRequest(Method.GET);
+                request.AddHeader("Content-Type", "application/json");
+                request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+                IRestResponse response = client.Execute(request);
+                if (response.IsSuccessful)
+                {
+                    webResponse.message = "Success";
+                    webResponse.value = JsonConvert.DeserializeObject<GetPaymentResponse>(response.Content);
+                }
+                else
+                {
+                    webResponse.message = "Failed";
+                }
             }
-            else
+            catch (Exception e)
             {
                 webResponse.message = "Failed";
+                _logger.Error(e.Message);
             }
             return webResponse;
+
         }
 
 
-
+        // get rrr
         public string GeneratePaymentReference(string Applicationid, string baseurl, string paymentname, decimal paymentamonut)
-       {
+        {
             try
             {
                 var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == Applicationid select a).FirstOrDefault();
 
-                var agencydetails = (from a in _context.UserMaster where a.UserEmail == applicationdetails.CompanyEmail select a).FirstOrDefault();
+                var companydetails = (from a in _context.UserMaster where a.UserEmail == applicationdetails.CompanyEmail select a).FirstOrDefault();
 
                 PaymentLog paymentLogs = _context.PaymentLog.Where(c => c.ApplicationId == Applicationid && (c.Status == "INIT" || c.Status == "AUTH" || c.Status == "FAIL")).FirstOrDefault();
                 if (paymentLogs != null)
                 {
-                    log.Info("RRR is Already Generated =>" + paymentLogs.Rrreference);
+                    //log.Info("RRR is Already Generated =>" + paymentLogs.Rrreference);
                     return paymentLogs.Rrreference;
                 }
 
@@ -116,7 +128,7 @@ namespace RSPP.Helpers
                 paymentRequest.serviceTypeId = servicetype;//generalClass.ServiceIdNewLive;
                 paymentRequest.orderId = Applicationid;
                 paymentRequest.amount = Decimal.ToInt32(paymentamonut).ToString();
-                paymentRequest.payerName = agencydetails.CompanyName;
+                paymentRequest.payerName = companydetails.CompanyName;
                 paymentRequest.payerEmail = applicationdetails.CompanyEmail;
                 paymentRequest.payerPhone = applicationdetails.PhoneNum;
                 paymentRequest.description = applicationdetails.AgencyName;
@@ -144,22 +156,22 @@ namespace RSPP.Helpers
                     paymentLog.RetryCount = 0;
                     paymentLog.Status = "INIT";
 
-                    log.Info("About to Add Payment Log");
+                    //log.Info("About to Add Payment Log");
                     _context.PaymentLog.Add(paymentLog);
 
-                    log.Info("Added Payment Log to Table");
+                    //log.Info("Added Payment Log to Table");
                     _context.SaveChanges();
-                    log.Info("Saved it Successfully");
+                    //log.Info("Saved it Successfully");
                 }
-                    return paymentResponse.RRR;
-                
+                return paymentResponse.RRR;
+
             }
             catch (Exception ex)
             {
-                log.Error(ex.StackTrace);
+                _logger.Error(ex.StackTrace);
                 return "An Error Occured Generating Payment Reference, Pls Try again Later";
             }
-           
+
         }
 
 

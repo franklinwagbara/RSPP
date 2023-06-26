@@ -3,26 +3,21 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Rotativa.AspNetCore;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
 using RSPP.Models;
 using RSPP.Models.DB;
+using RSPP.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
-using static QRCoder.PayloadGenerator;
 
 namespace RSPP.Controllers
 {
@@ -38,6 +33,8 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         WorkFlowHelper _workflowHelper;
         List<UserMaster> staffJsonList = new List<UserMaster>();
+        UtilityHelper _utilityHelper;
+
 
         private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
 
@@ -58,6 +55,7 @@ namespace RSPP.Controllers
             _hostingEnv = hostingEnv;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
+            _utilityHelper = new UtilityHelper(_context);
         }
 
 
@@ -510,6 +508,61 @@ namespace RSPP.Controllers
             return View();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult CheckPaymentStatus(string applicationId)
+        {
+            var response = new PaymentStatusResponse(false, "Invalid application id received");
+
+            if (!string.IsNullOrWhiteSpace(applicationId))
+                return Json(response);
+
+            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
+            if (paymentdetails == null)
+            {
+                response.ResultMessage = "No payment details found";
+                return Json(response);
+            }
+
+            string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive;
+            string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
+            var webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
+            var paymentResponse = (GetPaymentResponse)webResponse.value;
+            if (paymentResponse == null)
+            {
+                response.ResultMessage = "Unable to fetch details for this payment";
+                return Json(response);
+            }
+
+            response.ResultMessage = "Payment details found";
+            if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
+            {
+                paymentdetails.Status = "AUTH";
+                paymentdetails.TxnMessage = paymentResponse.message;
+                paymentdetails.TransactionId = paymentResponse.status;
+                paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
+                ResponseWrapper responseWrapper = _workflowHelper.processAction(applicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
+
+            }
+            else
+            {
+                paymentdetails.Status = "INIT";
+            }
+            _context.SaveChanges();
+
+            response.TransactionAmount = paymentdetails.TxnAmount.ToString();
+            var companyName = (from app in _context.ApplicationRequestForm
+                               join users in _context.UserMaster
+                               on app.CompanyEmail equals users.UserEmail
+                               where app.ApplicationId == applicationId
+                               select users.CompanyName).FirstOrDefault();
+            response.CompanyName = companyName;
+
+            response.Success = true;
+            response.PaymentResponse = paymentResponse;
+            return Json(response);
+        }
+
         public ActionResult AllStaffOutofOffice()
         {
             ViewBag.AllStaffOutofOfficeList = _helpersController.GetAllOutofOffice();
@@ -920,7 +973,7 @@ namespace RSPP.Controllers
                         return Json(new
                         {
                             Status = status,
-                            Message="Unable to update company details because the provided email already exists"
+                            Message = "Unable to update company details because the provided email already exists"
                         });
                     }
 

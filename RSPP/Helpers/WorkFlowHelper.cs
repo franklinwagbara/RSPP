@@ -19,6 +19,7 @@ namespace RSPP.Helper
 
         }
 
+        // process an application by moving it to its correct work stage
         public ResponseWrapper processAction(string ApplicationId, string Action, string FromUserId, string Comment)
         {
 
@@ -59,8 +60,7 @@ namespace RSPP.Helper
                 }
 
                 logger.Info("Done with Application Record");
-                //applicationTypeList.Add(appmaster.ApplicationTypeId.Trim());
-                // List<WorkFlowNavigation> wkflowNavigationList = dbCtxt.WorkFlowNavigations.Where(c => c.CurrentStageID == appmaster.CurrentStageID && (appmaster.ApplicationID == ApplicationId) && (appmaster.LastAssignedUser == FromUserId) && (c.Action == Action) && (c.LicenseTypeCode == Appcode)).ToList();//&& applicationTypeList.Contains(c.ApplicationType.Trim())
+                // get work flow navigation details for this application
                 var wkflowNavigationList = (from w in _context.WorkFlowNavigation
                                             join a in _context.ApplicationRequestForm on w.CurrentStageId
                                             equals a.CurrentStageId
@@ -94,6 +94,7 @@ namespace RSPP.Helper
                 
                 if (mainWkflowNavigation.TargetRole == "COMPANY")
                 {
+                    // update the application's state & current stage
                     NextProcessor = appmaster.CompanyEmail;
                     nextUser = _context.UserMaster.Where(u => u.UserEmail == appmaster.CompanyEmail).FirstOrDefault();
                     appmaster.CurrentStageId = mainWkflowNavigation.NextStateId;
@@ -189,7 +190,7 @@ namespace RSPP.Helper
                 }
 
                 responsewrapper.status = true;
-
+                //determine what should happen in the current stage
                 string stateType = null;
                 String nextStageName = null;
                 WorkFlowState wkflowstate = _context.WorkFlowState.Where(w => w.StateId == mainWkflowNavigation.NextStateId).FirstOrDefault();
@@ -226,7 +227,7 @@ namespace RSPP.Helper
                 responsewrapper.receivedByRole = received.TargetedToRole;
                 
                 logger.Info("Current State Type =>" + stateType);
-
+                // generate messages based on the work state of the application
                 if (stateType == "PROGRESS")
                 {
                     responsewrapper.value = "Application has been moved To " + responsewrapper.receivedBy + "(" + responsewrapper.receivedByRole + ")"; 
@@ -262,7 +263,7 @@ namespace RSPP.Helper
             return responsewrapper;
         }
 
-
+        // store the current action details
         private void insertIntoHistory(ApplicationRequestForm appRequest, UserMaster actionUserMaster, UserMaster targetUserMaster, string userAction, string comment, int currentStageId, int nextStageId)
         {
             ActionHistory actionHistory = new ActionHistory();

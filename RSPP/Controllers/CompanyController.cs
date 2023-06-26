@@ -399,6 +399,7 @@ namespace RSPP.Controllers
 
             //_context.SaveChanges();
 
+            // prepare & save details based on the type of service provider - returns success, rejected etc
             status = _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
 
             if (status == "Rejected")
@@ -411,6 +412,7 @@ namespace RSPP.Controllers
                 }
                 return Json(new { Status = status, applicationId = appid, Message = "Unable to resubmit your application please try again later." });
             }
+            // process an application by moving it to its correct work stage
             responseWrapper = _workflowHelper.processAction(appid, "Proceed", companyemail, "Initiated Application");
             if (responseWrapper.status == true)
             {
@@ -562,7 +564,45 @@ namespace RSPP.Controllers
             return View();
         }
 
+        //public ActionResult CheckPaymentStatus()
+        //{
+        //    //var applicationId = "062223133538";//failed
+        //    //var applicationId = "062323071911";
+        //    var applicationId = "062323072225";
 
+
+        //    var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
+        //    if (paymentdetails != null)
+        //    {
+
+        //        string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive; //generalClass.AppKey + generalClass.merchantId;
+        //        string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
+
+        //        WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
+        //        GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
+
+        //        if (paymentResponse != null)
+        //        {
+
+        //            if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
+        //            {
+        //                paymentdetails.Status = "AUTH";
+        //                paymentdetails.TxnMessage = paymentResponse.message;
+        //                paymentdetails.TransactionId = paymentResponse.status;
+        //                paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
+        //                //ResponseWrapper responseWrapper = _workflowHelper.processAction(ApplicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
+
+        //            }
+        //            else
+        //            {
+        //                paymentdetails.Status = "INIT";
+        //            }
+        //            _context.SaveChanges();
+        //        }
+        //    }
+
+        //    return View();
+        //}
 
         [HttpGet]
         public ActionResult PaymentReceipt(string ApplicationId)
@@ -1274,12 +1314,14 @@ namespace RSPP.Controllers
             decimal amt = 0;
             var checkRRRExit = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
             var checkGovAgency = (from a in _context.ApplicationRequestForm where a.ApplicationId == ApplicationId select a).FirstOrDefault();
+            // move to work flow state 3(documents attach) if application is from gov agency
             if (checkGovAgency?.AgencyId == 1)
             {
                 checkGovAgency.CurrentStageId = 3;
                 _context.SaveChanges();
                 return RedirectToAction("DocumentUpload", new { ApplicationId = ApplicationId });
             }
+            // generate RRR if it doesnt exist
             if (checkRRRExit == null)
             {
                 amt = Convert.ToDecimal(Amount);
@@ -1301,14 +1343,14 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            var pdf= _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
 
             return new ViewAsPdf("ViewCertificate", pdf)
             {
                 PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
             };
         }
-        
+
         public ActionResult DownloadCertificate(string id)
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;

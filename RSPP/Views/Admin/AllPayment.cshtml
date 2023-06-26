@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "All Payment";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
@@ -11,7 +10,6 @@
             <thead>
                 <tr>
 
-
                     <th>RRR Ref Number</th>
                     <th>Application Ref Number</th>
                     <th>Agency Name</th>
@@ -21,10 +19,13 @@
                     <th>Arrears</th>
                     <th>Total Amount</th>
                     <th>Status</th>
+                    <th>Others</th>
                 </tr>
             </thead>
 
             <tbody>
+                @Html.AntiForgeryToken()
+
                 @foreach (var b in ViewBag.PaymentList)
                 {
                     <tr>
@@ -50,6 +51,7 @@
                             }
 
                         </td>
+                        <td><button class="btn btn-xs btn-primary confirmPaymentStatus" id=@b.ApplicationID>Confirm Payment Status</button></td>
                     </tr>
                 }
             </tbody>
@@ -57,23 +59,155 @@
         </table>
     </div>
 
+    <!-- Other errors response Modal -->
+    <div class="modal fade" id="modalPaymentStatusResponse" data-backdrop="false">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Status Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                    <table class="table">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Company Name</th>
+                                <td id="company-name">Mark</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Reference Number</th>
+                                <td id="reference-number">Jacob</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Payment Reference (RRR)</th>
+                                <td id="payment-reference">Mark</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Transaction Amount</th>
+                                <td id="transaction-amount">Larry</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Approved Amount</th>
+                                <td id="approved-amount">Jacob</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Response Description</th>
+                                <td id="response-description">Larry</td>
+                            </tr>
+
+                            <tr>
+                                <th scope="row">Transaction Date</th>
+                                <td id="transaction-date">Larry</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Other errors response Modal -->
+    <div class="modal fade" id="modalPaymentStatusFailedResponse" data-backdrop="false">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Payment Status Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
 </div>
-@section scripts{
-    <script type="text/javascript">
-            $(function () {
-            $(".dataTable").dataTable({
-                "aLengthMenu": [25, 50, 75, 100, 200],
-                'iDisplayLength': 25,
-                'dom': 'Blfrtip',
-                'columnDefs': [{ orderable: false, "targets": [-1] }],
-                "language": {
-                    "lengthMenu": "Display  _MENU_ records per page",
-                    "zeroRecords": "Nothing found - sorry",
-                    "infoEmpty": "No records available",
-                    "infoFiltered": "(filtered from _MAX_ total records)"
-                },
-                "order": [[1, "desc"]]
-            });
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $(".dataTable").dataTable({
+            "aLengthMenu": [25, 50, 75, 100, 200],
+            'iDisplayLength': 10,
+            'dom': 'Blfrtip',
+            'columnDefs': [{ orderable: false, "targets": [-1] }],
+            "language": {
+                "lengthMenu": "Display  _MENU_ records per page",
+                "zeroRecords": "Nothing found - sorry",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)"
+            },
+            "order": [[1, "desc"]]
         });
-    </script>
-}
+
+        $(".confirmPaymentStatus").click(function (e) {
+            e.preventDefault();
+
+            var selectedApplicationId = (this).id;
+
+            $.ajax({
+                type: "POST",
+                url: "/Admin/CheckPaymentStatus",
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    applicationId: selectedApplicationId
+                },
+                success: function (response) {
+
+                    if (response.success) {
+                        $('#modalPaymentStatusResponse #company-name').text(response.companyName);
+                        $('#modalPaymentStatusResponse #reference-number').text(response.paymentResponse.orderId);
+                        $('#modalPaymentStatusResponse #payment-reference').text(response.paymentResponse.rrr);
+                        $('#modalPaymentStatusResponse #transaction-amount').text("N" + response.transactionAmount);
+                        $('#modalPaymentStatusResponse #approved-amount').text("N" + response.paymentResponse.amount);
+                        $('#modalPaymentStatusResponse #response-description').text(response.paymentResponse.message);
+                        $('#modalPaymentStatusResponse #transaction-date').text(response.paymentResponse.transactiontime);
+                        $('#modalPaymentStatusResponse').modal('show');
+
+                    } else {
+                        $('#modalPaymentStatusFailedResponse .modal-body').text(response.resultMessage);
+                        $('#modalPaymentStatusFailedResponse').modal('show');
+                    }
+
+                },
+                failure: function (response) {
+                    //console.log(response.responseText);
+                },
+                error: function (response) {
+                    //console.log(response.responseText);
+                }
+            });
+
+        });
+
+    });
+</script>
