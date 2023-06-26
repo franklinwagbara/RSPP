@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.AccountModel
+﻿@model RSPP.Models.DTOs.AuthenticationRequest
 
 @{
     Layout = null;
@@ -276,10 +276,10 @@
                             }
                         },
                         failure: function (response) {
-                            console.log(response.responseText);
+                            //console.log(response.responseText);
                         },
                         error: function (response) {
-                            console.log(response.responseText);
+                            //console.log(response.responseText);
                         }
                     });
 

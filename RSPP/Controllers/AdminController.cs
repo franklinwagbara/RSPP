@@ -12,6 +12,7 @@ using RSPP.Helpers;
 using RSPP.Models;
 using RSPP.Models.DB;
 using RSPP.Models.DTOs;
+using RSPP.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,6 +40,7 @@ namespace RSPP.Controllers
         private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
 
         private readonly IWebHostEnvironment _hostingEnv;
+        private readonly IEmailer _emailer;
 
         private const string SUPERVISOR = "SUPERVISOR";
         private const string REGISTRAR = "REGISTRAR";
@@ -47,12 +49,13 @@ namespace RSPP.Controllers
 
 
         [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnv) : base(hostingEnv)
+        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnv, IEmailer emailer) : base(hostingEnv)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _hostingEnv = hostingEnv;
+            _emailer = emailer;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
             _utilityHelper = new UtilityHelper(_context);
@@ -987,7 +990,7 @@ namespace RSPP.Controllers
 
                     var emailMessage = GenerateEmailBodyForCompanyEmailUpdate(companydetails.UserEmail);
 
-                    var emailResponse = Emailer.SendEmail(
+                    var emailResponse = _emailer.SendEmail(
                         companydetails.CompanyName,
                         companydetails.UserEmail,
                         "Password Reset Confirmation",

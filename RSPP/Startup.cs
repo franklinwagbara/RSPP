@@ -14,6 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Rotativa.AspNetCore;
 using System;
 using RSPP.Exceptions;
+using RSPP.UnitOfWorks;
+using RSPP.UnitOfWorks.Interfaces;
+using RSPP.Services.Interfaces;
+using RSPP.Services;
 
 namespace RSPP
 {
@@ -64,7 +68,6 @@ namespace RSPP
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
-
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);//You can set Time   
@@ -77,6 +80,9 @@ namespace RSPP
             {
                 options.AutomaticAuthentication = false;
             });
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IEmailer, Emailer>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews(options => options.Filters.Add(new ExceptionHandlingFilter()))
