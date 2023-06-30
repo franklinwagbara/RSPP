@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RSPP.Models.DB;
+﻿using RSPP.Models.DB;
 using RSPP.Repositories;
 using RSPP.Repositories.Interfaces;
 using RSPP.UnitOfWorks.Interfaces;
@@ -11,6 +10,8 @@ namespace RSPP.UnitOfWorks
     {
         private readonly RSPPdbContext _context;
         private UserMasterRepository<UserMaster> _userMasterRepository;
+        private PaymentLogRepository<PaymentLog> _paymentLogRepository;
+        private ApplicationRequestFormRepository<ApplicationRequestForm> _applicationRequestFormRepository;
 
 
         public UnitOfWork(RSPPdbContext context)
@@ -30,6 +31,31 @@ namespace RSPP.UnitOfWorks
                 return _userMasterRepository;
             }
         }
+        public IPaymentLogRepository PaymentLogRepository
+        {
+            get
+            {
+
+                if (this._paymentLogRepository == null)
+                {
+                    this._paymentLogRepository = new PaymentLogRepository<PaymentLog>(_context);
+                }
+                return _paymentLogRepository;
+            }
+        }
+
+        public IApplicationRequestFormRepository ApplicationRequestFormRepository {
+            get
+            {
+
+                if (this._applicationRequestFormRepository == null)
+                {
+                    this._applicationRequestFormRepository = new ApplicationRequestFormRepository<ApplicationRequestForm>(_context);
+                }
+                return _applicationRequestFormRepository;
+            }
+        }
+
         public void Complete()
         {
             _context.SaveChanges();

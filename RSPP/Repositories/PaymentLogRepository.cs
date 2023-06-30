@@ -4,12 +4,15 @@ using RSPP.Repositories.Interfaces;
 
 namespace RSPP.Repositories
 {
-    public class UserMasterRepository<T> : BaseRepository<UserMaster>, IUserMasterRepository
+    public class PaymentLogRepository<T>: BaseRepository<PaymentLog>, IPaymentLogRepository
     {
         /// <summary>
-        /// UserMasterRepository Constructor
+        /// PaymentLogRepository Constructor
         /// </summary>
         /// <param name="context"> The database context</param>
-        public UserMasterRepository(RSPPdbContext context) : base(context) { }
+        public PaymentLogRepository(RSPPdbContext context):base(context)
+        {
+            
+        }
     }
 }

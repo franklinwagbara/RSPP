@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Asn1;
+using RSPP.Models.DB;
 using RSPP.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,14 +18,14 @@ namespace RSPP.Repositories
     public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : class
     {
 
-        protected readonly DbContext _context;
+        protected readonly RSPPdbContext _context;
         protected readonly DbSet<TEntity> _dbSet;
 
         ///<summary>
         ///Repository constructor
         /// </summary>
-        /// <param name="dbContext"> The Database Context </param>
-        public BaseRepository(DbContext context)
+        /// <param name="context"> The RSPPdbContext Database Context </param>
+        public BaseRepository(RSPPdbContext context)
         {
             _context = context;
             _dbSet = _context.Set<TEntity>();
