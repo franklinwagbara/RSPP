@@ -18,6 +18,7 @@ using RSPP.UnitOfWorks;
 using RSPP.UnitOfWorks.Interfaces;
 using RSPP.Services.Interfaces;
 using RSPP.Services;
+using RSPP.Models.Options;
 
 namespace RSPP
 {
@@ -43,27 +44,10 @@ namespace RSPP
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
-
-            //AddHostedService
-
-            //services.AddHostedService<PaymentConfirmationService>();
-            //services.AddHostedService<ExpiryCertificateReminderService>();
+            services.Configure<RemitaOptions>(Configuration.GetSection(RemitaOptions.Remita));
             services.AddDistributedMemoryCache();
 
             services.ConfigureApplicationCookie(options => options.LoginPath = "/Home/Index");
-
-
-            //services.ConfigureApplicationCookie(options =>
-            //{
-            //    // Cookie settings
-            //    options.Cookie.HttpOnly = true;
-            //    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-            //    options.LoginPath = "/Identity/Account/Login";
-            //    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-            //    options.SlidingExpiration = true;
-            //});
-
 
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -83,6 +67,8 @@ namespace RSPP
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IEmailer, Emailer>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IRemitaPaymentService, RemitaPaymentService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllersWithViews(options => options.Filters.Add(new ExceptionHandlingFilter()))

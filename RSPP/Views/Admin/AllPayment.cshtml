@@ -182,19 +182,18 @@
                     applicationId: selectedApplicationId
                 },
                 success: function (response) {
-
-                    if (response.success) {
-                        $('#modalPaymentStatusResponse #company-name').text(response.companyName);
-                        $('#modalPaymentStatusResponse #reference-number').text(response.paymentResponse.orderId);
-                        $('#modalPaymentStatusResponse #payment-reference').text(response.paymentResponse.rrr);
-                        $('#modalPaymentStatusResponse #transaction-amount').text("N" + response.transactionAmount);
-                        $('#modalPaymentStatusResponse #approved-amount').text("N" + response.paymentResponse.amount);
-                        $('#modalPaymentStatusResponse #response-description').text(response.paymentResponse.message);
-                        $('#modalPaymentStatusResponse #transaction-date').text(response.paymentResponse.transactiontime);
+                    if (response.result.success) {
+                        $('#modalPaymentStatusResponse #company-name').text(response.result.companyName);
+                        $('#modalPaymentStatusResponse #reference-number').text(response.result.remitaResponse.orderId);
+                        $('#modalPaymentStatusResponse #payment-reference').text(response.result.remitaResponse.rrr);
+                        $('#modalPaymentStatusResponse #transaction-amount').text("N" + response.result.transactionAmount);
+                        $('#modalPaymentStatusResponse #approved-amount').text("N" + response.result.remitaResponse.amount);
+                        $('#modalPaymentStatusResponse #response-description').text(response.result.remitaResponse.message);
+                        $('#modalPaymentStatusResponse #transaction-date').text(response.result.remitaResponse.transactiontime);
                         $('#modalPaymentStatusResponse').modal('show');
 
                     } else {
-                        $('#modalPaymentStatusFailedResponse .modal-body').text(response.resultMessage);
+                        $('#modalPaymentStatusFailedResponse .modal-body').text(response.result.resultMessage);
                         $('#modalPaymentStatusFailedResponse').modal('show');
                     }
 

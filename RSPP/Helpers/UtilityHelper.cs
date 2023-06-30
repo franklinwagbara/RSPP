@@ -19,11 +19,10 @@ namespace RSPP.Helpers
     {
         //string path = 
         public RSPPdbContext _context;
-        GeneralClass generalClass = new GeneralClass();
+        //GeneralClass generalClass = new GeneralClass();
 
-        PaymentTransactionModel paymentRequest = new PaymentTransactionModel();
-        //private static ILog log = log4net.LogManager.GetLogger(typeof(UtilityHelper));
-        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        //RRRRequestModel paymentRequest = new RRRRequestModel();
+        //private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 
         public UtilityHelper(RSPPdbContext context)
@@ -32,147 +31,147 @@ namespace RSPP.Helpers
 
         }
 
-        public WebResponse RemitaPayment(PaymentTransactionModel model, string APIHash)
-        {
-            WebResponse webResponse = new WebResponse();
+        //public WebResponse RemitaPayment(RRRRequestModel model, string APIHash)
+        //{
+        //    WebResponse webResponse = new WebResponse();
 
-            var client = new RestClient(generalClass.PostPaymentUrlLive);
-            client.Timeout = -1;
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
-            StreamWriter swAPI = new StreamWriter("log.txt", true);
-            swAPI.WriteLine(APIHash);
-            swAPI.Dispose();
-            var requestobj = JsonConvert.SerializeObject(model);
-            StreamWriter sw = new StreamWriter("log.txt", true);
-            sw.WriteLine(requestobj);
-            sw.Dispose();
+        //    var client = new RestClient(generalClass.PostPaymentUrlLive);
+        //    client.Timeout = -1;
+        //    var request = new RestRequest(Method.POST);
+        //    request.AddHeader("Content-Type", "application/json");
+        //    request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+        //    StreamWriter swAPI = new StreamWriter("log.txt", true);
+        //    swAPI.WriteLine(APIHash);
+        //    swAPI.Dispose();
+        //    var requestobj = JsonConvert.SerializeObject(model);
+        //    StreamWriter sw = new StreamWriter("log.txt", true);
+        //    sw.WriteLine(requestobj);
+        //    sw.Dispose();
 
-            //_logger.Info("This is the request OBJ :" + requestobj);
-            request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            string content = response.Content;
-            var removeunwantedstring1 = content.Replace("jsonp (", "");
-            var removeunwantedstring2 = removeunwantedstring1.Replace(")", "");
+        //    //_logger.Info("This is the request OBJ :" + requestobj);
+        //    request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
+        //    IRestResponse response = client.Execute(request);
+        //    string content = response.Content;
+        //    var removeunwantedstring1 = content.Replace("jsonp (", "");
+        //    var removeunwantedstring2 = removeunwantedstring1.Replace(")", "");
 
 
-            if (response.IsSuccessful)
-            {
-                webResponse.message = "Success";
-                webResponse.value = JsonConvert.DeserializeObject<RemitaModel>(removeunwantedstring2);
-                StreamWriter sw_Passed = new StreamWriter("log.txt", true);
-                sw_Passed.WriteLine(webResponse.message);
-                sw_Passed.Dispose();
-            }
-            else
-            {
-                webResponse.message = "Failed";
-                StreamWriter sw_Failed = new StreamWriter("log.txt", true);
-                sw_Failed.WriteLine(webResponse.message);
-                sw_Failed.Dispose();
-            }
-            return webResponse;
-        }
+        //    if (response.IsSuccessful)
+        //    {
+        //        webResponse.message = "Success";
+        //        webResponse.value = JsonConvert.DeserializeObject<RemitaModel>(removeunwantedstring2);
+        //        StreamWriter sw_Passed = new StreamWriter("log.txt", true);
+        //        sw_Passed.WriteLine(webResponse.message);
+        //        sw_Passed.Dispose();
+        //    }
+        //    else
+        //    {
+        //        webResponse.message = "Failed";
+        //        StreamWriter sw_Failed = new StreamWriter("log.txt", true);
+        //        sw_Failed.WriteLine(webResponse.message);
+        //        sw_Failed.Dispose();
+        //    }
+        //    return webResponse;
+        //}
 
         // check status
-        public WebResponse GetRemitaPaymentDetails(string APIHash, string rrr)
-        {
-            WebResponse webResponse = new WebResponse();
-            try
-            {
+        //public WebResponse GetRemitaPaymentDetails(string APIHash, string rrr)
+        //{
+        //    WebResponse webResponse = new WebResponse();
+        //    try
+        //    {
 
-                var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/" + rrr + "/" + APIHash + "/status.reg");
-                client.Timeout = -1;
-                var request = new RestRequest(Method.GET);
-                request.AddHeader("Content-Type", "application/json");
-                request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
-                IRestResponse response = client.Execute(request);
-                if (response.IsSuccessful)
-                {
-                    webResponse.message = "Success";
-                    webResponse.value = JsonConvert.DeserializeObject<GetPaymentResponse>(response.Content);
-                }
-                else
-                {
-                    webResponse.message = "Failed";
-                }
-            }
-            catch (Exception e)
-            {
-                webResponse.message = "Failed";
-                _logger.Error(e.Message);
-            }
-            return webResponse;
+        //        var client = new RestClient(generalClass.GetPaymentBaseUrlLive + generalClass.merchantIdLive + "/" + rrr + "/" + APIHash + "/status.reg");
+        //        client.Timeout = -1;
+        //        var request = new RestRequest(Method.GET);
+        //        request.AddHeader("Content-Type", "application/json");
+        //        request.AddHeader("Authorization", "remitaConsumerKey=" + generalClass.merchantIdLive + ",remitaConsumerToken=" + APIHash);
+        //        IRestResponse response = client.Execute(request);
+        //        if (response.IsSuccessful)
+        //        {
+        //            webResponse.message = "Success";
+        //            webResponse.value = JsonConvert.DeserializeObject<GetPaymentResponse>(response.Content);
+        //        }
+        //        else
+        //        {
+        //            webResponse.message = "Failed";
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        webResponse.message = "Failed";
+        //        _logger.Error(e.Message);
+        //    }
+        //    return webResponse;
 
-        }
+        //}
 
 
         // get rrr
-        public string GeneratePaymentReference(string Applicationid, string baseurl, string paymentname, decimal paymentamonut)
-        {
-            try
-            {
-                var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == Applicationid select a).FirstOrDefault();
+        //public string GeneratePaymentReference(string Applicationid, string baseurl, string paymentname, decimal paymentamonut)
+        //{
+        //    try
+        //    {
+        //        var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == Applicationid select a).FirstOrDefault();
 
-                var companydetails = (from a in _context.UserMaster where a.UserEmail == applicationdetails.CompanyEmail select a).FirstOrDefault();
+        //        var companydetails = (from a in _context.UserMaster where a.UserEmail == applicationdetails.CompanyEmail select a).FirstOrDefault();
 
-                PaymentLog paymentLogs = _context.PaymentLog.Where(c => c.ApplicationId == Applicationid && (c.Status == "INIT" || c.Status == "AUTH" || c.Status == "FAIL")).FirstOrDefault();
-                if (paymentLogs != null)
-                {
-                    //log.Info("RRR is Already Generated =>" + paymentLogs.Rrreference);
-                    return paymentLogs.Rrreference;
-                }
+        //        PaymentLog paymentLogs = _context.PaymentLog.Where(c => c.ApplicationId == Applicationid && (c.Status == "INIT" || c.Status == "AUTH" || c.Status == "FAIL")).FirstOrDefault();
+        //        if (paymentLogs != null)
+        //        {
+        //            //log.Info("RRR is Already Generated =>" + paymentLogs.Rrreference);
+        //            return paymentLogs.Rrreference;
+        //        }
 
-                var servicetype = applicationdetails.ApplicationTypeId == "NEW" ? generalClass.ServiceIdNewLive : generalClass.ServiceIdRenewalLive;
-                paymentRequest.serviceTypeId = servicetype;//generalClass.ServiceIdNewLive;
-                paymentRequest.orderId = Applicationid;
-                paymentRequest.amount = Decimal.ToInt32(paymentamonut).ToString();
-                paymentRequest.payerName = companydetails.CompanyName;
-                paymentRequest.payerEmail = applicationdetails.CompanyEmail;
-                paymentRequest.payerPhone = applicationdetails.PhoneNum;
-                paymentRequest.description = applicationdetails.AgencyName;
-                string AppkeyHash = generalClass.merchantIdLive + servicetype + Applicationid + Decimal.ToInt32(paymentamonut).ToString() + generalClass.AppKeyLive;//generalClass.merchantId + generalClass.ServiceId + Applicationid + Decimal.ToInt32(paymentamonut).ToString() + generalClass.AppKey;
-                string AppkeyHashed = generalClass.GenerateSHA512(AppkeyHash).ToLower();
-                WebResponse webResponse = RemitaPayment(paymentRequest, AppkeyHashed);
+        //        var servicetype = applicationdetails.ApplicationTypeId == "NEW" ? generalClass.ServiceIdNewLive : generalClass.ServiceIdRenewalLive;
+        //        paymentRequest.serviceTypeId = servicetype;//generalClass.ServiceIdNewLive;
+        //        paymentRequest.orderId = Applicationid;
+        //        paymentRequest.amount = Decimal.ToInt32(paymentamonut).ToString();
+        //        paymentRequest.payerName = companydetails.CompanyName;
+        //        paymentRequest.payerEmail = applicationdetails.CompanyEmail;
+        //        paymentRequest.payerPhone = applicationdetails.PhoneNum;
+        //        paymentRequest.description = applicationdetails.AgencyName;
+        //        string AppkeyHash = generalClass.merchantIdLive + servicetype + Applicationid + Decimal.ToInt32(paymentamonut).ToString() + generalClass.AppKeyLive;//generalClass.merchantId + generalClass.ServiceId + Applicationid + Decimal.ToInt32(paymentamonut).ToString() + generalClass.AppKey;
+        //        string AppkeyHashed = Encryption.GenerateSHA512(AppkeyHash).ToLower();
+        //        WebResponse webResponse = RemitaPayment(paymentRequest, AppkeyHashed);
 
-                RemitaModel paymentResponse = (RemitaModel)webResponse.value;
-                if (webResponse.message == "Success")
-                {
-                    PaymentLog paymentLog = new PaymentLog();
-                    paymentLog.ApplicationId = Applicationid;
-                    paymentLog.TransactionDate = DateTime.UtcNow;
-                    paymentLog.LastRetryDate = DateTime.UtcNow;
-                    paymentLog.PaymentCategory = paymentname;
-                    paymentLog.TransactionId = paymentResponse.statuscode;
-                    paymentLog.ApplicantId = applicationdetails.CompanyEmail;
-                    paymentLog.Rrreference = paymentResponse.RRR;
-                    paymentLog.AppReceiptId = "APPID";
-                    paymentLog.TxnAmount = paymentamonut;
-                    paymentLog.Arrears = 0;
-                    paymentLog.TxnMessage = paymentResponse.status;
-                    paymentLog.Account = generalClass.AccountNumberLive;
-                    paymentLog.BankCode = generalClass.BankCodeLive;
-                    paymentLog.RetryCount = 0;
-                    paymentLog.Status = "INIT";
+        //        RemitaModel paymentResponse = (RemitaModel)webResponse.value;
+        //        if (webResponse.message == "Success")
+        //        {
+        //            PaymentLog paymentLog = new PaymentLog();
+        //            paymentLog.ApplicationId = Applicationid;
+        //            paymentLog.TransactionDate = DateTime.UtcNow;
+        //            paymentLog.LastRetryDate = DateTime.UtcNow;
+        //            paymentLog.PaymentCategory = paymentname;
+        //            paymentLog.TransactionId = paymentResponse.statuscode;
+        //            paymentLog.ApplicantId = applicationdetails.CompanyEmail;
+        //            paymentLog.Rrreference = paymentResponse.RRR;
+        //            paymentLog.AppReceiptId = "APPID";
+        //            paymentLog.TxnAmount = paymentamonut;
+        //            paymentLog.Arrears = 0;
+        //            paymentLog.TxnMessage = paymentResponse.status;
+        //            paymentLog.Account = generalClass.AccountNumberLive;
+        //            paymentLog.BankCode = generalClass.BankCodeLive;
+        //            paymentLog.RetryCount = 0;
+        //            paymentLog.Status = "INIT";
 
-                    //log.Info("About to Add Payment Log");
-                    _context.PaymentLog.Add(paymentLog);
+        //            //log.Info("About to Add Payment Log");
+        //            _context.PaymentLog.Add(paymentLog);
 
-                    //log.Info("Added Payment Log to Table");
-                    _context.SaveChanges();
-                    //log.Info("Saved it Successfully");
-                }
-                return paymentResponse.RRR;
+        //            //log.Info("Added Payment Log to Table");
+        //            _context.SaveChanges();
+        //            //log.Info("Saved it Successfully");
+        //        }
+        //        return paymentResponse.RRR;
 
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.StackTrace);
-                return "An Error Occured Generating Payment Reference, Pls Try again Later";
-            }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(ex.StackTrace);
+        //        return "An Error Occured Generating Payment Reference, Pls Try again Later";
+        //    }
 
-        }
+        //}
 
 
 

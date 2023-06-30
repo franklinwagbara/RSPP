@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Rotativa.AspNetCore;
 using RSPP.Configurations;
@@ -12,6 +13,7 @@ using RSPP.Helpers;
 using RSPP.Models;
 using RSPP.Models.DB;
 using RSPP.Models.DTOs;
+using RSPP.Models.Options;
 using RSPP.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -24,8 +26,6 @@ namespace RSPP.Controllers
 {
     public class AdminController : AppUserController
     {
-
-
 
         public RSPPdbContext _context;
         IHttpContextAccessor _httpContextAccessor;
@@ -41,6 +41,7 @@ namespace RSPP.Controllers
 
         private readonly IWebHostEnvironment _hostingEnv;
         private readonly IEmailer _emailer;
+        private readonly IPaymentService _paymentService;
 
         private const string SUPERVISOR = "SUPERVISOR";
         private const string REGISTRAR = "REGISTRAR";
@@ -49,7 +50,14 @@ namespace RSPP.Controllers
 
 
         [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnv, IEmailer emailer) : base(hostingEnv)
+        public AdminController(
+            RSPPdbContext context, 
+            IConfiguration configuration, 
+            IHttpContextAccessor httpContextAccessor, 
+            IWebHostEnvironment hostingEnv, 
+            IEmailer emailer,
+            IPaymentService paymentService,
+            IOptions<RemitaOptions> remitaOptions) : base(hostingEnv,paymentService)
         {
             _context = context;
             _configuration = configuration;
@@ -74,8 +82,6 @@ namespace RSPP.Controllers
 
             try
             {
-
-
                 foreach (ApplicationRequestForm appRequest in _context.ApplicationRequestForm.ToList())
                 {
                     switch (_context.WorkFlowState.Where(w => w.StateId == appRequest.CurrentStageId).FirstOrDefault().StateType)
@@ -509,61 +515,6 @@ namespace RSPP.Controllers
             }
             ViewBag.PaymentList = payment;
             return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult CheckPaymentStatus(string applicationId)
-        {
-            var response = new PaymentStatusResponse(false, "Invalid application id received");
-
-            if (!string.IsNullOrWhiteSpace(applicationId))
-                return Json(response);
-
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-            if (paymentdetails == null)
-            {
-                response.ResultMessage = "No payment details found";
-                return Json(response);
-            }
-
-            string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive;
-            string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
-            var webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
-            var paymentResponse = (GetPaymentResponse)webResponse.value;
-            if (paymentResponse == null)
-            {
-                response.ResultMessage = "Unable to fetch details for this payment";
-                return Json(response);
-            }
-
-            response.ResultMessage = "Payment details found";
-            if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-            {
-                paymentdetails.Status = "AUTH";
-                paymentdetails.TxnMessage = paymentResponse.message;
-                paymentdetails.TransactionId = paymentResponse.status;
-                paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
-                ResponseWrapper responseWrapper = _workflowHelper.processAction(applicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
-
-            }
-            else
-            {
-                paymentdetails.Status = "INIT";
-            }
-            _context.SaveChanges();
-
-            response.TransactionAmount = paymentdetails.TxnAmount.ToString();
-            var companyName = (from app in _context.ApplicationRequestForm
-                               join users in _context.UserMaster
-                               on app.CompanyEmail equals users.UserEmail
-                               where app.ApplicationId == applicationId
-                               select users.CompanyName).FirstOrDefault();
-            response.CompanyName = companyName;
-
-            response.Success = true;
-            response.PaymentResponse = paymentResponse;
-            return Json(response);
         }
 
         public ActionResult AllStaffOutofOffice()

@@ -31,7 +31,7 @@ namespace RSPP.Models
 
 
 
-    public class PaymentTransactionModel
+    public class RRRRequestModel
     {
         public string serviceTypeId { get; set; }
         public string amount { get; set; }

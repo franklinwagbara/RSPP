@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using RSPP.Helpers;
 using RSPP.Models;
+using RSPP.Models.DB;
+using RSPP.Services.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 
@@ -15,9 +17,9 @@ namespace RSPP.Controllers
     public class AppUserController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IPaymentService _paymentService;
 
         private const string PDF_MIME_TYPE = "application/pdf";
-
         protected const string VIDEO_GUIDES_COMPANY_PATH = "UserGuides/Video/";
         protected const string USER_GUIDES_COMPANY_PATH = "UserGuides/Company/";
         protected const string USER_GUIDES_ADMIN_PATH = "UserGuides/Admin/";
@@ -25,9 +27,10 @@ namespace RSPP.Controllers
         protected const string USER_TYPE_ADMIN = "ADMIN";
 
         public List<FileModel> Files { get; set; } = new List<FileModel>();
-        public AppUserController(IWebHostEnvironment webHostEnvironment)
+        public AppUserController(IWebHostEnvironment webHostEnvironment,IPaymentService paymentService)
         {
             _webHostEnvironment = webHostEnvironment;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -88,7 +91,20 @@ namespace RSPP.Controllers
 
         public string VideoUserGuide()
         {
-            return "~/"+VIDEO_GUIDES_COMPANY_PATH+"user_guide.mp4";
+            return "~/" + VIDEO_GUIDES_COMPANY_PATH + "user_guide.mp4";
+        }
+
+        /// <summary>
+        /// Gets the status for payment attached to an application
+        /// </summary>
+        /// <param name="applicationId">application id</param>
+        /// <returns>A JsonResult representing payment status for that application</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public JsonResult CheckPaymentStatus(string applicationId)
+        {
+            return Json(_paymentService.CheckPaymentStatusAsync(applicationId));
         }
     }
 }

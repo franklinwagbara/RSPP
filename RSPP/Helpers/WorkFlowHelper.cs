@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace RSPP.Helper
 {
-    public class WorkFlowHelper : Controller
+    public class WorkFlowHelper
     {
         public RSPPdbContext _context;
         GeneralClass generalClass = new GeneralClass(); 

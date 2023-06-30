@@ -6,6 +6,9 @@ using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Models;
 using RSPP.Models.DB;
+using RSPP.Services;
+using RSPP.Services.Interfaces;
+using RSPP.UnitOfWorks.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,68 +23,95 @@ namespace RSPP.Helpers
         public RSPPdbContext _context;
         UtilityHelper _utilityHelper;
         WorkFlowHelper _workflowHelper;
+
+        //private readonly PaymentService _paymentService = new PaymentService();
         public BackgroundCheck(RSPPdbContext context)
         {
             _context = context;
             _utilityHelper = new UtilityHelper(_context);
             _workflowHelper = new WorkFlowHelper(_context);
-
         }
 
-        public async void CheckPayment()
-        {
+        //public async void CheckPayment()
+        //{
+        //    try
+        //    {
+        //        var unPaidApplicationIds = (from app in _context.ApplicationRequestForm
+        //                                    join payments in _context.PaymentLog
+        //                                    on app.ApplicationId equals payments.ApplicationId
+        //                                    where app.Status != AppMessages.REJECTED && app.CurrentStageId < 4
+        //                                    && payments.Status == AppMessages.INIT && payments.Rrreference != null
+        //                                    && payments.Rrreference != AppMessages.RRR
+        //                                    select app.ApplicationId)
+        //                                    .ToList();
+        //        if (unPaidApplicationIds.Any())
+        //        {
+        //            foreach (var applicationId in unPaidApplicationIds)
+        //            {
+        //                var response = _paymentService.CheckPaymentStatusAsync(applicationId).Result;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(ex);
+        //    }
+        //}
 
-            try
-            {
+        //public async void CheckPayment()
+        //{
 
-                List<PaymentLog> paymentlog = (from p in _context.PaymentLog where p.Status == "INIT" && p.Rrreference != null && p.Rrreference != "RRR" select p).ToList();
-                if (paymentlog.Count > 0)
-                {
-                    foreach (var item1 in paymentlog)
-                    {
+        //    try
+        //    {
 
-                        string APIHash = item1.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive;
-                        string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
+        //        List<PaymentLog> paymentlog = (from p in _context.PaymentLog where p.Status == "INIT" && p.Rrreference != null && p.Rrreference != "RRR" select p).ToList();
+        //        if (paymentlog.Count > 0)
+        //        {
+        //            foreach (var item1 in paymentlog)
+        //            {
 
-                        WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, item1.Rrreference);
+        //                string APIHash = item1.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive;
+        //                string AppkeyHashed = Encryption.GenerateSHA512(APIHash);
 
-                        GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
+        //                WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, item1.Rrreference);
 
-                        var paymentdetails = (from a in _context.PaymentLog join p in _context.ApplicationRequestForm on a.ApplicationId equals p.ApplicationId where a.ApplicationId == item1.ApplicationId select new { a, p }).FirstOrDefault();
+        //                GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
 
-                        if (paymentResponse != null && paymentdetails != null)
-                        {
-                            if (paymentdetails.p.Status != "Rejected" && paymentdetails.p.CurrentStageId < 4)
-                            {
-                                if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-                                {
-                                    paymentdetails.a.Status = "AUTH";
-                                    paymentdetails.a.TxnMessage = paymentResponse.message;
-                                    paymentdetails.a.TransactionId = paymentResponse.status;
-                                    paymentdetails.a.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
+        //                var paymentdetails = (from a in _context.PaymentLog join p in _context.ApplicationRequestForm on a.ApplicationId equals p.ApplicationId where a.ApplicationId == item1.ApplicationId select new { a, p }).FirstOrDefault();
 
-                                    ResponseWrapper responseWrapper = _workflowHelper.processAction(item1.ApplicationId, "GenerateRRR", item1.ApplicantId, "Remita Retrieval Reference Generated");
+        //                if (paymentResponse != null && paymentdetails != null)
+        //                {
+        //                    if (paymentdetails.p.Status != "Rejected" && paymentdetails.p.CurrentStageId < 4)
+        //                    {
+        //                        if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
+        //                        {
+        //                            paymentdetails.a.Status = "AUTH";
+        //                            paymentdetails.a.TxnMessage = paymentResponse.message;
+        //                            paymentdetails.a.TransactionId = paymentResponse.status;
+        //                            paymentdetails.a.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
 
-                                }
-                                else
-                                {
-                                    paymentdetails.a.Status = "INIT";
-                                }
-                            }
-                            await _context.SaveChangesAsync();
-                        }
+        //                            ResponseWrapper responseWrapper = _workflowHelper.processAction(item1.ApplicationId, "GenerateRRR", item1.ApplicantId, "Remita Retrieval Reference Generated");
 
-                    }
+        //                        }
+        //                        else
+        //                        {
+        //                            paymentdetails.a.Status = "INIT";
+        //                        }
+        //                    }
+        //                    await _context.SaveChangesAsync();
+        //                }
 
-                }
+        //            }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message);
-            }
+        //        }
 
-        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.Error(ex.Message);
+        //    }
+
+        //}
 
 
         public async void CheckExpiredCertificate()
