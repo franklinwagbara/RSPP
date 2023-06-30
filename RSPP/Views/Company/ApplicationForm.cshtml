@@ -1006,55 +1006,6 @@
             });
 
 
-            //$(".Logistics").on("change", function () {
-            //    debugger;
-            //    var logistic = $(".Logistics:checked").val();
-
-
-            //    var logisticlist = [];
-
-
-
-
-            //    if (logistic === "LogisticsOthers") {
-            //        $("#LogisticsLineOfBusiness").show();
-            //        $("#LogisticsLineOfBusiness").attr("required", true);
-            //    } else {
-            //        $("#LogisticsLineOfBusiness").hide();
-            //        $.each($(".Logistics:checked"), function () {
-            //            logisticlist.push($(this).val());
-            //        });
-            //        $("#LogisticsLineOfBusiness").val(logisticlist.join(", "));
-            //    }
-            //    var FeeTypeName = $(".Logistics:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
-
-
-
-            //$(".LineOfBusinessTerminals").on("change", function () {
-
-            //    debugger;
-            //    var LineOfBusinessTerminalslist = [];
-            //    $.each($(".LineOfBusinessTerminals:checked"), function () {
-            //        LineOfBusinessTerminalslist.push($(this).val());
-            //    });
-            //    $("#portoffdockLineOfBusiness").val(LineOfBusinessTerminalslist.join(", "));
-
-            //    var FeeTypeName = $(".LineOfBusinessTerminals:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-
-            //});
-
-
             $(".StatusTerminals").on("change", function () {
                 debugger;
                 var StatusTerminal = $(".StatusTerminals:checked").val();
@@ -1091,41 +1042,6 @@
                 }
 
             });
-
-
-
-            //$(".LineofBusinessUsers").on("change", function () {
-            //    var portoffdocklist = [];
-            //    $.each($(".LineofBusinessUsers:checked"), function () {
-            //        portoffdocklist.push($(this).val());
-            //    });
-            //    $("#userportLineOfBusiness").val(portoffdocklist.join(", "));
-
-            //    var FeeTypeName = $(".LineofBusinessUsers:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
-
-
-
-
-            //$(".LineOfBusinessShipping").on("change", function () {
-            //    var portoffdocklist = [];
-            //    $.each($(".LineOfBusinessShipping:checked"), function () {
-            //        portoffdocklist.push($(this).val());
-            //    });
-            //    $("#ShippingagencyLineOfBusiness").val(portoffdocklist.join(", "));
-
-            //    var FeeTypeName = $(".LineOfBusinessShipping:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
 
 
             $(".ShippingCargoType").on("change", function () {
@@ -1204,9 +1120,8 @@
                             else {
                                 alert("Reference Number " + data.applicationId + " Generated For this Application");
                                 $(".loadingImage").hide();
-                                window.location.href = getContextPath() + "/GenerateRRR?ApplicationId=" + data.applicationId + "&Amount=" + fee;
+                                window.location.href = getContextPath() + "/GenerateRRR?applicationId=" + data.applicationId + "&amount=" + fee;
 
-                                //window.location.href = getContextPath() + "/ChargeSummary?ApplicationId=" + data.applicationId;
                             }
 
                         }).fail(function (data) {

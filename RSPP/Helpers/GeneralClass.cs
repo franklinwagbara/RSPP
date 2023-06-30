@@ -59,24 +59,6 @@ namespace RSPP.Helpers
         //public string FinalizePaymentURLLive = "https://login.remita.net/remita/ecomm/finalize.reg";
         private Object lockThis = new object();
 
-        public string GenerateSHA512(string inputString)
-        {
-            SHA512 sha512 = SHA512Managed.Create();
-            byte[] bytes = Encoding.UTF8.GetBytes(inputString);
-            byte[] hash = sha512.ComputeHash(bytes);
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-
-            return sb.ToString();
-        }
-
-
-
-
         public string Encrypt(string clearText)
         {
             try
@@ -94,8 +76,6 @@ namespace RSPP.Helpers
                 throw ex;
             }
         }
-
-
 
         public string Decrypt(string cipherText)
         {
