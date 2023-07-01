@@ -1,4 +1,5 @@
 ﻿using RSPP.Models.DB;
+using RSPP.Models.ViewModels;
 
 namespace RSPP.Repositories.Interfaces
 {
@@ -7,6 +8,6 @@ namespace RSPP.Repositories.Interfaces
     /// </summary>
     public interface IPaymentLogRepository:IBaseRepository<PaymentLog>
     {
-
+        ChargeSummaryVM GetChargeSummary(string applicationId);
     }
 }

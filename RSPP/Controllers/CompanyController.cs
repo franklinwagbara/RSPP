@@ -73,6 +73,7 @@ namespace RSPP.Controllers
             _workflowHelper = new WorkFlowHelper(_context);
             _utilityHelper = new UtilityHelper(_context);
             _logger = logger;
+            _remitaPaymentService = remitaPaymentService;
             _unitOfWork = unitOfWork;
             _remitaOptions = remitaOptions.Value;
         }
@@ -465,13 +466,6 @@ namespace RSPP.Controllers
         }
 
 
-
-
-
-
-
-
-
         [HttpGet]
         public ActionResult MyApplications()
         {
@@ -555,28 +549,43 @@ namespace RSPP.Controllers
             return Json(message);
         }
 
-
-
-
-
+        /// <summary>
+        /// Fetches the details of an application's payment
+        /// </summary>
+        /// <param name="applicationId">the application id to be updated</param>
+        /// <returns>A view to display the details</returns>
 
         [HttpGet]
-        public ActionResult ChargeSummary(string RRR, string applicationId, decimal amount)
+        public ActionResult ChargeSummary(string applicationId)
         {
+            var model = new ChargeSummaryVM();
+            var chargeSummaryDetails = _unitOfWork.PaymentLogRepository.GetChargeSummary(applicationId);
+            if (chargeSummaryDetails != null)
+            {
+                model = chargeSummaryDetails;
+                model.MerchantId = _remitaOptions.MerchantId;
+                model.BaseUrl = _remitaOptions.PortalBaseUrl;
+                model.FinalizePaymentURL = _remitaOptions.FinalizePaymentURL;
+                model.ApiKey = Encryption.GenerateSHA512($"{_remitaOptions.MerchantId}{model.RRR}{_remitaOptions.ApiKey}");
+            }
+            else
+            {
+                model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
+            }
 
-            var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-            var RemitaRef = paymentdetails != null ? paymentdetails.Rrreference : RRR;
-            string APIHash = generalClass.merchantIdLive + RemitaRef + generalClass.AppKeyLive; //generalClass.merchantId + RRR + generalClass.AppKey;
-            ViewBag.AppkeyHashed = Encryption.GenerateSHA512(APIHash).ToLower();
-            ViewBag.AgencyName = applicationdetails.AgencyName;
-            ViewBag.Applicationid = applicationId;
-            ViewBag.RRR = RemitaRef;
-            ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount : amount;
-            ViewBag.MerchantId = generalClass.merchantIdLive;//generalClass.merchantId;
-            ViewBag.BaseUrl = generalClass.PortalBaseUrlLive;//generalClass.PortalBaseUrl;
+            //var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
+            //var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
+            //var RemitaRef = paymentdetails != null ? paymentdetails.Rrreference : RRR;
+            //string APIHash = _remitaOptions.MerchantId + RemitaRef + _remitaOptions.ApiKey; //generalClass.merchantId + RRR + generalClass.AppKey;
+            //ViewBag.AppkeyHashed = Encryption.GenerateSHA512(APIHash).ToLower();
+            //ViewBag.AgencyName = applicationdetails.AgencyName;
+            //ViewBag.Applicationid = applicationId;
+            //ViewBag.RRR = RemitaRef;
+            //ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount : amount;
+            //ViewBag.MerchantId = _remitaOptions.MerchantId;
+            //ViewBag.BaseUrl = _remitaOptions.PortalBaseUrl;
 
-            return View();
+            return View(model);
         }
 
         //public ActionResult CheckPaymentStatus()
@@ -1339,10 +1348,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         public JsonResult GetFees(int MyCategoryid)
         {
 
@@ -1402,7 +1407,7 @@ namespace RSPP.Controllers
 
 
             }
-            return RedirectToAction("ChargeSummary", new { RRR = rrr, applicationId = applicationId, amount = amt });
+            return RedirectToAction("ChargeSummary", new { applicationId });
         }
 
         /// <summary>
