@@ -16,11 +16,109 @@
         <div class="clear"></div>
     </div><br />
 </div>
-<br /><br />
+<br />
+<br />
+<div style="display:none" class="loadingImage">
+    <div id="load" style="width: 100%; height: 100%; top:0; left:0; position:fixed; display:block; opacity:0.7; background-color:#fff; z-index:99; text-align:center">
+        <img id="loading-image" style="position:absolute; top:100px; left:50%; z-index:100" src="~/images/spinning.gif" />
+    </div>
+</div>
+
+<!-- response Modal -->
+<div class="modal fade" id="modalPaymentStatusResponse" data-backdrop="false">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Payment Status Response</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" style="font-weight:500;font-size:large;">
+                <table class="table">
+                    <thead>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">Company Name</th>
+                            <td id="company-name"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Reference Number</th>
+                            <td id="reference-number"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Payment Reference (RRR)</th>
+                            <td id="payment-reference"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Transaction Amount</th>
+                            <td id="transaction-amount"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Approved Amount</th>
+                            <td id="approved-amount"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Response Description</th>
+                            <td id="response-description"></td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">Transaction Date</th>
+                            <td id="transaction-date"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Other errors response Modal -->
+<div class="modal fade" id="modalPaymentStatusFailedResponse" data-backdrop="false">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Payment Status Response</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" style="font-weight:500;font-size:large;">
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 @if (ViewBag.MyPaymentsResponseMessage == "SUCCESS")
 {
     <div class="row xrow" style="overflow-x:scroll">
         <div class="col-md-12">
+
+            @Html.AntiForgeryToken()
+
             <table class="table dataTable">
                 <thead>
                     <tr>
@@ -36,30 +134,33 @@
                 <tbody>
                     @foreach (RSPP.Models.DB.PaymentLog paymentlog in Model)
                     {
-                    <tr>
-                        <td>@(counter += 1)</td>
-                        <td>@paymentlog.ApplicationId</td>
-                        <td>@paymentlog.TxnMessage</td>
-                        <td>@paymentlog.TransactionDate.Value.ToString("dd-MMM-yyyy HH:mm")</td>
-                        <td>@paymentlog.Rrreference</td>
-                        <td>@paymentlog.TxnAmount</td>
-                        @if (paymentlog.Status.Contains("INIT"))
-                        {
-                            <td><span class="badge badge-warning" style="padding: 10px">Payment Pending</span></td>
-                        }
-                        else
-                        {
-                            if (paymentlog.Status.Contains("AUTH"))
+                        <tr>
+                            <td>@(counter += 1)</td>
+                            <td>@paymentlog.ApplicationId</td>
+                            <td>@paymentlog.TxnMessage</td>
+                            <td>@paymentlog.TransactionDate.Value.ToString("dd-MMM-yyyy HH:mm")</td>
+                            <td>@paymentlog.Rrreference</td>
+                            <td>@paymentlog.TxnAmount</td>
+                            @if (paymentlog.Status.Contains("INIT"))
                             {
-                                <td><span class="badge badge-success">PAID</span></td>
+                                <td>
+                                    <span class="badge badge-warning" style="padding: 10px">Payment Pending</span>
+                                    <button class="btn btn-xs btn-primary confirmPaymentStatus" id=@paymentlog.ApplicationId>Confirm Payment Status</button>
+                                </td>
                             }
-                            else if (paymentlog.Status.Contains("FAIL") || paymentlog.Status.Contains("ERROR"))
+                            else
                             {
-                                <td><span class="badge badge-danger">paymentlog.Status</span></td>
+                                if (paymentlog.Status.Contains("AUTH"))
+                                {
+                                    <td><span class="badge badge-success">PAID</span></td>
+                                }
+                                else if (paymentlog.Status.Contains("FAIL") || paymentlog.Status.Contains("ERROR"))
+                                {
+                                    <td><span class="badge badge-danger">paymentlog.Status</span></td>
+                                }
                             }
-                        }
 
-                    </tr>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -95,6 +196,50 @@ else
                 },
                 "order": [[1, "desc"]]
             });
+
+            $(".confirmPaymentStatus").click(function (e) {
+                e.preventDefault();
+
+                $(".loadingImage").show();
+                var selectedApplicationId = (this).id;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Company/CheckPaymentStatus",
+                    data: {
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                        applicationId: selectedApplicationId
+                    },
+                    success: function (response) {
+                        if (response.result.success) {
+                            $('#modalPaymentStatusResponse #company-name').text(response.result.companyName);
+                            $('#modalPaymentStatusResponse #reference-number').text(response.result.remitaResponse.orderId);
+                            $('#modalPaymentStatusResponse #payment-reference').text(response.result.remitaResponse.rrr);
+                            $('#modalPaymentStatusResponse #transaction-amount').text("N" + response.result.transactionAmount);
+                            $('#modalPaymentStatusResponse #approved-amount').text("N" + response.result.remitaResponse.amount);
+                            $('#modalPaymentStatusResponse #response-description').text(response.result.remitaResponse.message);
+                            $('#modalPaymentStatusResponse #transaction-date').text(response.result.remitaResponse.transactiontime);
+                            $('#modalPaymentStatusResponse').modal('show');
+
+                        } else {
+                            $('#modalPaymentStatusFailedResponse .modal-body').text(response.result.resultMessage);
+                            $('#modalPaymentStatusFailedResponse').modal('show');
+                        }
+
+                    },
+                    failure: function (response) {
+                        //console.log(response.responseText);
+                    },
+                    error: function (response) {
+                        //console.log(response.responseText);
+                    },
+                    complete: function () {
+                        $(".loadingImage").hide();
+                    }
+                });
+
+            });
+
         });
     </script>
 }

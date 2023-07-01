@@ -1,13 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using RSPP.Helpers;
+﻿using Microsoft.EntityFrameworkCore.Internal;
 using RSPP.Models.DB;
 using RSPP.Repositories.Interfaces;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 
 namespace RSPP.Repositories
 {
@@ -29,7 +24,8 @@ namespace RSPP.Repositories
                     join users in _context.UserMaster
                     on app.CompanyEmail equals users.UserEmail
                     where app.ApplicationId == applicationId
-                    select users.CompanyName).FirstOrDefault();
+                    select users.CompanyName)
+                    .FirstOrDefault();
         }
 
         //public IEnumerable<string> GetUnPaidApplicationIds()
