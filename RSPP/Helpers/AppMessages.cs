@@ -18,6 +18,8 @@
         public const string REQUEST = "Request";
         public const string ORDER = "Order";
         public const string APP_RECEIPT_ID = "APPID";
+        public const string REMITA_TEST = "RemitaTest";
+        public const string REMITA_LIVE = "RemitaLive";
 
         public const string ALREADY = "already";
         public const string NOT_EXIST = "does not exist";
