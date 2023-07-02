@@ -3,33 +3,29 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Rotativa.AspNetCore;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
 using RSPP.Models;
 using RSPP.Models.DB;
+using RSPP.Models.DTOs;
+using RSPP.Models.Options;
+using RSPP.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
-using static QRCoder.PayloadGenerator;
 
 namespace RSPP.Controllers
 {
     public class AdminController : AppUserController
     {
-
-
 
         public RSPPdbContext _context;
         IHttpContextAccessor _httpContextAccessor;
@@ -38,10 +34,14 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         WorkFlowHelper _workflowHelper;
         List<UserMaster> staffJsonList = new List<UserMaster>();
+        UtilityHelper _utilityHelper;
+
 
         private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
 
         private readonly IWebHostEnvironment _hostingEnv;
+        private readonly IEmailer _emailer;
+        private readonly IPaymentService _paymentService;
 
         private const string SUPERVISOR = "SUPERVISOR";
         private const string REGISTRAR = "REGISTRAR";
@@ -50,14 +50,23 @@ namespace RSPP.Controllers
 
 
         [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnv) : base(hostingEnv)
+        public AdminController(
+            RSPPdbContext context, 
+            IConfiguration configuration, 
+            IHttpContextAccessor httpContextAccessor, 
+            IWebHostEnvironment hostingEnv, 
+            IEmailer emailer,
+            IPaymentService paymentService,
+            IOptions<RemitaOptions> remitaOptions) : base(hostingEnv,paymentService)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _hostingEnv = hostingEnv;
+            _emailer = emailer;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
+            _utilityHelper = new UtilityHelper(_context);
         }
 
 
@@ -73,8 +82,6 @@ namespace RSPP.Controllers
 
             try
             {
-
-
                 foreach (ApplicationRequestForm appRequest in _context.ApplicationRequestForm.ToList())
                 {
                     switch (_context.WorkFlowState.Where(w => w.StateId == appRequest.CurrentStageId).FirstOrDefault().StateType)
@@ -920,7 +927,7 @@ namespace RSPP.Controllers
                         return Json(new
                         {
                             Status = status,
-                            Message="Unable to update company details because the provided email already exists"
+                            Message = "Unable to update company details because the provided email already exists"
                         });
                     }
 
@@ -934,7 +941,7 @@ namespace RSPP.Controllers
 
                     var emailMessage = GenerateEmailBodyForCompanyEmailUpdate(companydetails.UserEmail);
 
-                    var emailResponse = Emailer.SendEmail(
+                    var emailResponse = _emailer.SendEmail(
                         companydetails.CompanyName,
                         companydetails.UserEmail,
                         "Password Reset Confirmation",

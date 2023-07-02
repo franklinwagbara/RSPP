@@ -16,6 +16,8 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
 using RSPP.Models.DTOs;
+using RSPP.UnitOfWorks.Interfaces;
+using RSPP.Services.Interfaces;
 
 namespace RSPP.Controllers
 {
@@ -35,32 +37,38 @@ namespace RSPP.Controllers
         public const string sessionCompanyName = "_sessionCompanyName";
         private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string LOGIN_SUCCESSFUL = "Login successful";
-        private const string LOGIN_FAILED = "Login failed - Invalid username or password";
-        private const string AUTHENTICATION_FAILED = "Authentication failed - Invalid username or password";
-        private const string AUTHENTICATION_SUCCESSFUL = "Authentication successful";
-        private const string COMPANY = "COMPANY";
-        private const string ADMIN = "ADMIN";
-        private const string USER_DOES_NOT_EXIST = "User does not exist";
-        private const string ACTIVE_USER = "ACTIVE";
-        private const string PASSIVE_USER = "PASSIVE";
+        private readonly IEmailer _emailer;
+
+
+        private readonly IUnitOfWork _unitOfWork;
+
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
 
 
-        public AccountController(RSPPdbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public AccountController(
+            RSPPdbContext context,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork,
+            IEmailer emailer)
         {
+            _unitOfWork = unitOfWork;
+            _emailer = emailer;
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
         }
 
+        /// <summary>
+        /// Displays the login page
+        /// </summary>
         [AllowAnonymous]
         public IActionResult Login()
         {
-            return View();
+            return View("Login");
         }
 
         /// <summary>
@@ -74,22 +82,17 @@ namespace RSPP.Controllers
         [ValidateAntiForgeryToken]
         public JsonResult Login(AuthenticationRequest request)
         {
-            /*
-             * validate modelstate
-             * get user from db
-             * if exists chk if email is not confirmed, issue appr response
-             * else initialize session data, store user details in obj & return response
-             */
-            var response = new AuthenticationResponse(false, LOGIN_FAILED);
+
+            var response = new AuthenticationResponse(false, $"{AppMessages.LOGIN} {AppMessages.FAILED}");
             if (!ModelState.IsValid)
                 return Json(response);
 
             try
             {
 
-                var userMaster = (from u in _context.UserMaster where u.UserEmail == request.UserEmail 
-                                  && u.Status == ACTIVE_USER select u)
-                                  .FirstOrDefault();
+                var userMaster = _unitOfWork.UserMasterRepository
+                    .Get(u => u.UserEmail.Equals(request.UserEmail) && u.Status.Equals(AppMessages.ACTIVE), null, "", null, null)
+                    .FirstOrDefault();
                 if (userMaster != null)
                 {
 
@@ -106,18 +109,20 @@ namespace RSPP.Controllers
 
                         HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
                         HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
-                        if (userMaster.UserType == COMPANY)
+                        if (userMaster.UserType == AppMessages.COMPANY)
                             HttpContext.Session.SetString(sessionCompanyName, userMaster.CompanyName);
-                        else if (userMaster.UserType == ADMIN)
+                        else if (userMaster.UserType == AppMessages.ADMIN)
                             HttpContext.Session.SetString(sessionStaffName, userMaster.FirstName.ToString() + " " + userMaster.LastName.ToString());
 
                         response.IsEmailConfirmed = true;
                         response.UserType = userMaster.UserType;
-                        response.ResultMessage = LOGIN_SUCCESSFUL;
+                        response.ResultMessage = $"{AppMessages.LOGIN} {AppMessages.SUCCESSFUL}";
                         return Json(response);
                     }
+                    response.ResultMessage = $"{AppMessages.INVALID_USERNAME_PASSWORD}";
+                    return Json(response);
                 }
-                response.ResultMessage = USER_DOES_NOT_EXIST;
+                response.ResultMessage = $"{AppMessages.USER}  {AppMessages.NOT_EXIST}";
                 return Json(response);
             }
             catch (Exception ex)
@@ -127,6 +132,86 @@ namespace RSPP.Controllers
             }
         }
 
+        /// <summary>
+        /// Displays the registration page
+        /// </summary>
+        public IActionResult AccountRegister()
+        {
+            return View("AccountRegister");
+        }
+
+
+        /// <summary>
+        /// Registers a user
+        /// </summary>
+        /// <param name="request">model holding registration details</param>
+        /// <returns>A BasicResponse indicating success or failure</returns>
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public JsonResult AccountRegister(RegistrationRequest request)
+        {
+            var response = new BasicResponse(false, $"{AppMessages.REGISTRATION} {AppMessages.FAILED}");
+            if (!ModelState.IsValid)
+                return Json(response);
+
+            try
+            {
+                var userMaster = _unitOfWork.UserMasterRepository
+                    .Get(u => u.UserEmail.Equals(request.UserEmail), null, "", null, null).FirstOrDefault();
+                if (userMaster != null)
+                {
+                    response.ResultMessage = $"{AppMessages.EMAIL} {AppMessages.EXISTS}";
+                    return Json(response);
+                }
+
+                var token = Guid.NewGuid().ToString();
+                var newUser = new UserMaster()
+                {
+                    CompanyName = request.CompanyName,
+                    CompanyAddress = request.CompanyAddress,
+                    UserEmail = request.UserEmail,
+                    PhoneNum = request.MobilePhoneNumber,
+                    Password = generalClass.Encrypt(request.Password),
+                    UserType = AppMessages.COMPANY,
+                    UserRole = AppMessages.COMPANY,
+                    //UpdatedBy = request.UserEmail,
+                    //LoginCount = 0,
+                    CreatedOn = DateTime.Now,
+                    Status = AppMessages.ACTIVE,
+                    EmailConfirmed = false,
+                    EmailConfirmationToken = token
+                };
+
+                _unitOfWork.UserMasterRepository.Add(newUser);
+                _unitOfWork.Complete();
+
+                response.Success = true;
+                response.ResultMessage = $"{AppMessages.REGISTRATION} {AppMessages.SUCCESSFUL}";
+
+                var emailBody = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+                var emailResponse = _emailer.SendEmail(newUser.CompanyName, newUser.UserEmail, $"{AppMessages.EMAIL} {AppMessages.CONFIRMATION}", emailBody);
+                if (!emailResponse.Success)
+                {
+                    _logger.Warn($"{emailResponse.ResultMessage} Email[{newUser.UserEmail}]");
+
+                    response.ResultMessage += $" {AppMessages.EMAIL_VERIFICATION_LINK_FAILED}";
+                    return Json(response);
+                }
+
+                response.ResultMessage += $". {AppMessages.EMAIL_VERIFICATION_LINK_SENT}";
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return Json(response);
+            }
+
+
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -144,7 +229,7 @@ namespace RSPP.Controllers
                 var token = userMaster.EmailConfirmationToken;
                 var emailMessage = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
 
-                var emailResponse = Emailer.SendEmail(
+                var emailResponse = _emailer.SendEmail(
                     userMaster.CompanyName,
                     userMaster.UserEmail,
                     "Email Confirmation",
@@ -178,16 +263,6 @@ namespace RSPP.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //[HttpPost]
-        //public ActionResult LogOff()
-        //{
-        //    var elpsLogOffUrl = Request.PathBase + "/Account/RemoteLogOff";
-        //    var returnUrl = Url.Action("Index", "Home", null, Request.Scheme);
-        //    //var returnUrl = Request.Url.GetLeftPart(UriPartial.Authority) + Request.ApplicationPath;
-        //    var frm = "<form action='" + elpsLogOffUrl + "' id='frmTest' method='post'>" + "<input type='hidden' name='returnUrl' value='" + returnUrl + "' />"+ "</form>" + "<script>document.getElementById('frmTest').submit();</script>";
-        //    return Content(frm, "text/html");
-        //}
-
         #region Helpers
 
         /// <summary>
@@ -199,7 +274,7 @@ namespace RSPP.Controllers
         /// <returns>A basic response</returns>
         private BasicResponse AuthenticateUser(string email, string password, string ipAddress)
         {
-            var response = new BasicResponse(false, AUTHENTICATION_FAILED);
+            var response = new BasicResponse(false, $"{AppMessages.AUTHENTICATION} {AppMessages.FAILED}");
             try
             {
 
@@ -220,7 +295,7 @@ namespace RSPP.Controllers
                     _context.SaveChanges();
 
                     response.Success = true;
-                    response.ResultMessage = AUTHENTICATION_SUCCESSFUL;
+                    response.ResultMessage = $"{AppMessages.AUTHENTICATION} {AppMessages.SUCCESSFUL}";
                 }
                 return response;
 
@@ -233,40 +308,117 @@ namespace RSPP.Controllers
         }
 
         #endregion
-        public IActionResult AccountRegister()
-        {
-            return View();
-        }
-        private string SendConfirmationEmail(string email, string token)
-        {
-            string result;
-            var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng");
-            var toAddress = new MailAddress(email);
-            const string fromPassword = "nsc2018#";
-            const string subject = "Confirm your email address";
-            //string callBackURL = 
-            body = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
 
-            var smtp = new SmtpClient
-            {
-                Host = "webmail.shipperscouncil.gov.ng", //"smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
-                Timeout = 20000
-            };
 
-            var message = new MailMessage();
-            message.From = fromAddress;
-            message.To.Add(toAddress);
-            message.Subject = subject;
-            message.Body = body;
-            GeneralClass gen = new GeneralClass();
-            result = "success";
-            result = gen.ConfirmationEmailMessage(body, toAddress, subject);
-            return result;
-        }
+        //[HttpPost]
+        //public JsonResult AccountRegister2(string Email, string PhoneNbr, string Companyaddress, string Passwrd, string Companyname)
+        //{
+        //    /*
+        //     * create new usermasterl
+        //     * check if email already exists
+        //     * **if not-exists populate new user & save , then send email for confirmation
+        //     * **if exists, check if user has confirmed email, if not send confirmation email, return response for the email sending
+        //     */
+        //    string status = string.Empty;
+        //    string message = string.Empty;
+        //    UserMaster usermaster = new UserMaster();
+        //    Passwrd = generalClass.Encrypt(Passwrd);
+        //    string token = Guid.NewGuid().ToString();
+
+        //    var checkexistemail = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
+        //    try
+        //    {
+        //        if (checkexistemail == null)
+        //        {
+        //            usermaster.CompanyName = Companyname;
+        //            usermaster.CompanyAddress = Companyaddress;
+        //            usermaster.UserEmail = Email;
+        //            usermaster.PhoneNum = PhoneNbr;
+        //            usermaster.Password = Passwrd;
+        //            usermaster.UserType = "COMPANY";
+        //            usermaster.UserRole = "COMPANY";
+        //            usermaster.UpdatedBy = Email;
+        //            usermaster.LoginCount = 1;
+        //            usermaster.LastLogin = DateTime.Now;
+        //            usermaster.UpdatedOn = DateTime.Now;
+        //            usermaster.CreatedOn = DateTime.Now;
+        //            usermaster.Status = "ACTIVE";
+        //            usermaster.EmailConfirmed = false;
+        //            usermaster.EmailConfirmationToken = token;
+        //            _context.Add(usermaster);
+        //            _context.SaveChanges();
+        //            status = "success";
+        //            message = "Your registration was successful";
+
+        //            SendConfirmationEmail(Email, token);
+
+        //        }
+        //        else
+        //        {
+        //            if (usermaster.EmailConfirmed == false)
+        //            {
+        //                status = "exist";
+        //                message = "User with the email: " + Email + " already exist on the portal. A new mail has been sent to confirm your email.";
+        //                string sendmail = SendConfirmationEmail(Email, token);
+        //                if (sendmail == "failed")
+        //                {
+        //                    message += "Unable to send Confirmation link to " + Email + ". Please try again later.";
+
+        //                }
+        //                else
+        //                {
+        //                    message += "Confirmation link was successfully sent to " + Email;
+        //                }
+        //            }
+        //            else
+        //            {
+        //                status = "exist";
+        //                message = "User with the email: " + Email + " already exist on the portal. Kindly login with your email";
+        //            }
+
+        //            return Json(new { Status = status, Message = message });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        status = "exist";
+        //        message = ex.Message;
+        //        return Json(new { Status = status, Message = message });
+        //    }
+
+        //    return Json(new { Status = status, Message = message });
+        //}
+
+        //private string SendConfirmationEmail(string email, string token)
+        //{
+        //    string result;
+        //    var fromAddress = new MailAddress("rprspu-noreply@nscregistration.gov.ng");
+        //    var toAddress = new MailAddress(email);
+        //    const string fromPassword = "nsc2018#";
+        //    const string subject = "Confirm your email address";
+        //    //string callBackURL = 
+        //    body = "Please confirm your email address by clicking the following the following link: " + "<a href=\"" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "\">" + Url.Action("ConfirmEmail", "Account", new { token = token }, protocol: Request.Scheme) + "</a>";
+
+        //    var smtp = new SmtpClient
+        //    {
+        //        Host = "webmail.shipperscouncil.gov.ng", //"smtp.gmail.com",
+        //        Port = 587,
+        //        EnableSsl = true,
+        //        DeliveryMethod = SmtpDeliveryMethod.Network,
+        //        Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
+        //        Timeout = 20000
+        //    };
+
+        //    var message = new MailMessage();
+        //    message.From = fromAddress;
+        //    message.To.Add(toAddress);
+        //    message.Subject = subject;
+        //    message.Body = body;
+        //    GeneralClass gen = new GeneralClass();
+        //    result = "success";
+        //    result = gen.ConfirmationEmailMessage(body, toAddress, subject);
+        //    return result;
+        //}
 
         public ActionResult ConfirmEmail(string token)
         {
@@ -300,80 +452,6 @@ namespace RSPP.Controllers
         {
             return View();
         }
-
-        [HttpPost]
-        public JsonResult AccountRegister(string Email, string PhoneNbr, string Companyaddress, string Passwrd, string Companyname)
-        {
-            string status = string.Empty;
-            string message = string.Empty;
-            UserMaster usermaster = new UserMaster();
-            Passwrd = generalClass.Encrypt(Passwrd);
-            string token = Guid.NewGuid().ToString();
-
-            var checkexistemail = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
-            try
-            {
-                if (checkexistemail == null)
-                {
-                    usermaster.CompanyName = Companyname;
-                    usermaster.CompanyAddress = Companyaddress;
-                    usermaster.UserEmail = Email;
-                    usermaster.PhoneNum = PhoneNbr;
-                    usermaster.Password = Passwrd;
-                    usermaster.UserType = "COMPANY";
-                    usermaster.UserRole = "COMPANY";
-                    usermaster.UpdatedBy = Email;
-                    usermaster.LoginCount = 1;
-                    usermaster.LastLogin = DateTime.Now;
-                    usermaster.UpdatedOn = DateTime.Now;
-                    usermaster.CreatedOn = DateTime.Now;
-                    usermaster.Status = "ACTIVE";
-                    usermaster.EmailConfirmed = false;
-                    usermaster.EmailConfirmationToken = token;
-                    _context.Add(usermaster);
-                    _context.SaveChanges();
-                    status = "success";
-                    message = "Your registration was successful";
-
-                    SendConfirmationEmail(Email, token);
-
-                }
-                else
-                {
-                    if (usermaster.EmailConfirmed == false)
-                    {
-                        status = "exist";
-                        message = "User with the email: " + Email + " already exist on the portal. A new mail has been sent to confirm your email.";
-                        string sendmail = SendConfirmationEmail(Email, token);
-                        if (sendmail == "failed")
-                        {
-                            message += "Unable to send Confirmation link to " + Email + ". Please try again later.";
-
-                        }
-                        else
-                        {
-                            message += "Confirmation link was successfully sent to " + Email;
-                        }
-                    }
-                    else
-                    {
-                        status = "exist";
-                        message = "User with the email: " + Email + " already exist on the portal. Kindly login with your email";
-                    }
-
-                    return Json(new { Status = status, Message = message });
-                }
-            }
-            catch (Exception ex)
-            {
-                status = "exist";
-                message = ex.Message;
-                return Json(new { Status = status, Message = message });
-            }
-
-            return Json(new { Status = status, Message = message });
-        }
-
 
         [HttpPost]
         public JsonResult ForgotPassword(string Email)

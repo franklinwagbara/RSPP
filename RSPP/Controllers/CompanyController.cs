@@ -13,12 +13,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Globalization;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.Logging;
-using SendGrid;
 using Rotativa.AspNetCore;
 using RSPP.Models.DTOs;
+using Microsoft.Extensions.Options;
+using RSPP.Models.Options;
+using RSPP.Services.Interfaces;
+using RSPP.UnitOfWorks.Interfaces;
+using RSPP.Models.DTOs.Remita;
+using Newtonsoft.Json;
+using RSPP.Models.ViewModels;
 
 namespace RSPP.Controllers
 {
@@ -38,6 +43,10 @@ namespace RSPP.Controllers
         protected readonly ILogger<CompanyController> _logger;
 
         private readonly IWebHostEnvironment _hostingEnv;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
+        private readonly IRemitaPaymentService _remitaPaymentService;
+        private readonly RemitaOptions _remitaOptions;
 
         private const string FAILED_UPDATE_RESPONSE = "Update Failed";
         private const string SUCCESS_UPDATE_RESPONSE = "Update Successful";
@@ -49,8 +58,12 @@ namespace RSPP.Controllers
             IConfiguration configuration,
             IHttpContextAccessor httpContextAccessor,
             IWebHostEnvironment hostingEnv,
-            ILogger<CompanyController> logger
-            ) : base(hostingEnv)
+            ILogger<CompanyController> logger,
+            IPaymentService paymentService,
+            IRemitaPaymentService remitaPaymentService,
+            IOptions<RemitaOptions> remitaOptions,
+            IUnitOfWork unitOfWork
+            ) : base(hostingEnv, paymentService)
         {
             _context = context;
             _configuration = configuration;
@@ -60,6 +73,9 @@ namespace RSPP.Controllers
             _workflowHelper = new WorkFlowHelper(_context);
             _utilityHelper = new UtilityHelper(_context);
             _logger = logger;
+            _remitaPaymentService = remitaPaymentService;
+            _unitOfWork = unitOfWork;
+            _remitaOptions = remitaOptions.Value;
         }
 
 
@@ -399,6 +415,7 @@ namespace RSPP.Controllers
 
             //_context.SaveChanges();
 
+            // prepare & save details based on the type of service provider - returns success, rejected etc
             status = _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
 
             if (status == "Rejected")
@@ -411,6 +428,7 @@ namespace RSPP.Controllers
                 }
                 return Json(new { Status = status, applicationId = appid, Message = "Unable to resubmit your application please try again later." });
             }
+            // process an application by moving it to its correct work stage
             responseWrapper = _workflowHelper.processAction(appid, "Proceed", companyemail, "Initiated Application");
             if (responseWrapper.status == true)
             {
@@ -446,13 +464,6 @@ namespace RSPP.Controllers
 
             //return Json(new { Status = status, applicationId = appid, Message = message });
         }
-
-
-
-
-
-
-
 
 
         [HttpGet]
@@ -538,78 +549,60 @@ namespace RSPP.Controllers
             return Json(message);
         }
 
-
-
-
-
+        /// <summary>
+        /// Fetches the details of an application's payment
+        /// </summary>
+        /// <param name="applicationId">the application id to be updated</param>
+        /// <returns>A view to display the details</returns>
 
         [HttpGet]
-        public ActionResult ChargeSummary(string RRR, string applicationId, decimal amount)
+        public ActionResult ChargeSummary(string applicationId)
         {
+            var model = new ChargeSummaryVM();
+            var chargeSummaryDetails = _unitOfWork.PaymentLogRepository.GetChargeSummary(applicationId);
+            if (chargeSummaryDetails != null)
+            {
+                model = chargeSummaryDetails;
+                model.MerchantId = _remitaOptions.MerchantId;
+                model.BaseUrl = _remitaOptions.PortalBaseUrl;
+                model.FinalizePaymentURL = _remitaOptions.FinalizePaymentURL;
+                model.ApiKey = Encryption.GenerateSHA512($"{_remitaOptions.MerchantId}{model.RRR}{_remitaOptions.ApiKey}");
+                return View(model);
+            }
+            //return RedirectToAction("GenerateRRR", new { applicationId });
+            model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
+            return View(model);
 
-            var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-            var RemitaRef = paymentdetails != null ? paymentdetails.Rrreference : RRR;
-            string APIHash = generalClass.merchantIdLive + RemitaRef + generalClass.AppKeyLive; //generalClass.merchantId + RRR + generalClass.AppKey;
-            ViewBag.AppkeyHashed = generalClass.GenerateSHA512(APIHash).ToLower();
-            ViewBag.AgencyName = applicationdetails.AgencyName;
-            ViewBag.Applicationid = applicationId;
-            ViewBag.RRR = RemitaRef;
-            ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount : amount;
-            ViewBag.MerchantId = generalClass.merchantIdLive;//generalClass.merchantId;
-            ViewBag.BaseUrl = generalClass.PortalBaseUrlLive;//generalClass.PortalBaseUrl;
-
-            return View();
         }
 
-
-
+        /// <summary>
+        /// Displays a receipt after a user makes a payment
+        /// </summary>
+        /// <param name="applicationId">application id</param>
+        /// <returns>A view</returns>
         [HttpGet]
-        public ActionResult PaymentReceipt(string ApplicationId)
+        public ActionResult PaymentReceipt(string applicationId)
         {
+            var model = new PaymentReceiptVM();
+            var transactionResponse = JsonConvert
+                .DeserializeObject<RemitaTransactionResponse>(_paymentService.CheckPaymentStatusAsync(applicationId).ToString());
 
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-
-            if (paymentdetails != null)
+            if (transactionResponse != null)
             {
-                string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive; //generalClass.AppKey + generalClass.merchantId;
-                string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
+                var paymentDetails = _unitOfWork.PaymentLogRepository
+                    .Get(pay => pay.ApplicationId == applicationId, null, "", null, null)
+                    .FirstOrDefault();
 
-                WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
-
-                GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
-
-                if (paymentResponse != null)
-                {
-
-                    if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-                    {
-                        paymentdetails.Status = "AUTH";
-                        paymentdetails.TxnMessage = paymentResponse.message;
-                        paymentdetails.TransactionId = paymentResponse.status;
-                        paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
-                        ResponseWrapper responseWrapper = _workflowHelper.processAction(ApplicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
-
-                    }
-                    else
-                    {
-                        paymentdetails.Status = "INIT";
-                    }
-                    _context.SaveChanges();
-                }
-
-                ViewBag.PaymentLogApplicationId = paymentResponse.orderId;
-                ViewBag.PaymentLogStatus = paymentdetails.Status;
-                ViewBag.PaymentLogRRReference = paymentResponse.RRR;
-                ViewBag.PaymentLogTransactionDate = paymentResponse.transactiontime;
-                ViewBag.PaymentLogTxnMessage = paymentResponse.message;
-                ViewBag.TotalAmount = paymentdetails.TxnAmount;
+                model.ApplicationId = applicationId;
+                model.PaymentStatus = paymentDetails.Status;
+                model.RRR = paymentDetails.Rrreference;
+                model.TransactionDate = paymentDetails.TransactionDate.ToString();
+                model.TransactionMessage = paymentDetails.TxnMessage;
+                model.TotalAmount = paymentDetails.TxnAmount.ToString();
             }
 
-            return View();
+            return View(model);
         }
-
-
 
         public ActionResult DocumentUpload(string ApplicationId)
         {
@@ -1255,10 +1248,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         public JsonResult GetFees(int MyCategoryid)
         {
 
@@ -1267,32 +1256,114 @@ namespace RSPP.Controllers
             return Json(new { feeamount = details.Amount, formid = details.FormTypeId });
         }
 
-
-        public ActionResult GenerateRRR(string ApplicationId, string Amount)
+        public ActionResult GenerateRRR(string applicationId, string amount)
         {
-            string resultrrr = "";
-            decimal amt = 0;
-            var checkRRRExit = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-            var checkGovAgency = (from a in _context.ApplicationRequestForm where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-            if (checkGovAgency?.AgencyId == 1)
+            string rrr = string.Empty;
+            var applicationDetails = _unitOfWork.ApplicationRequestFormRepository
+                .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
+
+            // gov agencies don't make payment, so move them to the next stage
+            if (applicationDetails.AgencyId == 1)
             {
-                checkGovAgency.CurrentStageId = 3;
-                _context.SaveChanges();
-                return RedirectToAction("DocumentUpload", new { ApplicationId = ApplicationId });
+                applicationDetails.CurrentStageId = 3;
+                _unitOfWork.Complete();
+                return RedirectToAction("DocumentUpload", new { ApplicationId = applicationId });
             }
-            if (checkRRRExit == null)
+
+            var existingApplicationPayments = _unitOfWork.PaymentLogRepository
+                .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
+            if (existingApplicationPayments == null)
             {
-                amt = Convert.ToDecimal(Amount);
-                var baseUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
-                resultrrr = _utilityHelper.GeneratePaymentReference(ApplicationId, baseUrl, checkGovAgency.AgencyName, amt);
+
+                var companyDetails = _unitOfWork.UserMasterRepository
+                .Get(user => user.UserEmail == applicationDetails.CompanyEmail, null, "", null, null).FirstOrDefault();
+                if (companyDetails != null)
+                {
+
+                    var requestRRR = new RRRRequestModel
+                    {
+                        serviceTypeId = applicationDetails.ApplicationTypeId == AppMessages.NEW ? _remitaOptions.NewServiceId : _remitaOptions.RenewalServiceId,
+                        orderId = applicationId,
+                        amount = amount,
+                        payerName = companyDetails.CompanyName,
+                        payerEmail = companyDetails.UserEmail,
+                        payerPhone = companyDetails.PhoneNum,
+                        description = applicationDetails.AgencyName
+                    };
+                    var initiatePaymentResponse = _remitaPaymentService.InitiatePaymentAsync(requestRRR).Result;
+                    if (initiatePaymentResponse != null)
+                    {
+                        if (initiatePaymentResponse.Success)
+                        {
+                            InsertPaymentLog(initiatePaymentResponse, requestRRR);
+                        }
+                    }
+                }
+
             }
-            else
-            {
-                amt = Convert.ToDecimal(checkRRRExit.TxnAmount);
-                resultrrr = checkRRRExit.Rrreference;
-            }
-            return RedirectToAction("ChargeSummary", new { RRR = resultrrr, applicationId = ApplicationId, amount = amt });
+            return RedirectToAction("ChargeSummary", new { applicationId });
         }
+
+        /// <summary>
+        /// adds payment details
+        /// </summary>
+        /// <param name="status">status string</param>
+        /// <returns>A tuple consisting of success & message</returns>
+        private void InsertPaymentLog(RemitaInitiatePaymentResponse response, RRRRequestModel request)
+        {
+            if (response != null)
+            {
+                var paymentLog = new PaymentLog()
+                {
+                    ApplicationId = request.orderId,
+                    TransactionDate = DateTime.UtcNow,
+                    LastRetryDate = DateTime.UtcNow,
+                    PaymentCategory = request.description,
+                    TransactionId = response.RemitaInitiatePaymentStatusResponse.statuscode,
+                    ApplicantId = request.payerEmail,
+                    Rrreference = response.RemitaInitiatePaymentStatusResponse.RRR,
+                    AppReceiptId = AppMessages.APP_RECEIPT_ID,
+                    TxnAmount = Convert.ToDecimal(request.amount),
+                    Arrears = 0,
+                    TxnMessage = response.RemitaInitiatePaymentStatusResponse.status,
+                    Account = _remitaOptions.AccountNumber,
+                    BankCode = _remitaOptions.BankCode,
+                    RetryCount = 0,
+                    Status = AppMessages.INIT
+                };
+                _unitOfWork.PaymentLogRepository.Add(paymentLog);
+                _unitOfWork.Complete();
+            }
+        }
+
+
+        //public ActionResult GenerateRRRs(string ApplicationId, string Amount)
+        //{
+        //    string resultrrr = "";
+        //    decimal amt = 0;
+        //    var checkRRRExit = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
+        //    var checkGovAgency = (from a in _context.ApplicationRequestForm where a.ApplicationId == ApplicationId select a).FirstOrDefault();
+        //    // move to work flow state 3(documents attach) if application is from gov agency
+        //    if (checkGovAgency?.AgencyId == 1)
+        //    {
+        //        checkGovAgency.CurrentStageId = 3;
+        //        _context.SaveChanges();
+        //        return RedirectToAction("DocumentUpload", new { ApplicationId = ApplicationId });
+        //    }
+        //    // generate RRR if it doesnt exist
+        //    if (checkRRRExit == null)
+        //    {
+        //        amt = Convert.ToDecimal(Amount);
+        //        var baseUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
+        //        resultrrr = _utilityHelper.GeneratePaymentReference(ApplicationId, baseUrl, checkGovAgency.AgencyName, amt);
+        //    }
+        //    else
+        //    {
+        //        amt = Convert.ToDecimal(checkRRRExit.TxnAmount);
+        //        resultrrr = checkRRRExit.Rrreference;
+        //    }
+        //    return RedirectToAction("ChargeSummary", new { RRR = resultrrr, applicationId = ApplicationId, amount = amt });
+        //}
 
 
 
@@ -1301,14 +1372,14 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            var pdf= _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
 
             return new ViewAsPdf("ViewCertificate", pdf)
             {
                 PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
             };
         }
-        
+
         public ActionResult DownloadCertificate(string id)
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;

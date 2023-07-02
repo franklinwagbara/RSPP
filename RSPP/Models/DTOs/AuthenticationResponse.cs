@@ -7,7 +7,7 @@
 
         }
 
-        public AuthenticationResponse(bool success, string? message) : base(success, message)
+        public AuthenticationResponse(bool success, string message) : base(success, message)
         {
 
         }
