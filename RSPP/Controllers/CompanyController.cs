@@ -567,66 +567,13 @@ namespace RSPP.Controllers
                 model.BaseUrl = _remitaOptions.PortalBaseUrl;
                 model.FinalizePaymentURL = _remitaOptions.FinalizePaymentURL;
                 model.ApiKey = Encryption.GenerateSHA512($"{_remitaOptions.MerchantId}{model.RRR}{_remitaOptions.ApiKey}");
+                return View(model);
             }
-            else
-            {
-                model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
-            }
-
-            //var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
-            //var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-            //var RemitaRef = paymentdetails != null ? paymentdetails.Rrreference : RRR;
-            //string APIHash = _remitaOptions.MerchantId + RemitaRef + _remitaOptions.ApiKey; //generalClass.merchantId + RRR + generalClass.AppKey;
-            //ViewBag.AppkeyHashed = Encryption.GenerateSHA512(APIHash).ToLower();
-            //ViewBag.AgencyName = applicationdetails.AgencyName;
-            //ViewBag.Applicationid = applicationId;
-            //ViewBag.RRR = RemitaRef;
-            //ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount : amount;
-            //ViewBag.MerchantId = _remitaOptions.MerchantId;
-            //ViewBag.BaseUrl = _remitaOptions.PortalBaseUrl;
-
+            //return RedirectToAction("GenerateRRR", new { applicationId });
+            model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
             return View(model);
+
         }
-
-        //public ActionResult CheckPaymentStatus()
-        //{
-        //    //var applicationId = "062223133538";//failed
-        //    //var applicationId = "062323071911";
-        //    var applicationId = "062323072225";
-
-
-        //    var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-        //    if (paymentdetails != null)
-        //    {
-
-        //        string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive; //generalClass.AppKey + generalClass.merchantId;
-        //        string AppkeyHashed = Encryption.GenerateSHA512(APIHash);
-
-        //        WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
-        //        GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
-
-        //        if (paymentResponse != null)
-        //        {
-
-        //            if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-        //            {
-        //                paymentdetails.Status = "AUTH";
-        //                paymentdetails.TxnMessage = paymentResponse.message;
-        //                paymentdetails.TransactionId = paymentResponse.status;
-        //                paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
-        //                //ResponseWrapper responseWrapper = _workflowHelper.processAction(ApplicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
-
-        //            }
-        //            else
-        //            {
-        //                paymentdetails.Status = "INIT";
-        //            }
-        //            _context.SaveChanges();
-        //        }
-        //    }
-
-        //    return View();
-        //}
 
         /// <summary>
         /// Displays a receipt after a user makes a payment
@@ -656,53 +603,6 @@ namespace RSPP.Controllers
 
             return View(model);
         }
-
-        //[HttpGet]
-        //public ActionResult PaymentReceipt2(string ApplicationId)
-        //{
-
-        //    var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-
-        //    if (paymentdetails != null)
-        //    {
-        //        string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive; //generalClass.AppKey + generalClass.merchantId;
-        //        string AppkeyHashed = Encryption.GenerateSHA512(APIHash);
-
-        //        WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
-
-        //        GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
-
-        //        if (paymentResponse != null)
-        //        {
-
-        //            if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-        //            {
-        //                paymentdetails.Status = "AUTH";
-        //                paymentdetails.TxnMessage = paymentResponse.message;
-        //                paymentdetails.TransactionId = paymentResponse.status;
-        //                paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
-        //                ResponseWrapper responseWrapper = _workflowHelper.processAction(ApplicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
-
-        //            }
-        //            else
-        //            {
-        //                paymentdetails.Status = "INIT";
-        //            }
-        //            _context.SaveChanges();
-        //        }
-
-        //        ViewBag.PaymentLogApplicationId = paymentResponse.orderId;
-        //        ViewBag.PaymentLogStatus = paymentdetails.Status;
-        //        ViewBag.PaymentLogRRReference = paymentResponse.RRR;
-        //        ViewBag.PaymentLogTransactionDate = paymentResponse.transactiontime;
-        //        ViewBag.PaymentLogTxnMessage = paymentResponse.message;
-        //        ViewBag.TotalAmount = paymentdetails.TxnAmount;
-        //    }
-
-        //    return View();
-        //}
-
-
 
         public ActionResult DocumentUpload(string ApplicationId)
         {
@@ -1356,10 +1256,9 @@ namespace RSPP.Controllers
             return Json(new { feeamount = details.Amount, formid = details.FormTypeId });
         }
 
-        public ActionResult GenerateRRR(string applicationId, string amt)
+        public ActionResult GenerateRRR(string applicationId, string amount)
         {
             string rrr = string.Empty;
-            decimal amount = 0;
             var applicationDetails = _unitOfWork.ApplicationRequestFormRepository
                 .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
 
@@ -1373,13 +1272,9 @@ namespace RSPP.Controllers
 
             var existingApplicationPayments = _unitOfWork.PaymentLogRepository
                 .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
-            if (existingApplicationPayments != null)
+            if (existingApplicationPayments == null)
             {
-                rrr = existingApplicationPayments.Rrreference;
-                amount = Convert.ToDecimal(existingApplicationPayments.TxnAmount);
-            }
-            else
-            {
+
                 var companyDetails = _unitOfWork.UserMasterRepository
                 .Get(user => user.UserEmail == applicationDetails.CompanyEmail, null, "", null, null).FirstOrDefault();
                 if (companyDetails != null)
@@ -1389,7 +1284,7 @@ namespace RSPP.Controllers
                     {
                         serviceTypeId = applicationDetails.ApplicationTypeId == AppMessages.NEW ? _remitaOptions.NewServiceId : _remitaOptions.RenewalServiceId,
                         orderId = applicationId,
-                        amount = amt,
+                        amount = amount,
                         payerName = companyDetails.CompanyName,
                         payerEmail = companyDetails.UserEmail,
                         payerPhone = companyDetails.PhoneNum,
@@ -1404,7 +1299,6 @@ namespace RSPP.Controllers
                         }
                     }
                 }
-
 
             }
             return RedirectToAction("ChargeSummary", new { applicationId });

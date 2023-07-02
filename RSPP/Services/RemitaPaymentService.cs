@@ -94,16 +94,6 @@ namespace RSPP.Services
                 var requestobj = JsonConvert.SerializeObject(rrrRequest);
                 request.AddParameter("application/json", requestobj, ParameterType.RequestBody);
 
-                //var body = @"{ " + "\n" +
-                //@"	""serviceTypeId"": ""4430731""," + "\n" +
-                //@"	""amount"": ""{{totalAmount}}""," + "\n" +
-                //@"	""orderId"": ""{{orderId}}""," + "\n" +
-                //@"	""payerName"": ""John Doe""," + "\n" +
-                //@"	""payerEmail"": ""doe@gmail.com""," + "\n" +
-                //@"	""payerPhone"": ""09062067384""," + "\n" +
-                //@"	""description"": ""Payment for Septmeber Fees""" + "\n" +
-                //@"}";
-                //request.AddStringBody(body, DataFormat.Json);
                 RestResponse response = await client.ExecuteAsync(request);
                 if (response != null && response.IsSuccessful)
                 {

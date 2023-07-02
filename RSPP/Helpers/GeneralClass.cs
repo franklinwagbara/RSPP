@@ -29,34 +29,20 @@ namespace RSPP.Helpers
         //public string PortalBaseUrl = "http://rprspu-demo.azurewebsites.net";
         //public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
         //public string FinalizePaymentURL = "https://remitademo.net/remita/ecomm/finalize.reg";
-        
-        //Remita demo-live credentials
-        public string merchantIdLive = "2547916";
-        public string AppKeyLive = "1946";
-        public string ServiceIdNewLive = "4430731";
-        public string ServiceIdRenewalLive = "4430731";
-        public string AccountNumberLive = "0230188961016";
-        public string BankCodeLive = "000";
-        public string PostPaymentUrlLive = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
-        public string GetPaymentBaseUrlLive = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/";
-        public string PortalBaseUrlLive = "http://rprspu-demo.azurewebsites.net";
-        public string passwordactivationlinkExtension = "/Account/PasswordActivation?Email=";
-        public string HostedNSCLogo = "http://www.shipperstradedata.gov.ng/ServiceProvider/images/DesktopLogoImage.bmp";
-        public string FinalizePaymentURLLive = "https://remitademo.net/remita/ecomm/finalize.reg";
 
         //Remita live credentials
-        //public string merchantIdLive = "2987258165";
-        //public string AppKeyLive = "897260";
-        //public string ServiceIdNewLive = "2977866904";
-        //public string ServiceIdRenewalLive = "2977870950";
-        //public string AccountNumberLive = "0230188961016";
-        //public string BankCodeLive = "000";
-        //public string PostPaymentUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
-        //public string GetPaymentBaseUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/";
-        //public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
-        //public string passwordactivationlinkExtension = "/Account/PasswordActivation?Email=";
-        //public string HostedNSCLogo = "http://www.shipperstradedata.gov.ng/ServiceProvider/images/DesktopLogoImage.bmp";
-        //public string FinalizePaymentURLLive = "https://login.remita.net/remita/ecomm/finalize.reg";
+        public string merchantIdLive = "2987258165";
+        public string AppKeyLive = "897260";
+        public string ServiceIdNewLive = "2977866904";
+        public string ServiceIdRenewalLive = "2977870950";
+        public string AccountNumberLive = "0230188961016";
+        public string BankCodeLive = "000";
+        public string PostPaymentUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
+        public string GetPaymentBaseUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/";
+        public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
+        public string passwordactivationlinkExtension = "/Account/PasswordActivation?Email=";
+        public string HostedNSCLogo = "http://www.shipperstradedata.gov.ng/ServiceProvider/images/DesktopLogoImage.bmp";
+        public string FinalizePaymentURLLive = "https://login.remita.net/remita/ecomm/finalize.reg";
         private Object lockThis = new object();
 
         public string Encrypt(string clearText)
