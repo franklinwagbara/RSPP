@@ -8,7 +8,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -130,9 +129,9 @@ namespace RSPP.Helpers
         }
         public Byte[] GenerateQR(string url)
         {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
+            using QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            using QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+            using QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
             var imageResult = BitmapToBytes(qrCodeImage);
             return imageResult;
@@ -157,7 +156,7 @@ namespace RSPP.Helpers
         public string ForgotPasswordTemplate(string email, string subject, string content, string EncrptedPassword)
         {
             string body = "<div>";
-            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+HostedNSCLogo+ "' alt='Logo'/></div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
             body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
             body += "<div style='padding: 10px 30px 30px 30px;'>";
             body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
@@ -252,14 +251,14 @@ namespace RSPP.Helpers
         public string ConfirmationEmailMessage(string message, MailAddress email, string subject)
         {
             var result = "";
-            
+
             var password = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
             var emailFrom = "nscregistration@shipperscouncil.gov.ng";//"rprspu-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
-            
+
 
             MailMessage _mail = new MailMessage();
             SmtpClient client = new SmtpClient(Host, Port);
@@ -289,14 +288,14 @@ namespace RSPP.Helpers
         public string StaffMessageTemplate(string subject, string content)
         {
             string body = "<div>";
-            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+ HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
             body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
             body += "<div style='padding: 10px 30px 30px 30px;'>";
             body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
             body += "<p>Dear Sir/Madam,</p>";
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
-            body += "<p>Kindly go to <a href='"+ PortalBaseUrlLive + "'>RRPSPU PORTAL(CLICK HERE)</a></p>";
+            body += "<p>Kindly go to <a href='" + PortalBaseUrlLive + "'>RRPSPU PORTAL(CLICK HERE)</a></p>";
             body += "<p>Nigerian Shipper's Council<br/> <small>(RRPSPU) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
@@ -305,7 +304,7 @@ namespace RSPP.Helpers
 
         public string SendStaffEmailMessage(string staffemail, string subject, string content)
         {
-            var result = "";          
+            var result = "";
             var apiKey = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
             var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rspp-noreply@nscregistration.gov.ng";
@@ -351,22 +350,22 @@ namespace RSPP.Helpers
                 var todayDate = DateTime.Today.Date;
                 var intervalDate = todayDate.AddDays(-AllocInterval);
 
-                        foreach (var userlist in (from item in dbCtxt.UserMaster
-                                                  where item.UserRole == targetRole && item.Status == "ACTIVE"
-                                                  select item).OrderBy(x => Guid.NewGuid()).Take(100).ToList())
-                        {
+                foreach (var userlist in (from item in dbCtxt.UserMaster
+                                          where item.UserRole == targetRole && item.Status == "ACTIVE"
+                                          select item).OrderBy(x => Guid.NewGuid()).Take(100).ToList())
+                {
 
-                            UserActivityCountTbl.Add(userlist.UserEmail, UserActivityCount);
-                        }
-                        if (UserActivityCountTbl.Keys.Count != 0)
-                        {
-                            string returnuser = UserActivityCountTbl.OrderBy(a => a.Value).ToList().First().Key;
-                           
+                    UserActivityCountTbl.Add(userlist.UserEmail, UserActivityCount);
+                }
+                if (UserActivityCountTbl.Keys.Count != 0)
+                {
+                    string returnuser = UserActivityCountTbl.OrderBy(a => a.Value).ToList().First().Key;
 
-                            assignedUser = returnuser;
-                            dbCtxt.SaveChanges();
-                        }
-                    
+
+                    assignedUser = returnuser;
+                    dbCtxt.SaveChanges();
+                }
+
 
 
             }

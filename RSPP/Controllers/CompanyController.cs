@@ -73,6 +73,7 @@ namespace RSPP.Controllers
             _workflowHelper = new WorkFlowHelper(_context);
             _utilityHelper = new UtilityHelper(_context);
             _logger = logger;
+            _paymentService = paymentService;
             _remitaPaymentService = remitaPaymentService;
             _unitOfWork = unitOfWork;
             _remitaOptions = remitaOptions.Value;
