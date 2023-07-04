@@ -10,6 +10,8 @@ using RSPP.Models.DB;
 using RSPP.Models.DTOs;
 using RSPP.Services.Interfaces;
 using RSPP.UnitOfWorks.Interfaces;
+using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace RRPSPU.Tests.Controllers
@@ -23,7 +25,7 @@ namespace RRPSPU.Tests.Controllers
         private readonly Mock<IEmailer> _emailer;
         private readonly AccountController _accountController;
 
-        private readonly DefaultHttpContext _httpContext; 
+        private readonly DefaultHttpContext _httpContext;
         private readonly Mock<IUrlHelper> _urlHelperMock;
 
         public AccountControllerTests()
@@ -164,30 +166,34 @@ namespace RRPSPU.Tests.Controllers
         {
             var userList = AuthenticationMock.GetFakeUnConfirmedUserMasterList();
             var user = userList.FirstOrDefault();
-            var registrationRequest = new RegistrationRequest()
+            if (user != null)
             {
-                UserEmail = user.UserEmail,
-                Password = user.Password,
-                ConfirmPassword = user.Password,
-                MobilePhoneNumber = "09087866567",
-                CompanyAddress = "address",
-                CompanyName = "company name"
-            };
 
-            _unitOfWork.Setup(unit => unit.UserMasterRepository.Get(
-                It.IsAny<Expression<Func<UserMaster, bool>>?>(),
-                        It.IsAny<Func<IQueryable<UserMaster>, IOrderedQueryable<UserMaster>>?>(),
-                        It.IsAny<string>(),
-                        It.IsAny<int?>(),
-                        It.IsAny<int?>())
-            ).Returns(() => userList);
+                var registrationRequest = new RegistrationRequest()
+                {
+                    UserEmail = user.UserEmail,
+                    Password = user.Password,
+                    ConfirmPassword = user.Password,
+                    MobilePhoneNumber = "09087866567",
+                    CompanyAddress = "address",
+                    CompanyName = "company name"
+                };
 
-            var result = _accountController.AccountRegister(registrationRequest);
+                _unitOfWork.Setup(unit => unit.UserMasterRepository.Get(
+                    It.IsAny<Expression<Func<UserMaster, bool>>?>(),
+                            It.IsAny<Func<IQueryable<UserMaster>, IOrderedQueryable<UserMaster>>?>(),
+                            It.IsAny<string>(),
+                            It.IsAny<int?>(),
+                            It.IsAny<int?>())
+                ).Returns(() => userList);
 
-            Assert.NotNull(result);
-            var registrationResponse = Assert.IsType<BasicResponse>(result.Value);
-            Assert.False(registrationResponse.Success);
-            Assert.Contains($"{AppMessages.EMAIL} {AppMessages.EXISTS}", registrationResponse.ResultMessage);
+                var result = _accountController.AccountRegister(registrationRequest);
+
+                Assert.NotNull(result);
+                var registrationResponse = Assert.IsType<BasicResponse>(result.Value);
+                Assert.False(registrationResponse.Success);
+                Assert.Contains($"{AppMessages.EMAIL} {AppMessages.EXISTS}", registrationResponse.ResultMessage);
+            }
         }
 
         [Fact]
@@ -240,7 +246,7 @@ namespace RRPSPU.Tests.Controllers
             //emailConfirmed is false
             //emailConfirmationToken has correct value
         }
-        
+
         [Fact]
         public void AccountRegister_WhenRequestIsValidButEmailIsNotSent_ReturnsSuccessResponse()
         {

@@ -44,7 +44,7 @@ namespace RSPP.Controllers
 
 
         [Obsolete]
-        private readonly IHostingEnvironment _hostingEnv;
+        //private readonly IHostingEnvironment _hostingEnv;
 
 
         public AccountController(

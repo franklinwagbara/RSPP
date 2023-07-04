@@ -41,7 +41,7 @@ namespace RSPP.Controllers
 
         private readonly IWebHostEnvironment _hostingEnv;
         private readonly IEmailer _emailer;
-        private readonly IPaymentService _paymentService;
+        //private readonly IPaymentService _paymentService;
 
         private const string SUPERVISOR = "SUPERVISOR";
         private const string REGISTRAR = "REGISTRAR";
