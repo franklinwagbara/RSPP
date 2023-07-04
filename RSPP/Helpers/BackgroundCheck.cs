@@ -114,7 +114,7 @@ namespace RSPP.Helpers
         //}
 
 
-        public async void CheckExpiredCertificate()
+        public void CheckExpiredCertificate()
         {
             try
             {

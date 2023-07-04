@@ -165,8 +165,7 @@ namespace RSPP.Services
                 }
                 catch (RegexMatchTimeoutException ex)
                 {
-                    // log error here later
-                    //Logger.log(ex);
+                    _logger.Error(ex);
                     return validFormatStatus;
                 }
             }
