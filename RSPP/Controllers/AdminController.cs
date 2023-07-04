@@ -2700,18 +2700,11 @@ namespace RSPP.Controllers
 
         }
 
-        //public IActionResult ApplicationDetails(string ApplicationId)
-        //{
-        //    var appdetailvalues = _helpersController.ApplicationDetails(ApplicationId);
-        //    return View(appdetailvalues);
-        //}
-
 
         public ActionResult ViewCertificate(string id)
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            //return _helpersController.ViewCertificate(id, Host);
             var pdf = _helpersController.ViewCertificate(id, Host);
 
             return new ViewAsPdf("ViewCertificate", pdf)
