@@ -1396,11 +1396,11 @@ namespace RSPP.Controllers
             return Json(result);
         }
 
-        [HttpGet]
-        public ActionResult GiveValueList()
-        {
-            return View();
-        }
+        //[HttpGet]
+        //public ActionResult GiveValueList()
+        //{
+        //    return View();
+        //}
 
 
         [HttpPost]
@@ -1458,64 +1458,64 @@ namespace RSPP.Controllers
 
         }
 
-        [HttpPost]
-        public ActionResult GiveValue(string Appid)
-        {
-            decimal processFeeAmt = 0, statutoryFeeAmt = 0;
-            string errorMessage = "";
-            string status = "";
-            var appRequest = (from a in _context.ApplicationRequestForm where a.ApplicationId == Appid select a).FirstOrDefault();
+        //[HttpPost]
+        //public ActionResult GiveValue(string Appid)
+        //{
+        //    decimal processFeeAmt = 0, statutoryFeeAmt = 0;
+        //    string errorMessage = "";
+        //    string status = "";
+        //    var appRequest = (from a in _context.ApplicationRequestForm where a.ApplicationId == Appid select a).FirstOrDefault();
 
-            /// decimal Arrears = commonHelper.CalculateArrears(Appid, userMaster.UserId, dbCtxt);
-            try
-            {
-                //errorMessage = commonHelper.GetApplicationFees(appRequest, out processFeeAmt, out statutoryFeeAmt);
-                log.Info("Response Message =>" + errorMessage);
-
-
-                var paylog = (from l in _context.PaymentLog where l.ApplicationId == Appid select l).FirstOrDefault();
-
-                if (paylog == null)
-                {
-                    PaymentLog paymentLog = new PaymentLog();
-                    paymentLog.ApplicationId = appRequest.ApplicationId;
-                    paymentLog.TransactionDate = DateTime.UtcNow;
-                    paymentLog.TransactionId = "Value Given";
-                    paymentLog.ApplicantId = appRequest.CompanyEmail;
-                    paymentLog.TxnMessage = "Given";
-                    paymentLog.Rrreference = "Value Given";
-                    paymentLog.AppReceiptId = "Value Given";
-                    paymentLog.TxnAmount = processFeeAmt + statutoryFeeAmt;
-                    paymentLog.Arrears = 0;
-                    paymentLog.Account = generalClass.AccountNumberLive;
-                    paymentLog.BankCode = generalClass.BankCodeLive;
-                    paymentLog.RetryCount = 0;
-                    paymentLog.ActionBy = _helpersController.getSessionEmail();
-                    paymentLog.Status = "AUTH";
-                    log.Info("About to Add Payment Log");
-                    _context.PaymentLog.Add(paymentLog);
-                    _context.SaveChanges();
-                    log.Info("Added Payment Log to Table");
-                    status = "success";
-                    log.Info("Saved it Successfully");
-                }
-                else
-                {
-                    paylog.Status = "AUTH";
-                    _context.SaveChanges();
-                    status = "success";
-                }
-
-                if (appRequest != null)
-                {
-                    ResponseWrapper responseWrapper = _workflowHelper.processAction(Appid, "GenerateRRR", appRequest.CompanyEmail, "Application has moved to document upload after value given");
-                }
+        //    /// decimal Arrears = commonHelper.CalculateArrears(Appid, userMaster.UserId, dbCtxt);
+        //    try
+        //    {
+        //        //errorMessage = commonHelper.GetApplicationFees(appRequest, out processFeeAmt, out statutoryFeeAmt);
+        //        log.Info("Response Message =>" + errorMessage);
 
 
-            }
-            catch (Exception ex) { ViewBag.message = ex.Message; }
-            return Json(new { Status = status });
-        }
+        //        var paylog = (from l in _context.PaymentLog where l.ApplicationId == Appid select l).FirstOrDefault();
+
+        //        if (paylog == null)
+        //        {
+        //            PaymentLog paymentLog = new PaymentLog();
+        //            paymentLog.ApplicationId = appRequest.ApplicationId;
+        //            paymentLog.TransactionDate = DateTime.UtcNow;
+        //            paymentLog.TransactionId = "Value Given";
+        //            paymentLog.ApplicantId = appRequest.CompanyEmail;
+        //            paymentLog.TxnMessage = "Given";
+        //            paymentLog.Rrreference = "Value Given";
+        //            paymentLog.AppReceiptId = "Value Given";
+        //            paymentLog.TxnAmount = processFeeAmt + statutoryFeeAmt;
+        //            paymentLog.Arrears = 0;
+        //            paymentLog.Account = generalClass.AccountNumberLive;
+        //            paymentLog.BankCode = generalClass.BankCodeLive;
+        //            paymentLog.RetryCount = 0;
+        //            paymentLog.ActionBy = _helpersController.getSessionEmail();
+        //            paymentLog.Status = "AUTH";
+        //            log.Info("About to Add Payment Log");
+        //            _context.PaymentLog.Add(paymentLog);
+        //            _context.SaveChanges();
+        //            log.Info("Added Payment Log to Table");
+        //            status = "success";
+        //            log.Info("Saved it Successfully");
+        //        }
+        //        else
+        //        {
+        //            paylog.Status = "AUTH";
+        //            _context.SaveChanges();
+        //            status = "success";
+        //        }
+
+        //        if (appRequest != null)
+        //        {
+        //            ResponseWrapper responseWrapper = _workflowHelper.processAction(Appid, "GenerateRRR", appRequest.CompanyEmail, "Application has moved to document upload after value given");
+        //        }
+
+
+        //    }
+        //    catch (Exception ex) { ViewBag.message = ex.Message; }
+        //    return Json(new { Status = status });
+        //}
 
 
         [HttpGet]

@@ -573,7 +573,6 @@ namespace RSPP.Controllers
             //return RedirectToAction("GenerateRRR", new { applicationId });
             model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
             return View(model);
-
         }
 
         /// <summary>

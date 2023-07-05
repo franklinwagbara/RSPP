@@ -97,8 +97,10 @@ namespace RSPP.Services
                 RestResponse response = await client.ExecuteAsync(request);
                 if (response != null && response.IsSuccessful)
                 {
-                    statusResponse.RemitaInitiatePaymentStatusResponse = JsonConvert.DeserializeObject<RemitaInitiatePaymentStatusResponse>(response.Content);
-                    var statusResult = InterpretRemitaResponseStatus(statusResponse.RemitaInitiatePaymentStatusResponse.status);
+                    var jsonpTextAndOpeningBracketRemoved = response.Content.Replace("jsonp (", "");
+                    var contentWithClosingBracketRemoved = jsonpTextAndOpeningBracketRemoved.Replace(")", "");
+                    statusResponse.RemitaInitiatePaymentStatusResponse = JsonConvert.DeserializeObject<RemitaInitiatePaymentStatusResponse>(contentWithClosingBracketRemoved);
+                    var statusResult = InterpretRemitaResponseStatus(statusResponse.RemitaInitiatePaymentStatusResponse.statuscode);
                     statusResponse.Success = statusResult.success;
                     statusResponse.ResultMessage = statusResult.message;
                 }
