@@ -72,6 +72,8 @@ namespace RSPP.Services
                 response = _remitaPaymentService.CheckTransactionStatusAsync(paymentDetails.Rrreference).Result;
                 if (response.Success)
                 {
+                    var applicationDetails = _unitOfWork.ApplicationRequestFormRepository
+                        .Get(app => app.ApplicationId == applicationId, null, null, null).FirstOrDefault();
 
                     if (response.ResultMessage == $"{AppMessages.TRANSACTION} {AppMessages.PAID}")
                     {
@@ -79,7 +81,7 @@ namespace RSPP.Services
                         paymentDetails.TxnMessage = response.RemitaResponse.message;
                         paymentDetails.TransactionId = response.RemitaResponse.status;
                         paymentDetails.TransactionDate = Convert.ToDateTime(response.RemitaResponse.transactiontime);
-                        var updateWorkFlow = _workFlowHelper.processAction(applicationId, "GenerateRRR", _helperController.getSessionEmail(), "Remita Retrieval Reference Generated");
+                        var updateWorkFlow = _workFlowHelper.processAction(applicationId, "GenerateRRR", applicationDetails.CompanyEmail, "Remita Retrieval Reference Generated");
                     }
                     else
                     {
