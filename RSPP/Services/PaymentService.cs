@@ -73,7 +73,7 @@ namespace RSPP.Services
                 if (response.Success)
                 {
                     var applicationDetails = _unitOfWork.ApplicationRequestFormRepository
-                        .Get(app => app.ApplicationId == applicationId, null, null, null).FirstOrDefault();
+                        .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
 
                     if (response.ResultMessage == $"{AppMessages.TRANSACTION} {AppMessages.PAID}")
                     {
