@@ -55,7 +55,10 @@ namespace RSPP
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30);//You can set Time   
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SameSite = SameSiteMode.Strict;
                 options.Cookie.HttpOnly = true;
+                options.Cookie.Name = ".RSPP.Session";
                 options.Cookie.IsEssential = true;
 
             });
