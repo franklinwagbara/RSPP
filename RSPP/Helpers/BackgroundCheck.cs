@@ -4,11 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using RSPP.Configurations;
 using RSPP.Helper;
+using RSPP.Helpers.SerilogService.GeneralLogs;
 using RSPP.Models;
 using RSPP.Models.DB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace RSPP.Helpers
@@ -20,10 +22,11 @@ namespace RSPP.Helpers
         public RSPPdbContext _context;
         UtilityHelper _utilityHelper;
         WorkFlowHelper _workflowHelper;
-        public BackgroundCheck(RSPPdbContext context)
+
+        public BackgroundCheck(RSPPdbContext context, GeneralLogger generalLogger, IHttpClientFactory clientFactory)
         {
             _context = context;
-            _utilityHelper = new UtilityHelper(_context);
+            _utilityHelper = new UtilityHelper(_context, generalLogger, clientFactory);
             _workflowHelper = new WorkFlowHelper(_context);
 
         }

@@ -41,7 +41,7 @@ namespace RSPP.Helpers
         public string BankCodeLive = "000";
         public string PostPaymentUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
         public string GetPaymentBaseUrlLive = "https://login.remita.net/remita/exapp/api/v1/send/api/echannelsvc/";
-        public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
+        public string PortalBaseUrlLive = "https://registration.shipperscouncil.gov.ng";
         public string passwordactivationlinkExtension = "/Account/PasswordActivation?Email=";
         public string HostedNSCLogo = "http://www.shipperstradedata.gov.ng/ServiceProvider/images/DesktopLogoImage.bmp";
         public string FinalizePaymentURLLive = "https://login.remita.net/remita/ecomm/finalize.reg";
@@ -62,6 +62,8 @@ namespace RSPP.Helpers
             return sb.ToString();
         }
 
+
+      
 
 
 

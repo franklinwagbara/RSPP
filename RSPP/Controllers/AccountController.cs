@@ -14,6 +14,7 @@ using RSPP.Configurations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using RSPP.Helpers.SerilogService.GeneralLogs;
 
 namespace RSPP.Controllers
 {
@@ -30,12 +31,13 @@ namespace RSPP.Controllers
         public const string sessionStaffName = "_sessionStaffName";
         public const string sessionRoleName = "_sessionRoleName";
         public const string sessionCompanyName = "_sessionCompanyName";
-        private static readonly log4net.ILog Logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly string directory = "AdminLogs";
+        private readonly GeneralLogger _generalLogger;
 
-
-        public AccountController(RSPPdbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public AccountController(RSPPdbContext context, IHttpContextAccessor httpContextAccessor, IConfiguration configuration, GeneralLogger generalLogger)
         {
             _context = context;
+            _generalLogger = generalLogger;
             _httpContextAccessor = httpContextAccessor;
             _configuration = configuration;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
@@ -58,23 +60,14 @@ namespace RSPP.Controllers
             try
             {
 
-
-                Logger.Info("Coming To Login User with Email =>" + Email);
-
+                _generalLogger.LogRequest($"{"Coming To Login User with Email =>" + Email}{"-"}{DateTime.Now}", false, directory);
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
-
-                Logger.Info("Client IpAddress =>" + HttpContext.GetRemoteIPAddress().ToString());
+                _generalLogger.LogRequest($"{"Client IpAddress =>" + HttpContext.GetRemoteIPAddress().ToString()}{"-"}{DateTime.Now}", false, directory);
                 string validateResult = validateUser(Email, Password, HttpContext.GetRemoteIPAddress().ToString());
-
-                Logger.Info("Validate User Result =>" + validateResult);
+                _generalLogger.LogRequest($"{"Validate User Result =>" + validateResult}{"-"}{DateTime.Now}", false, directory);
 
                 if (validateResult == "SUCCESS" && userMaster != null)
                 {
-
-                    //var identity = new ClaimsIdentity(new[]{new Claim(ClaimTypes.Role, userMaster.UserRole),}, CookieAuthenticationDefaults.AuthenticationScheme);
-                    //var principal = new ClaimsPrincipal(identity);
-                    //var getin = HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
 
                     HttpContext.Session.SetString(sessionEmail, userMaster.UserEmail);
                     HttpContext.Session.SetString(sessionRoleName, userMaster.UserRole);
@@ -110,7 +103,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"An exception occurred while trying to login"} {ex}{"-"}{DateTime.Now}", false, directory);
                 status = "failed";
                 message = ex.Message;
                 return Json(new { Status = status, Message = message });//Content("<html><head><script>alert(\"" + ex.Message + "\");window.location.replace('LogOff')</script></head></html>");
@@ -143,23 +136,20 @@ namespace RSPP.Controllers
             {
                 password = generalClass.Encrypt(password);
                 string responseMessage = string.Empty;
-                Logger.Info("Coming To validateUser User =>" + email);
+                _generalLogger.LogRequest($"{"Coming To validateUser User =>" + email} {"-"}{DateTime.Now}", false, directory);
                 if (string.IsNullOrEmpty(email))
                 {
                     return "UserId should Not be Empty";
                 }
 
-                Logger.Info("About To Acquire Database Conection for Queries");
+                _generalLogger.LogRequest($"{"About To Acquire Database Conection for Queries"} {"-"}{DateTime.Now}", false, directory);
 
-                Logger.Info("About To Retrieve UserMaster Details from the System");
                 UserMaster userMaster = _context.UserMaster.Where(c => c.UserEmail.Trim() == email.Trim() && c.Password == password).FirstOrDefault();
-                Logger.Info("User Details => " + userMaster);
-
-
+                _generalLogger.LogRequest($"{"User Details => " + userMaster} {"-"}{DateTime.Now}", false, directory);
 
                 if (userMaster !=default(UserMaster))
                 {
-                    Logger.Info("User Master Status => " + userMaster.Status);
+                    _generalLogger.LogRequest($"{"User Master Status => " + userMaster.Status} {"-"}{DateTime.Now}", false, directory);
                     UserLogin userLogin = new UserLogin();
                     userLogin.UserEmail = userMaster.UserEmail;
                     userLogin.UserType = userMaster.UserType;
@@ -170,11 +160,7 @@ namespace RSPP.Controllers
                     userLogin.Status = userMaster.Status;
                     _context.UserLogin.Add(userLogin);
                     _context.SaveChanges();
-
-                    Logger.Info("About To Maintain User on Session");
-
-                    Logger.Info("Done With Session");
-
+                    _generalLogger.LogRequest($"{"Saved login session successfully"} {"-"}{DateTime.Now}", false, directory);
                     return "SUCCESS";
                 }
                 else
@@ -187,7 +173,8 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                Logger.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"User Login -- An Error Occured Validating User"} {ex} {"-"}{DateTime.Now}", false, directory);
+
                 return "An Error Occured Validating User,Please try again Later";
             }
         }
@@ -265,9 +252,13 @@ namespace RSPP.Controllers
                  if(sendmail == "failed")
                 {
                     msg = "Unable to send activation link to "+ Email+". Please try again later.";
+                    _generalLogger.LogRequest($"{"Unable to send activation link to " + Email + ". Please try again later."} {"-"}{DateTime.Now}", false, directory);
+
                 }
                 else {
                     msg = "Activation link was successfully sent to " + Email;
+                    _generalLogger.LogRequest($"{"Activation link was successfully sent to " + Email} {"-"}{DateTime.Now}", false, directory);
+
                 }
             }
             return Json(new {message = msg });
@@ -279,6 +270,7 @@ namespace RSPP.Controllers
             var updatepassword = (from u in _context.UserMaster where u.UserEmail == Email select u).FirstOrDefault();
             updatepassword.Password = Password;
             _context.SaveChanges();
+            _generalLogger.LogRequest($"{"Passowrd was successfully updated " + Password} {"-"}{DateTime.Now}", false, directory);
             return RedirectToAction("Login");
         }
 

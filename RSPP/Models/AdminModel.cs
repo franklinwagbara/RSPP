@@ -138,6 +138,18 @@ namespace RSPP.Models
 
 
     }
+
+    public class ResponseParams
+    {
+    }
+
+    public class RemitaErrorResponseModel
+    {
+        public string status { get; set; }
+        public string statusMessage { get; set; }
+        public string uniqueReference { get; set; }
+        public ResponseParams responseParams { get; set; }
+    }
     public class ApplicationRatio
     {
         public int Initiated { get; set; }

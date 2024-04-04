@@ -20,6 +20,8 @@ using RSPP.Controllers;
 using RSPP.Job;
 using System.Threading.Tasks;
 using System.Threading;
+using RSPP.Helpers.SerilogService.GeneralLogs;
+using System.Net.Http;
 
 namespace RSPP
 {
@@ -41,10 +43,18 @@ namespace RSPP
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
+            services.AddHttpClient("HttpClientWithSSLUntrusted").ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+                ServerCertificateCustomValidationCallback =
+            (httpRequestMessage, cert, cetChain, policyErrors) =>
+            {
+                return true;
+            }
+            });
 
             //AddHostedService
-
+            services.AddSingleton<GeneralLogger>();
             services.AddHostedService<PaymentConfirmationService>();
             services.AddHostedService<ExpiryCertificateReminderService>();
             services.AddDistributedMemoryCache();

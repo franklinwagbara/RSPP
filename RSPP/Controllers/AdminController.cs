@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
+using RSPP.Helpers.SerilogService.GeneralLogs;
 using RSPP.Models;
 using RSPP.Models.DB;
 using System;
@@ -34,28 +35,25 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         WorkFlowHelper _workflowHelper;
         List<UserMaster> staffJsonList = new List<UserMaster>();
-
-        private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
+        private readonly string directory = "AdminLogs";
+        private readonly GeneralLogger _generalLogger;
 
         [Obsolete]
         private readonly IHostingEnvironment _hostingEnv;
 
 
         [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
+        public AdminController(RSPPdbContext context, IConfiguration configuration, GeneralLogger generalLogger, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _hostingEnv = hostingEnv;
+            _generalLogger = generalLogger;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
 
         }
-
-
-
-
 
 
         public ActionResult Index()
@@ -88,12 +86,13 @@ namespace RSPP.Controllers
                             break;
                     }
                 }
-                log.Info("totalPermitCount =>" + totalPermitCount);
-                log.Info("totalAppWorkedOn =>" + totalAppWorkedOn);
-                log.Info("totalCancelled =>" + totalCancelled);
+                _generalLogger.LogRequest($"{"Admin Index -- totalPermitCount => "+ totalPermitCount}{"-"}{DateTime.Now}", false, directory);
+                _generalLogger.LogRequest($"{"Admin Index -- totalAppWorkedOn => " + totalAppWorkedOn}{"-"}{DateTime.Now}", false, directory);
+                _generalLogger.LogRequest($"{"Admin Index -- totalCancelled => " + totalCancelled}{"-"}{DateTime.Now}", false, directory);
 
                 List<ApplicationRequestForm> myAppDeskCountList = _helpersController.GetApprovalRequest(out errorMessage);
-                log.Info("OnMyDeskCount =>" + myAppDeskCountList.Count);
+                _generalLogger.LogRequest($"{"Admin Index -- OnMyDeskCount => " + myAppDeskCountList.Count}{"-"}{DateTime.Now}", false, directory);
+
                 ViewBag.OnMyDeskCount = myAppDeskCountList.Count;
                 ViewBag.TotalApplicationWorkedOn = (from a in _context.ApplicationRequestForm where a.Status == "Processing" select a).ToList().Count();
                 ViewBag.PermitCount = (from a in _context.ApplicationRequestForm where a.Status == "Approved" select a).ToList().Count();
@@ -106,7 +105,8 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"Admin Index -- An exception occurred "+ex}{"-"}{DateTime.Now}", false, directory);
+
                 ViewBag.ErrorMessage = "Error Occured on Admin DashBoard, Please try again Later";
             }
 
@@ -200,6 +200,8 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
+                _generalLogger.LogRequest($"{"Staff onboarding -- An exception occurred " + ex}{"-"}{DateTime.Now}", false, directory);
+
                 status = "failed";
                 message = "Something went wrong please try again later " + ex.Message;
             }
@@ -241,6 +243,8 @@ namespace RSPP.Controllers
             {
                 status = "failed";
                 message = "Something went wrong " + ex.Message;
+                _generalLogger.LogRequest($"{"Edit Staff Record -- An exception occurred " + ex}{"-"}{DateTime.Now}", false, directory);
+
             }
             return Json(new { Status = status, Message = message });
         }
@@ -269,6 +273,8 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
+                _generalLogger.LogRequest($"{"Delete staff record -- An exception occurred " + ex}{"-"}{DateTime.Now}", false, directory);
+
                 status = "failed";
                 message = ex.Message + " Unable to delete user " + email;
             }
@@ -302,6 +308,7 @@ namespace RSPP.Controllers
 
             catch (Exception ex)
             {
+                _generalLogger.LogRequest($"{"Activate staff -- An exception occurred " + ex}{"-"}{DateTime.Now}", false, directory);
                 status = "failed";
                 message = ex.Message + " Unable to delete user " + usr;
             }
@@ -338,6 +345,7 @@ namespace RSPP.Controllers
 
             catch (Exception ex)
             {
+                _generalLogger.LogRequest($"{"Deactive staff -- An exception occurred " + ex}{"-"}{DateTime.Now}", false, directory);
                 status = "failed";
                 message = ex.Message + " Unable to deactive user " + usr;
             }
@@ -722,88 +730,6 @@ namespace RSPP.Controllers
 
 
 
-
-
-        //public ActionResult ApplicationReport()
-        //{
-        //    int totalapplication = (from a in _context.ApplicationRequestForm select a).ToList().Count();
-        //    TempData["totalapplication"] = totalapplication;
-        //    return View();
-        //}
-
-
-
-
-
-        //[AllowAnonymous]
-        //[HttpPost]
-        //public ActionResult GetApplicationReport()
-        //{
-        //    var draw = Request.Form["draw"].FirstOrDefault();
-        //    var start = Request.Form["start"].FirstOrDefault();
-        //    var length = Request.Form["length"].FirstOrDefault();
-
-        //    var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
-        //    var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
-
-        //    var searchTxt = Request.Form["search[value]"][0];
-
-        //    int pageSize = length != null ? Convert.ToInt32(length) : 0;
-        //    int skip = start != null ? Convert.ToInt32(start) : 0;
-        //    int totalRecords = 0;
-        //    var today = DateTime.Now.Date;
-        //    var staff = (from p in _context.ApplicationRequestForm
-
-        //                 select new
-        //                 {
-        //                     p.ApplicationId,
-        //                     p.Status,
-        //                     p.CompanyEmail,
-        //                     p.AgencyName,
-        //                     LicenseIssuedDate = p.LicenseIssuedDate.ToString(),
-        //                     LicenseExpiryDate = p.LicenseExpiryDate.ToString(),
-        //                     expiryDATE = p.LicenseExpiryDate,
-        //                     issuedDATE = p.LicenseIssuedDate
-        //                 });
-
-        //    if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
-        //    {
-        //        staff = staff.OrderBy(s => s.ApplicationId + " " + sortColumnDir);
-        //    }
-        //    if (!string.IsNullOrEmpty(searchTxt))
-        //    {
-        //        if (searchTxt == "All Company")
-        //        {
-        //            staff = staff.Where(s => s.ApplicationId == s.ApplicationId);
-        //        }
-        //        else
-        //        {
-        //            staff = staff.Where(a => a.ApplicationId.Contains(searchTxt) || a.CompanyEmail.Contains(searchTxt)
-        //           || a.Status.Contains(searchTxt) || a.AgencyName.Contains(searchTxt)
-        //           || a.LicenseIssuedDate.Contains(searchTxt) || a.LicenseExpiryDate.Contains(searchTxt));
-        //        }
-        //    }
-        //    string firstdate = Request.Form["mymin"];
-        //    string lastdate = Request.Form["mymax"];
-        //    if ((!string.IsNullOrEmpty(firstdate) && (!string.IsNullOrEmpty(lastdate))))
-        //    {
-        //        var mindate = Convert.ToDateTime(firstdate);
-        //        var maxdate = Convert.ToDateTime(lastdate);
-        //        staff = staff.Where(a => a.ApplicationId == a.ApplicationId && a.issuedDATE >= mindate && a.issuedDATE <= maxdate);
-        //    }
-
-        //    totalRecords = staff.Count();
-        //    var data = staff.Skip(skip).Take(pageSize).ToList();
-
-        //    return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data });
-
-        //}
-
-
-
-
-
-
         [HttpGet]
         public ActionResult GetApplicationChart(ApplicationRatio Appobj)
         {
@@ -814,10 +740,6 @@ namespace RSPP.Controllers
             Appobj.Legacy = (from a in _context.ApplicationRequestForm where a.IsLegacy == "YES" select a).ToList().Count();
             return Json(Appobj);
         }
-
-
-
-
 
 
 
@@ -836,9 +758,11 @@ namespace RSPP.Controllers
             try
             {
                 AppResponse appResponse = _helpersController.ChangePassword(_helpersController.getSessionEmail(), model.OldPassword, model.NewPassword);
-                log.Info("Response from Elps =>" + appResponse.message);
+                _generalLogger.LogRequest($"{"Response from Elps =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
+
                 if (appResponse.message.Trim() != "SUCCESS")
                 {
+                    _generalLogger.LogRequest($"{"Response from Elps, An Error Message occured during Service Call to Elps Server =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
                     responseMessage = "An Error Message occured during Service Call to Elps Server, Please try again Later";
                 }
                 else
@@ -846,19 +770,22 @@ namespace RSPP.Controllers
                     if (((bool)appResponse.value) == true)
                     {
                         {
+                            _generalLogger.LogRequest($"{"password was successfully changed"}{"-"}{DateTime.Now}", false, directory);
                             responseMessage = "success";
                             TempData["success"] = _helpersController.getSessionEmail() + " password was successfully changed";
                         }
                     }
                     else
                     {
+                        _generalLogger.LogRequest($"{"Password Cannot Change, Kindly ensure your Old Password is correct"}{"-"}{DateTime.Now}", false, directory);
                         responseMessage = "Password Cannot Change, Kindly ensure your Old Password is correct and try again";
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"A General Error occured during Change Password"} {ex}{"-"}{DateTime.Now}", false, directory);
+
                 responseMessage = "A General Error occured during Change Password";
             }
 
@@ -1038,7 +965,7 @@ namespace RSPP.Controllers
             catch (Exception ex)
             {
                 status = "failed";
-                log.Error(ex.Message);
+                _generalLogger.LogRequest($"{"GetStaffStartOutofOffice -- An exception error occured"} {ex}{"-"}{DateTime.Now}", false, directory);
             }
             return Json(status);
         }
@@ -1065,7 +992,8 @@ namespace RSPP.Controllers
             catch (Exception ex)
             {
                 status = "failed";
-                log.Error(ex.Message);
+                _generalLogger.LogRequest($"{"GetStaffEndOutofOffice -- An exception error occured"} {ex}{"-"}{DateTime.Now}", false, directory);
+
             }
             return Json(status);
         }
@@ -1195,20 +1123,16 @@ namespace RSPP.Controllers
         {
             string response = string.Empty;
             ResponseWrapper responseWrapper;
-            log.Info("UserAction => " + myaction);
-            log.Info("Applications => " + applicationId);
-            log.Info("UserComment => " + mycomment);
+            _generalLogger.LogRequest($"{"ApplicationAcceptDecline -- UserAction => " + myaction} {"-"}{DateTime.Now}", false, directory);
+            _generalLogger.LogRequest($"{"ApplicationAcceptDecline -- Applications =>" + applicationId} {"-"}{DateTime.Now}", false, directory);
+            _generalLogger.LogRequest($"{"ApplicationAcceptDecline -- UserComment => " + mycomment} {"-"}{DateTime.Now}", false, directory);
 
             var email = _helpersController.getSessionEmail();
+            _generalLogger.LogRequest($"{"ApplicationAcceptDecline -- AcceptDecline Parameters => "}{applicationId} {"-"} {myaction} {"-"} {mycomment} {"-"}{DateTime.Now}", false, directory);
 
-
-            log.Info("AcceptDecline Parameters =>" + applicationId + "_" + myaction + "_" + mycomment);
             try
             {
                 ApplicationRequestForm appRequest = _context.ApplicationRequestForm.Where(c => c.ApplicationId.Trim() == applicationId.Trim()).FirstOrDefault();
-
-
-
 
                 if (appRequest == default(ApplicationRequestForm))
                 {
@@ -1220,12 +1144,14 @@ namespace RSPP.Controllers
                 }
 
                 var approcom = mycomment == "" ? "" : "Comment => " + mycomment + ";";
-                log.Info("Continuing with the Approval to Process Application");
+                _generalLogger.LogRequest($"{"ApplicationAcceptDecline --Continuing with the Approval to Process Application"} {"-"}{DateTime.Now}", false, directory);
+
                 responseWrapper = _workflowHelper.processAction(appRequest.ApplicationId, myaction, email, (mycomment == "=> " || mycomment == "") ? "Application was proccessed by " + email : mycomment);
                 if (!responseWrapper.status)
                 {
                     response = responseWrapper.value;
-                    log.Error(response);
+                    _generalLogger.LogRequest($"{"ApplicationAcceptDecline (processAction response) --"} {response} {"-"}{DateTime.Now}", false, directory);
+
                     return Json(new
                     {
                         status = "failure",
@@ -1237,7 +1163,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                _generalLogger.LogRequest($"{"ApplicationAcceptDecline -- An Exception occur"} {ex} {"-"}{DateTime.Now}", true, directory);
                 return Json(new { status = "failure", Message = "An Exception occur during Transaction, Please try again Later" });
             }
 
@@ -1433,12 +1359,8 @@ namespace RSPP.Controllers
             string status = "";
             var appRequest = (from a in _context.ApplicationRequestForm where a.ApplicationId == Appid select a).FirstOrDefault();
 
-            /// decimal Arrears = commonHelper.CalculateArrears(Appid, userMaster.UserId, dbCtxt);
             try
             {
-                //errorMessage = commonHelper.GetApplicationFees(appRequest, out processFeeAmt, out statutoryFeeAmt);
-                log.Info("Response Message =>" + errorMessage);
-
 
                 var paylog = (from l in _context.PaymentLog where l.ApplicationId == Appid select l).FirstOrDefault();
 
@@ -1459,12 +1381,11 @@ namespace RSPP.Controllers
                     paymentLog.RetryCount = 0;
                     paymentLog.ActionBy = _helpersController.getSessionEmail();
                     paymentLog.Status = "AUTH";
-                    log.Info("About to Add Payment Log");
+                    _generalLogger.LogRequest($"{"GiveValue -- About to Add Payment Log"} {"-"}{DateTime.Now}", false, directory);
                     _context.PaymentLog.Add(paymentLog);
                     _context.SaveChanges();
-                    log.Info("Added Payment Log to Table");
+                    _generalLogger.LogRequest($"{"GiveValue -- Added Payment Log to Table"} {"-"}{DateTime.Now}", false, directory);
                     status = "success";
-                    log.Info("Saved it Successfully");
                 }
                 else
                 {
@@ -1480,7 +1401,11 @@ namespace RSPP.Controllers
 
 
             }
-            catch (Exception ex) { ViewBag.message = ex.Message; }
+            catch (Exception ex) {
+                _generalLogger.LogRequest($"{"GiveValue -- An exception occurred why trying to give value"} {ex} {"-"}{DateTime.Now}", false, directory);
+
+                ViewBag.message = ex.Message; 
+            }
             return Json(new { Status = status });
         }
 
@@ -1607,12 +1532,12 @@ namespace RSPP.Controllers
             try
             {
                 appRequestList = _helpersController.GetApprovalRequest(out errorMessage);
-                log.Info("Application Returned Count =>" + appRequestList.Count);
+                _generalLogger.LogRequest($"{"MyDesk -- Application Returned Count =>" + appRequestList.Count} {"-"}{DateTime.Now}", false, directory);
                 ViewBag.ErrorMessage = errorMessage;
             }
             catch (Exception ex)
             {
-                log.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"MyDesk -- An exception occurred =>"} {ex} {"-"}{DateTime.Now}", false, directory);
                 ViewBag.ErrorMessage = "Error Occured when calling MyDesk, Please try again Later";
             }
 
@@ -1954,8 +1879,7 @@ namespace RSPP.Controllers
             {
                 staffJsonList1.Add(new UserMaster() { UserEmail = staff.UserEmail, FirstName = staff.FirstName + " " + staff.LastName, UserRole = staff.UserRole });
             }
-
-            log.Info("Fetched Staff Count =>" + staffJsonList.Count);
+            _generalLogger.LogRequest($"{"UserIdAutosearch -- Fetched Staff Count =>" + staffJsonList.Count} {"-"}{DateTime.Now}", false, directory);
             return Json(staffJsonList1);
 
         }
@@ -2425,7 +2349,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex.StackTrace);
+                _generalLogger.LogRequest($"{"Error Occured when calling Transition History, Please try again Later"} {ex} {"-"}{DateTime.Now}", false, directory);
                 ViewBag.ErrorMessage = "Error Occured when calling Transition History, Please try again Later";
             }
 
@@ -2616,8 +2540,7 @@ namespace RSPP.Controllers
                 var TodayDate = DateTime.Now.Date;
                 ViewBag.TodayDate = TodayDate.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 UserMaster applicantMaster = _context.UserMaster.Where(c => c.UserEmail.Trim() == appRequest.CompanyEmail).FirstOrDefault();
-                log.Info("About to Get Application Fees");
-
+                _generalLogger.LogRequest($"{"About to Get Application Fees"} {"-"}{DateTime.Now}", false, directory);
 
                 if (paymentlogdetails != null)
                 {
@@ -2678,13 +2601,14 @@ namespace RSPP.Controllers
                         comment = "Your Application has been Rejected";
                     }
                 }
+                _generalLogger.LogRequest($"{"Continuing with the Approval to Process Application"} {"-"}{DateTime.Now}", false, directory);
 
-                log.Info("Continuing with the Approval to Process Application");
                 responseWrapper = _workflowHelper.processAction(appRequest.ApplicationId, myaction, _helpersController.getSessionEmail(), (string.IsNullOrEmpty(mycomment)) ? comment : mycomment);
                 if (!responseWrapper.status)
                 {
                     response = responseWrapper.value;
-                    log.Error(response);
+                    _generalLogger.LogRequest($"{"ApproveLicense -- "+ response} {"-"}{DateTime.Now}", false, directory);
+
                     return Json(new
                     {
                         status = "failure",
@@ -2694,7 +2618,7 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                _generalLogger.LogRequest($"{"ApproveLicense -- An Exception occurred -- " + ex} {"-"}{DateTime.Now}", false, directory);
                 return Json(new { status = "failure", Message = "An Exception occur during Transaction, Please try again Later" });
             }
             GenerateLicenseDocument(applicationId);
@@ -2714,18 +2638,10 @@ namespace RSPP.Controllers
             }
             catch (Exception ex)
             {
-                log.Error(ex.InnerException);
+                _generalLogger.LogRequest($"{"GenerateLicenseDocument -- An Exception occurred -- " + ex} {"-"}{DateTime.Now}", false, directory);
             }
 
         }
-
-
-
-        //public IActionResult ApplicationDetails(string ApplicationId)
-        //{
-        //    var appdetailvalues = _helpersController.ApplicationDetails(ApplicationId);
-        //    return View(appdetailvalues);
-        //}
 
 
         public ActionResult ViewCertificate(string id)
