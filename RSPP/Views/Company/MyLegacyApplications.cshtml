@@ -3,13 +3,18 @@
     ViewBag.Title = "My Applications";
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 }
+<head>
+    <environment include="Development">
+        <link href="~/css/StyleSheet1.css" rel="stylesheet" />
+    </environment>
+</head>
 
 <br />
 <br />
 <div class="row">
     <br />
     <div>
-        <h2 style="margin-left:10px" class="text-info">My Legacy Applications</h2>
+        <h2 style="margin-left:10px" class="sm-txt text-info">My Legacy Applications</h2>
         <div class="clear"></div>
     </div><br />
 </div>
@@ -26,46 +31,53 @@
     </div>
 </div>
 
-<div class="row xrow">
+<div class="row xrow" style="overflow-x:scroll">
     <div class="col-md-12">
+        <div>
+            <table class="table table-bordered table-condensed" id="myapptable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Application Ref</th>
+                        <th>Certificate Number</th>
+                        <th>Company Email</th>
+                        <th>Application Category</th>
+                        <th>Date Applied</th>
+                        <th>Status</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @{
+                        ViewBag.Counter = 0;
+                    }
+
+                    @foreach (RSPP.Models.DB.ApplicationRequestForm appmaster in Model)
+                    {
+                        <tr>
+                            <td>@(ViewBag.Counter += 1)</td>
+                            <td>@appmaster.ApplicationId</td>
+                            <td>@appmaster.LicenseReference</td>
+                            <td>@appmaster.CompanyEmail</td>
+                            <td>@appmaster.AgencyName</td>
+                            <td>@appmaster.AddedDate</td>
+                            <td>
+                                <strong class="badge badge-success btn btn-sm"><b>Approved</b></strong>
+                            </td>
 
 
-        <table class="table table-bordered table-condensed" id="myapptable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Application Ref</th>
-                    <th>Certificate Number</th>
-                    <th>Company Email</th>
-                    <th>Application Category</th>
-                    <th>Date Applied</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
 
-                @{ViewBag.Counter = 0;}
+                        </tr>
 
-                @foreach (RSPP.Models.DB.ApplicationRequestForm appmaster in Model)
-                {
-                <tr>
-                    <td>@(ViewBag.Counter += 1)</td>
-                    <td>@appmaster.ApplicationId</td>
-                    <td>@appmaster.LicenseReference</td>
-                    <td>@appmaster.CompanyEmail</td>
-                    <td>@appmaster.AgencyName</td>
-                    <td>@appmaster.AddedDate</td>
-                    <td>
-                        <strong class="badge badge-success btn btn-sm"><b>Approved</b></strong>
-                    </td>
+                    }
+
+                </tbody>
+            </table>
+        </div>
 
 
-
-                </tr>
-
-                }
-            </tbody>
-        </table>
+       
 
 
     </div>

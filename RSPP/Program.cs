@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using RSPP.Job;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RSPP
 {
@@ -19,7 +14,7 @@ namespace RSPP
             CreateHostBuilder(args).Build().Run();
 
             var host = new WebHostBuilder()
-       .UseKestrel()
+            .UseKestrel()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .UseIISIntegration()
             .UseStartup<Startup>()
@@ -32,11 +27,19 @@ namespace RSPP
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                }).ConfigureServices(services =>
+                {
+                    services.AddHostedService<PaymentConfirmationService>();
+                    services.AddHostedService<ExpiryCertificateReminderService>();
+                }).ConfigureLogging(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Information);
+                    builder.AddLog4Net("Configurations/log4Net.config");
                 });
 
-       
-            //.ConfigureServices(services =>
-            //       services.AddHostedService<PaymentConfirmationService>());
+
+        //.ConfigureServices(services =>
+        //       services.AddHostedService<PaymentConfirmationService>());
 
         //.UseShutdownTimeout(TimeSpan.FromSeconds(10))
 

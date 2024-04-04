@@ -4,17 +4,11 @@ using RSPP.Helpers;
 using RSPP.Helpers.SerilogService.GeneralLogs;
 using RSPP.Models.DB;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace RSPP.Job
 {
-    //public class ExpiryCertificateReminderService
-    //{
-    //}
 
     public class ExpiryCertificateReminderService : BackgroundService
     {
@@ -22,9 +16,8 @@ namespace RSPP.Job
         private readonly ILogger<ExpiryCertificateReminderService> _logger;
         BackgroundCheck _backgroundCheck;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly GeneralLogger _generalLogger;
-        private readonly IHttpClientFactory _clientFactory;
-        public ExpiryCertificateReminderService(ILogger<ExpiryCertificateReminderService> logger, IServiceScopeFactory scopeFactory, GeneralLogger generalLogger, IHttpClientFactory clientFactory)
+
+        public ExpiryCertificateReminderService(ILogger<ExpiryCertificateReminderService> logger, IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
             _logger = logger;

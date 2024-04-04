@@ -24,13 +24,13 @@
         }
         else
         {
-            <div class="col-md-9" id="showPart">
+            <div class="col-md-12" id="showPart">
                 <div class="mypanel-2leaf-h">
                     <div class="left-side">
                         <div class="padd">
-                            <dl class="dl-horizontal lt">
+                            <dl class="dl-horizontal lt" style="overflow-x:scroll">
                                 <dt>Company Email</dt>
-                                <dd><a href="/Admin/CompanyProfile?CompanyEmail=@ViewBag.AppRequest.CompanyEmail"><span class="text-info">@ViewBag.AppRequest.CompanyEmail</span></a></dd>
+                                <dd><a href="/Admin/CompanyProfile?CompanyEmail=@ViewBag.AppRequest.CompanyEmail"><span class="text-info"><abbr style="text-decoration:none" title="@ViewBag.AppRequest.CompanyEmail">@ViewBag.AppRequest.CompanyEmail</abbr></span></a></dd>
 
                                 <dt>Application Type</dt>
                                 <dd>@ViewBag.appRequest.ApplicationTypeId</dd>
@@ -82,6 +82,9 @@
                                         <a href="https://tcc.firs.gov.ng/tccvalidationnew" class="list-group-item text-primary" target="_blank"><span class="text-primary">Tax Clearance Certificate</span><i class="og-icon og-pdf righty"></i></a>
                                         <a href="https://search.cac.gov.ng/home" class="list-group-item" target="_blank"><span class="text-primary">Corporate Affair Commission</span><i class="og-icon og-pdf righty"></i></a>
                                         <a href="https://nepc.gov.ng/verify-exporter/" class="list-group-item text-primary" target="_blank"><span class="text-primary">Nigeria Exporter Verification Portal</span><i class="og-icon og-pdf righty"></i></a>
+                                        <a href="https://niwa.gov.ng/" class="list-group-item text-primary" target="_blank"><span class="text-primary">National Inland Waterways Authority</span><i class="og-icon og-pdf righty"></i></a>
+                                        <a href="https://nigerianports.gov.ng/" class="list-group-item text-primary" target="_blank"><span class="text-primary">Nigeria Port Authority</span><i class="og-icon og-pdf righty"></i></a>
+                                        <a href="https://crffn.gov.ng/" class="list-group-item text-primary" target="_blank"><span class="text-primary">Council For the Regulation of Freight Forwarding in Nigeria</span><i class="og-icon og-pdf righty"></i></a>
                                     </div>
                                 </dd>
 
@@ -163,7 +166,7 @@
                             </table>
                         </div>
                         <hr class="marg50" />
-                        <div>
+                        <div class="width-for-mobile">
                             <div class="panel panel-primary">
                                 <div class="panel-heading">
                                     <p class="panel-title text-white">Application History (Last 5)</p>
@@ -229,7 +232,7 @@
                     <div class="clear"></div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4 col-sm-5 col-xs-6">
                 <div class="pad">
                     <h3>Action Panel</h3>
                     @if (ViewBag.LoggedInUserRole == "OFFICER")
@@ -544,14 +547,15 @@
                 //   // docval = selectedvalue; DocId: docval 
                 //}
                 $.post('@Url.Action("ApplicationAcceptDecline")', { applicationId: $(".ApplicationId").val(), myaction: action, mycomment: comments}, function (data) {
-                        console.log('before console');
                         var status = data.status;
-                        console.log(status);
+                        //console.log(status);
 
                         hideAndResetModals('.approvalModal');
                         debugger;
                     if (status == 'success') {
                         $(".loadingImage").hide('fast');
+                            //console.log("message success " + data.message);
+
                         alert(data.message);
                         window.location.href = "/Admin/MyDesk";
                             //bootbox.alert({
@@ -660,6 +664,7 @@
                 }
             });
         }
+
         function showAcceptDeclineBox(applicationId, useraction, reason) {
             debugger;
              var checkextrapayment = '@ViewBag.ExtraPayment';

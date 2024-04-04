@@ -13,34 +13,57 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Globalization;
 using System.Net.Http.Headers;
-using RSPP.Helpers.SerilogService.GeneralLogs;
-using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using Rotativa.AspNetCore;
+using RSPP.Models.DTOs;
+using Microsoft.Extensions.Options;
+using RSPP.Models.Options;
+using RSPP.Services.Interfaces;
+using RSPP.UnitOfWorks.Interfaces;
+using RSPP.Models.DTOs.Remita;
+using Newtonsoft.Json;
+using RSPP.Models.ViewModels;
 
 namespace RSPP.Controllers
 {
-    public class CompanyController : Controller
+    public class CompanyController : AppUserController
     {
         public RSPPdbContext _context;
+        public IConfiguration _configuration;
         WorkFlowHelper _workflowHelper;
         IHttpContextAccessor _httpContextAccessor;
-        public IConfiguration _configuration;
         GeneralClass generalClass = new GeneralClass();
         ResponseWrapper responseWrapper = new ResponseWrapper();
         List<ApplicationRequestForm> AppRequest = null;
         HelperController _helpersController;
         UtilityHelper _utilityHelper;
+
         private ILog log = log4net.LogManager.GetLogger(typeof(CompanyController));
-        private readonly string directory = "CompanyLogs";
-        private readonly GeneralLogger _generalLogger;
+        protected readonly ILogger<CompanyController> _logger;
+
+        private readonly IWebHostEnvironment _hostingEnv;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
+        private readonly IRemitaPaymentService _remitaPaymentService;
+        private readonly RemitaOptions _remitaOptions;
+
+        private const string FAILED_UPDATE_RESPONSE = "Update Failed";
+        private const string SUCCESS_UPDATE_RESPONSE = "Update Successful";
+
 
         [Obsolete]
-        private readonly IHostingEnvironment _hostingEnv;
-
-
-        [Obsolete]
-        public CompanyController(RSPPdbContext context, IConfiguration configuration, GeneralLogger generalLogger, IHttpClientFactory clientFactory, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
+        public CompanyController(
+            RSPPdbContext context,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
+            IWebHostEnvironment hostingEnv,
+            ILogger<CompanyController> logger,
+            IPaymentService paymentService,
+            IRemitaPaymentService remitaPaymentService,
+            IOptions<RemitaOptions> remitaOptions,
+            IUnitOfWork unitOfWork
+            ) : base(hostingEnv, paymentService)
         {
             _context = context;
             _configuration = configuration;
@@ -49,9 +72,22 @@ namespace RSPP.Controllers
             _generalLogger = generalLogger;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
-            _utilityHelper = new UtilityHelper(_context, generalLogger, clientFactory);
+            _utilityHelper = new UtilityHelper(_context);
+            _logger = logger;
+            _paymentService = paymentService;
+            _remitaPaymentService = remitaPaymentService;
+            _unitOfWork = unitOfWork;
+            _remitaOptions = remitaOptions.Value;
         }
 
+
+        /// <summary>
+        /// Fetches various metrics of the company
+        /// - all application status
+        /// - messages
+        /// - user guides
+        /// </summary>
+        /// <returns>A view result</returns>
 
         public IActionResult Index()
         {
@@ -69,6 +105,7 @@ namespace RSPP.Controllers
                 ViewBag.ProcessedApplicationCount = 0;
                 ViewBag.CompanyName = _helpersController.getSessionCompanyName();
 
+                //get action history message & action id for the current user
                 var Rejectcomment = (from u in _context.UserMaster
                                      where u.UserEmail == _helpersController.getSessionEmail()
                                      join a in _context.ApplicationRequestForm on u.UserEmail equals a.CompanyEmail
@@ -77,14 +114,13 @@ namespace RSPP.Controllers
                                      select new { ah.Message, ah.Action }).FirstOrDefault();
 
 
-
                 if (Rejectcomment != null)
                 {
                     TempData["Rejectcomment"] = Rejectcomment.Message;
                     TempData["Acceptcomment"] = Rejectcomment.Action;
                 }
+                // fetch all applications ids & currentstage for current user
                 AppRequest = _helpersController.GetApplicationDetails(companyemail, out AppRequest);
-
                 ViewBag.AllApplicationStageDetails = AppRequest;
 
 
@@ -101,22 +137,26 @@ namespace RSPP.Controllers
                     ViewBag.ExtraPaymentEmail = extrapay.CompanyEmail;
                 }
 
-
-
-
-                _generalLogger.LogRequest($"{"About To Get Applications and Company Notification Messages"}{"-"}{DateTime.Now}", false, directory);
-
+                log.Info("About To Get Applications and Company Notification Messages");
                 var userMaster = (from u in _context.UserMaster where u.UserEmail == companyemail select u).FirstOrDefault();
+                if (userMaster is null)
+                {
+                    // implement later
+                }
+
+                ViewBag.UserGuides = this.GetUserGuides(USER_TYPE_COMPANY, USER_GUIDES_COMPANY_PATH);
+                ViewBag.VideoGuide = this.VideoUserGuide();
 
                 ViewBag.AllMessages = _helpersController.GetCompanyMessages(_context, userMaster);
 
+                // fetch all applications with licenses
                 ViewBag.AllUserApplication = _helpersController.GetApplications(userMaster.UserEmail, "ALL", out responseMessage);
 
                 _generalLogger.LogRequest($"{"GetApplications ResponseMessage => " + responseMessage}{"-"}{DateTime.Now}", false, directory);
 
                 if (responseMessage == "SUCCESS")
                 {
-
+                    // get messages from unapproved applilcations
                     ViewBag.Allcomments = _helpersController.AllHistoryComment(_helpersController.getSessionEmail());
 
                     appStatistics = _helpersController.GetApplicationStatistics(_helpersController.getSessionEmail(), out responseMessage, out appStageReference);
@@ -136,6 +176,7 @@ namespace RSPP.Controllers
                 ViewBag.StageReferenceList = appStageReference;
                 ViewBag.ErrorMessage = responseMessage;
 
+
             }
             catch (Exception ex)
             {
@@ -145,6 +186,47 @@ namespace RSPP.Controllers
             }
 
             return View();
+        }
+
+        /// <summary>
+        /// Updates application notifications whose messages have been read by the company
+        /// </summary>
+        /// <param name="applicationId">the application id to be updated</param>
+        /// <returns>A BasicResponse indicating success or failure of this operation</returns>
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult UpdateReadApplications(string applicationId)
+        {
+            var response = new BasicResponse(false, FAILED_UPDATE_RESPONSE);
+            try
+            {
+
+                // provide better applicationId validation later
+                if (!string.IsNullOrWhiteSpace(applicationId))
+                {
+                    var companyemail = _helpersController.getSessionEmail();
+                    var selectedApplication = _context.ApplicationRequestForm
+                        .FirstOrDefault(app => app.ApplicationId == applicationId && app.CompanyEmail == companyemail);
+                    if (selectedApplication != null)
+                    {
+                        selectedApplication.IsRead = true;
+                        _context.ApplicationRequestForm.Update(selectedApplication);
+                        _context.SaveChanges();
+
+                        response.Success = true;
+                        response.ResultMessage = SUCCESS_UPDATE_RESPONSE;
+                    }
+                }
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+                response.ResultMessage += " - " + ex.Message;
+                return Json(response);
+                //throw;
+            }
+
         }
 
 
@@ -166,10 +248,182 @@ namespace RSPP.Controllers
             var generatedapplicationid = generalClass.GenerateApplicationNo();
             var checkappexist = (from a in _context.ApplicationRequestForm where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
             var appid = checkappexist == null ? generatedapplicationid : model.ApplicationId;
-         
-            status =  _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
+            //ApplicationRequestForm appdetails = null;
+            //GovernmentAgency govagencydetails = null;
+            //LogisticsServiceProvider logisticsserviceprovider = null;
+            //OtherPortServiceProvider otherportserviceprovider = null;
+            //PortOffDockTerminalOperator portoffdockserviceprovider = null;
+            //ShippingAgency shippingagency = null;
+            //UserOfPortService userofportservice = null;
+            //var generatedapplicationid = generalClass.GenerateApplicationNo();
+            //var checkappexist = (from a in _context.ApplicationRequestForm where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //var companyemail = _helpersController.getSessionEmail();
+            //var appid = checkappexist == null ? generatedapplicationid : model.ApplicationId;
+            //try
+            //{
+            //    appdetails = checkappexist == null ? new ApplicationRequestForm() : (from a in _context.ApplicationRequestForm where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    govagencydetails = (from a in _context.GovernmentAgency where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new GovernmentAgency() : (from a in _context.GovernmentAgency where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    logisticsserviceprovider = (from a in _context.LogisticsServiceProvider where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new LogisticsServiceProvider() : (from a in _context.LogisticsServiceProvider where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    otherportserviceprovider = (from a in _context.OtherPortServiceProvider where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new OtherPortServiceProvider() : (from a in _context.OtherPortServiceProvider where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    portoffdockserviceprovider = (from a in _context.PortOffDockTerminalOperator where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new PortOffDockTerminalOperator() : (from a in _context.PortOffDockTerminalOperator where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    shippingagency = (from a in _context.ShippingAgency where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new ShippingAgency() : (from a in _context.ShippingAgency where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
+            //    userofportservice = (from a in _context.UserOfPortService where a.ApplicationId == model.ApplicationId select a).FirstOrDefault() == null ? new UserOfPortService() : (from a in _context.UserOfPortService where a.ApplicationId == model.ApplicationId select a).FirstOrDefault();
 
-            if(status == "Rejected")
+            //    appdetails.ApplicationTypeId = model.ApplicationTypeId;
+            //    appdetails.Status = appdetails.Status == null ? "ACTIVE" : "Rejected";
+            //    appdetails.ApplicationId = appid;
+            //    appdetails.AgencyName = model.AgencyName;
+            //    appdetails.DateofEstablishment = Convert.ToDateTime(model.DateofEstablishment);
+            //    appdetails.CompanyAddress = model.CompanyAddress;
+            //    appdetails.PostalAddress = model.PostalAddress;
+            //    appdetails.PhoneNum = model.PhoneNum;
+            //    appdetails.AddedDate = DateTime.Now;
+            //    appdetails.ModifiedDate = DateTime.Now;
+            //    appdetails.LastAssignedUser = companyemail;
+            //    appdetails.CompanyEmail = companyemail;
+            //    appdetails.CompanyWebsite = model.CompanyWebsite;
+            //    appdetails.AgencyId = model.AgencyId;
+            //    appdetails.CurrentStageId = 1;
+            //    appdetails.PrintedStatus = "Not Printed";
+            //    appdetails.NameOfAssociation = model.NameOfAssociation;
+            //    appdetails.CacregNum = model.CacregNum;
+            //    appdetails.LineOfBusinessId = Convert.ToInt32(Request.Form["lineofbusinessid"]);
+            //    if (checkappexist == null)
+            //    {
+            //        _context.Add(appdetails);
+            //    }
+
+            //    if (model.AgencyId != 0)
+            //    {
+
+            //        if (model.AgencyId == 1)//government Agency
+            //        {
+            //            govagencydetails.ApplicationId = appid;
+            //            govagencydetails.ServicesProvidedInPort = Request.Form["ServicesProvidedInPort"].ToString();
+            //            govagencydetails.AnyOtherRelevantInfo = Request.Form["AnyOtherRelevantInfo"].ToString();
+
+            //            if (model.ApplicationId == null)
+            //            {
+            //                _context.Add(govagencydetails);
+            //            }
+            //        }
+            //        else if (model.AgencyId == 2)//Logistics Services Providers
+            //        {
+            //            logisticsserviceprovider.ApplicationId = appid;
+            //            logisticsserviceprovider.LineOfBusiness = Request.Form["LogisticsLineOfBusiness"].ToString();
+            //            logisticsserviceprovider.CustomLicenseNum = Request.Form["CustomLicenseNum"].ToString();
+            //            logisticsserviceprovider.CrffnRegistrationNum = Request.Form["CrffnRegistrationNum"].ToString();
+            //            logisticsserviceprovider.AnyOtherInfo = Request.Form["LogisticsAnyOtherRelevantInfo"].ToString();
+            //            logisticsserviceprovider.OtherLicense = model.OtherLicense == null || model.OtherLicense == "" ? model.OtherLicense : Request.Form["OtherLicense"].ToString();
+            //            logisticsserviceprovider.CustomLicenseExpiryDate = DateTime.ParseExact(Request.Form["CustomLicenseExpiryDate"], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            //            logisticsserviceprovider.CrffnRegistratonExpiryDate = DateTime.ParseExact(Request.Form["CrffnRegistratonExpiryDate"], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            //            logisticsserviceprovider.OtherLicenseExpiryDate = model.OtherLicenseExpiryDate == null ? model.OtherLicenseExpiryDate : DateTime.ParseExact(Request.Form["OtherLicenseExpiryDate"], "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            //            if (model.ApplicationId == null)
+            //            {
+            //                _context.Add(logisticsserviceprovider);
+            //            }
+            //        }
+
+            //        else if (model.AgencyId == 3)//Port/Off Dock Terminals Operators
+            //        {
+
+            //            if (MyTerminals.Count > 0)
+            //            {
+
+
+            //                foreach (var item in MyTerminals)
+            //                {
+            //                    var checkterminalexist = (from t in _context.PortOffDockTerminalOperator where t.ApplicationId == model.ApplicationId && t.LocationOfTerminal == item.TerminalLocation select t).ToList();
+
+            //                    if (checkterminalexist.Count == 0)
+            //                    {
+
+            //                        PortOffDockTerminalOperator terminals = new PortOffDockTerminalOperator()
+            //                        {
+            //                            ApplicationId = appid,
+            //                            NameOfTerminal = item.TerminalName,
+            //                            LocationOfTerminal = item.TerminalLocation,
+            //                            LineOfBusiness = Request.Form["portoffdockLineOfBusiness"].ToString(),
+            //                            StatusOfTerminal = Request.Form["StatusOfTerminal"].ToString(),
+            //                            CargoType = Request.Form["portoffdockCargoType"].ToString(),
+            //                            AnyOtherInfo = Request.Form["portoffdockAnyOtherInfo"].ToString()
+            //                        };
+            //                        _context.PortOffDockTerminalOperator.Add(terminals);
+            //                        _context.SaveChanges();
+            //                    }
+
+            //                    else if (checkterminalexist.Count > 0 && MyTerminals.Count == checkterminalexist.Count)
+            //                    {
+
+            //                        checkterminalexist.FirstOrDefault().NameOfTerminal = item.TerminalName;
+            //                        checkterminalexist.FirstOrDefault().LocationOfTerminal = item.TerminalLocation;
+            //                    }
+
+
+            //                }
+            //            }
+
+            //            //if (model.ApplicationId == null)
+            //            //{
+            //            //    _context.Add(portoffdockserviceprovider);
+            //            //}
+            //        }
+
+            //        else if (model.AgencyId == 4)//Shipping Agencies/Companies/Lines
+            //        {
+            //            shippingagency.ApplicationId = appid;
+            //            shippingagency.LineOfBusiness = Request.Form["ShippingagencyLineOfBusiness"].ToString();
+            //            shippingagency.VesselLinesRepresentedInNigeria = Request.Form["VesselLinesRepresentedInNigeria"].ToString();
+            //            shippingagency.CargoType = Request.Form["ShippingagencyCargoType"].ToString();
+            //            shippingagency.AnyOtherInfo = Request.Form["ShippingagencyAnyOtherInfo"].ToString();
+            //            if (model.ApplicationId == null)
+            //            {
+            //                _context.Add(shippingagency);
+            //            }
+            //        }
+
+            //        else if (model.AgencyId == 5) //Other Port Service Providers
+            //        {
+            //            otherportserviceprovider.ApplicationId = appid;
+            //            otherportserviceprovider.LineOfBusiness = Request.Form["otherportLineOfBusiness"].ToString();
+            //            otherportserviceprovider.AnyOtherInfo = Request.Form["otherportAnyOtherInfo"].ToString();
+
+            //            if (model.ApplicationId == null)
+            //            {
+            //                _context.Add(otherportserviceprovider);
+            //            }
+            //        }
+
+            //        else if (model.AgencyId == 6)// Users of Port
+            //        {
+            //            userofportservice.ApplicationId = appid;
+            //            userofportservice.Category = Request.Form["userportLineOfBusiness"].ToString();
+            //            userofportservice.AnyOtherInfo = Request.Form["userportAnyOtherInfo"].ToString();
+            //            userofportservice.NepcRegNo = Request.Form["nepcregnum"].ToString();
+            //            if (model.ApplicationId == null)
+            //            {
+            //                _context.Add(userofportservice);
+            //            }
+            //        }
+
+            //    }
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    message = "Unable to save record " + ex.Message;
+            //    status = "failed";
+            //    return Json(new { Status = status, applicationId = appid, Message = message });
+
+            //}
+
+
+            //_context.SaveChanges();
+
+            // prepare & save details based on the type of service provider - returns success, rejected etc
+            status = _helpersController.ApplicationForm(model, MyTerminals, "NO", appid);
+
+            if (status == "Rejected")
             {
                 _generalLogger.LogRequest($"{"Application Form -- application status is rejected"}{"-"}{DateTime.Now}", false, directory);
 
@@ -185,6 +439,7 @@ namespace RSPP.Controllers
 
                 return Json(new { Status = status, applicationId = appid, Message = "Unable to resubmit your application please try again later." });
             }
+            // process an application by moving it to its correct work stage
             responseWrapper = _workflowHelper.processAction(appid, "Proceed", companyemail, "Initiated Application");
             if (responseWrapper.status == true)
             {
@@ -196,15 +451,33 @@ namespace RSPP.Controllers
             _generalLogger.LogRequest($"{"Application Form -- Unable to submit your application"}{"-"}{DateTime.Now}", false, directory);
 
             return Json(new { Status = status, applicationId = appid, Message = "Unable to submit your application please try again later." });
-           
+            //message = "Your record was saved successfully";
+            //status = "success";
+            //if (checkappexist != null)
+            //{
+            //    if (checkappexist.Status == "Rejected")// if re-submission jump payment page and proceed to document upload page
+            //    {
+            //        appdetails.CurrentStageId = 2;
+            //        _context.SaveChanges();
+            //        responseWrapper = _workflowHelper.processAction(appid, "GenerateRRR", companyemail, "Payment recieved");
+            //        if (responseWrapper.status == true)
+            //        {
+            //            return Json(new { Status = "resubmit", applicationId = appid, Message = responseWrapper.value });
+
+            //        }
+
+            //        return Json(new { Status = status, applicationId = appid, Message = message });
+            //    }
+            //}
+            //responseWrapper = _workflowHelper.processAction(appid, "Proceed", companyemail, "Initiated Application");
+            //if (responseWrapper.status == true)
+            //{
+            //    return Json(new { Status = "success", applicationId = appid, Message = responseWrapper.value });
+
+            //}
+
+            //return Json(new { Status = status, applicationId = appid, Message = message });
         }
-
-
-
-
-
-
-
 
 
         [HttpGet]
@@ -214,16 +487,16 @@ namespace RSPP.Controllers
             try
             {
                 apps = (from p in _context.ApplicationRequestForm.AsEnumerable()
-                             where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "NO"
-                             select new ApplicationRequestForm
-                             {
-                                 ApplicationId = p.ApplicationId,
-                                 CompanyEmail = p.CompanyEmail,
-                                 AgencyName = p.AgencyName,
-                                 AddedDate = p.AddedDate,
-                                 Status = p.Status,
-                                 CurrentStageId = p.CurrentStageId
-                             }).ToList();
+                        where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "NO"
+                        select new ApplicationRequestForm
+                        {
+                            ApplicationId = p.ApplicationId,
+                            CompanyEmail = p.CompanyEmail,
+                            AgencyName = p.AgencyName,
+                            AddedDate = p.AddedDate,
+                            Status = p.Status,
+                            CurrentStageId = p.CurrentStageId
+                        }).ToList();
 
             }
             catch (Exception ex)
@@ -240,22 +513,21 @@ namespace RSPP.Controllers
         [HttpGet]
         public ActionResult MyLegacyApplications()
         {
-           List <ApplicationRequestForm> legacyapp = new List<ApplicationRequestForm>();
+            List<ApplicationRequestForm> legacyapp = new List<ApplicationRequestForm>();
             try
             {
-                 legacyapp = (from p in _context.ApplicationRequestForm.AsEnumerable() 
-                                  where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "YES"
-                                  select new ApplicationRequestForm
-                                  {
-                                      ApplicationId = p.ApplicationId,
-                                      CompanyEmail = p.CompanyEmail,
-                                      AgencyName = p.AgencyName,
-                                      AddedDate = p.AddedDate,
-                                      Status = p.Status,
-                                      LicenseReference =p.LicenseReference,
-                                      CurrentStageId = p.CurrentStageId
-                                  }).ToList();
-              
+                legacyapp = (from p in _context.ApplicationRequestForm.AsEnumerable()
+                             where p.CompanyEmail == _helpersController.getSessionEmail() && p.IsLegacy == "YES"
+                             select new ApplicationRequestForm
+                             {
+                                 ApplicationId = p.ApplicationId,
+                                 CompanyEmail = p.CompanyEmail,
+                                 AgencyName = p.AgencyName,
+                                 AddedDate = p.AddedDate,
+                                 Status = p.Status,
+                                 CurrentStageId = p.CurrentStageId
+                             }).ToList();
+
             }
             catch (Exception ex)
             {
@@ -298,81 +570,59 @@ namespace RSPP.Controllers
             return Json(message);
         }
 
-
-
-
-
+        /// <summary>
+        /// Fetches the details of an application's payment
+        /// </summary>
+        /// <param name="applicationId">the application id to be updated</param>
+        /// <returns>A view to display the details</returns>
 
         [HttpGet]
-        public ActionResult ChargeSummary(string RRR, string applicationId, decimal amount)
+        public ActionResult ChargeSummary(string applicationId)
         {
-
-            var applicationdetails = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a).FirstOrDefault();
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == applicationId select a).FirstOrDefault();
-           var RemitaRef= paymentdetails != null ? paymentdetails.Rrreference : RRR;
-            string APIHash = generalClass.merchantIdLive + RemitaRef + generalClass.AppKeyLive; //generalClass.merchantId + RRR + generalClass.AppKey;
-            ViewBag.AppkeyHashed = generalClass.GenerateSHA512(APIHash).ToLower();
-            ViewBag.AgencyName = applicationdetails.AgencyName;
-            ViewBag.Applicationid = applicationId;
-            ViewBag.RRR = RemitaRef;
-            ViewBag.Amount = paymentdetails != null ? paymentdetails.TxnAmount: amount;
-            ViewBag.MerchantId = generalClass.merchantIdLive;//generalClass.merchantId;
-            ViewBag.BaseUrl = generalClass.PortalBaseUrlLive;//generalClass.PortalBaseUrl;
-
-            return View();
+            var model = new ChargeSummaryVM();
+            var chargeSummaryDetails = _unitOfWork.PaymentLogRepository.GetChargeSummary(applicationId);
+            if (chargeSummaryDetails != null)
+            {
+                model = chargeSummaryDetails;
+                model.MerchantId = _remitaOptions.MerchantId;
+                model.BaseUrl = _remitaOptions.PortalBaseUrl;
+                model.FinalizePaymentURL = _remitaOptions.FinalizePaymentURL;
+                model.ApiKey = Encryption.GenerateSHA512($"{_remitaOptions.MerchantId}{model.RRR}{_remitaOptions.ApiKey}");
+                return View(model);
+            }
+            //return RedirectToAction("GenerateRRR", new { applicationId });
+            model.ErrorMessage = $"{AppMessages.PAYMENT} {AppMessages.NOT_EXIST}";
+            return View(model);
         }
 
-
-
+        /// <summary>
+        /// Displays a receipt after a user makes a payment
+        /// </summary>
+        /// <param name="applicationId">application id</param>
+        /// <returns>A view</returns>
         [HttpGet]
-        public ActionResult PaymentReceipt(string ApplicationId)
+        public ActionResult PaymentReceipt(string applicationId)
         {
+            var model = new PaymentReceiptVM();
+            var transactionResponse = JsonConvert
+                .DeserializeObject<RemitaTransactionResponse>(_paymentService.CheckPaymentStatusAsync(applicationId).ToString());
 
-            var paymentdetails = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-
-            if (paymentdetails != null)
+            if (transactionResponse != null)
             {
-                string APIHash = paymentdetails.Rrreference + generalClass.AppKeyLive + generalClass.merchantIdLive; //generalClass.AppKey + generalClass.merchantId;
-                string AppkeyHashed = generalClass.GenerateSHA512(APIHash);
+                var paymentDetails = _unitOfWork.PaymentLogRepository
+                    .Get(pay => pay.ApplicationId == applicationId, null, "", null, null)
+                    .FirstOrDefault();
 
-                WebResponse webResponse = _utilityHelper.GetRemitaPaymentDetails(AppkeyHashed, paymentdetails.Rrreference);
-
-                GetPaymentResponse paymentResponse = (GetPaymentResponse)webResponse.value;
-
-                if (paymentResponse != null)
-                {
-
-                    if (paymentResponse.message == "Successful" || paymentResponse.status == "00")
-                    {
-                        paymentdetails.Status = "AUTH";
-                        paymentdetails.TxnMessage = paymentResponse.message;
-                        paymentdetails.TransactionId = paymentResponse.status;
-                        paymentdetails.TransactionDate = Convert.ToDateTime(paymentResponse.transactiontime);
-                        ResponseWrapper responseWrapper = _workflowHelper.processAction(ApplicationId, "GenerateRRR", _helpersController.getSessionEmail(), "Remita Retrieval Reference Generated");
-
-                    }
-                    else
-                    {
-                        paymentdetails.Status = "INIT";
-                    }
-                    _context.SaveChanges();
-                }
-
-                ViewBag.PaymentLogApplicationId = paymentResponse.orderId;
-                ViewBag.PaymentLogStatus = paymentdetails.Status;
-                ViewBag.PaymentLogRRReference = paymentResponse.RRR;
-                ViewBag.PaymentLogTransactionDate = paymentResponse.transactiontime;
-                ViewBag.PaymentLogTxnMessage = paymentResponse.message;
-                ViewBag.TotalAmount = paymentdetails.TxnAmount;
+                model.ApplicationId = applicationId;
+                model.PaymentStatus = paymentDetails.Status;
+                model.RRR = paymentDetails.Rrreference;
+                model.TransactionDate = paymentDetails.TransactionDate.ToString();
+                model.TransactionMessage = paymentDetails.TxnMessage;
+                model.TotalAmount = paymentDetails.TxnAmount.ToString();
             }
 
-            return View();
-
-
-
+            return View(model);
         }
-
-
 
         public ActionResult DocumentUpload(string ApplicationId)
         {
@@ -383,42 +633,51 @@ namespace RSPP.Controllers
             var uploadeddoc = (from d in _context.UploadedDocuments where d.ApplicationId == ApplicationId select d).ToList();
             ViewBag.MyApplicationID = ApplicationId;
             ViewBag.UploadedDocCount = uploadeddoc.Count;
-            if (uploadeddoc.Count == 0 || doclist.Count() != uploadeddoc.Count())
+            if (linseofbusinessid != 1)
             {
-                if (doclist.Count > 0)
+                if (uploadeddoc.Count == 0 || doclist.Count() != uploadeddoc.Count())
                 {
-                    foreach (var item in doclist)
+                    if (doclist.Count > 0)
                     {
+                        foreach (var item in doclist)
+                        {
+                            DocList.Add(new DocUpload()
+                            {
+
+                                DocumentName = item.DocumentName,
+                                DocId = item.DocId,
+                                IsMandatory = item.IsMandatory
+
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var item in uploadeddoc)
+                    {
+                        var docnamesplit = item.DocumentName.ToString().Split('_');
+                        var uploadedfilenamesplit = item.DocumentSource.ToString().Split('_').Last();
+
                         DocList.Add(new DocUpload()
                         {
-
-                            DocumentName = item.DocumentName,
-                            DocId = item.DocId,
-                            IsMandatory = item.IsMandatory
-
+                            DocumentName = docnamesplit[0],
+                            DocId = item.DocumentUploadId,
+                            IsMandatory = "Y",
+                            DocumentSource = item.DocumentSource,
+                            UploadedDocName = uploadedfilenamesplit
                         });
                     }
                 }
+                return View(DocList);
             }
             else
             {
-                foreach (var item in uploadeddoc)
-                {
-                    var docnamesplit = item.DocumentName.ToString().Split('_');
-                    var uploadedfilenamesplit = item.DocumentSource.ToString().Split('_').Last();
-
-                    DocList.Add(new DocUpload()
-                    {
-                        DocumentName = docnamesplit[0],
-                        DocId = item.DocumentUploadId,
-                        IsMandatory = "Y",
-                        DocumentSource = item.DocumentSource,
-                        UploadedDocName = uploadedfilenamesplit
-                    });
-                }
+                SubmitDocumentUpload(ApplicationId);
+                return RedirectToAction("MyApplications");
             }
 
-            return View(DocList);
+
         }
 
 
@@ -918,13 +1177,10 @@ namespace RSPP.Controllers
             try
             {
                 AppResponse appResponse = _helpersController.ChangePassword(_helpersController.getSessionEmail(), model.OldPassword, model.NewPassword);
-                _generalLogger.LogRequest($"{"Response from Elps =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
-
+                log.Info("Response from Shippers council =>" + appResponse.message);
                 if (appResponse.message.Trim() != "SUCCESS")
                 {
-                    _generalLogger.LogRequest($"{"Response from Elps, An Error Message occured during Service Call to Elps Server, Please try again Later =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
-
-                    responseMessage = "An Error Message occured during Service Call to Elps Server, Please try again Later";
+                    responseMessage = "An Error occured, Please try again Later";
                 }
                 else
                 {
@@ -1013,8 +1269,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
         public JsonResult GetFees(int MyCategoryid)
         {
 
@@ -1023,34 +1277,114 @@ namespace RSPP.Controllers
             return Json(new { feeamount = details.Amount, formid = details.FormTypeId });
         }
 
-
-        public async Task<ActionResult> GenerateRRR(string ApplicationId, string Amount)
+        public ActionResult GenerateRRR(string applicationId, string amount)
         {
-            string resultrrr = "";
-            decimal amt = 0;
-            var checkRRRExit = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
-            var checkGovAgency = (from a in _context.ApplicationRequestForm join l in _context.LineOfBusiness
-                                  on a.LineOfBusinessId equals l.LineOfBusinessId
-                                  where a.ApplicationId == ApplicationId select new { a, l }).FirstOrDefault();
-            if (checkGovAgency?.a.AgencyId == 1)
+            string rrr = string.Empty;
+            var applicationDetails = _unitOfWork.ApplicationRequestFormRepository
+                .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
+
+            // gov agencies don't make payment, so move them to the next stage
+            if (applicationDetails.AgencyId == 1)
             {
-                checkGovAgency.a.CurrentStageId = 3;
-                _context.SaveChanges();
-                return RedirectToAction("DocumentUpload", new { ApplicationId = ApplicationId });
+                applicationDetails.CurrentStageId = 3;
+                _unitOfWork.Complete();
+                return RedirectToAction("DocumentUpload", new { ApplicationId = applicationId });
             }
-            if (checkRRRExit == null)
+
+            var existingApplicationPayments = _unitOfWork.PaymentLogRepository
+                .Get(app => app.ApplicationId == applicationId, null, "", null, null).FirstOrDefault();
+            if (existingApplicationPayments == null)
             {
-                amt = Convert.ToDecimal(Amount);
-                var baseUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
-                resultrrr = await _utilityHelper.GeneratePaymentReference(ApplicationId, baseUrl, checkGovAgency.a.AgencyName, checkGovAgency.l.Amount);
+
+                var companyDetails = _unitOfWork.UserMasterRepository
+                .Get(user => user.UserEmail == applicationDetails.CompanyEmail, null, "", null, null).FirstOrDefault();
+                if (companyDetails != null)
+                {
+
+                    var requestRRR = new RRRRequestModel
+                    {
+                        serviceTypeId = applicationDetails.ApplicationTypeId == AppMessages.NEW ? _remitaOptions.NewServiceId : _remitaOptions.RenewalServiceId,
+                        orderId = applicationId,
+                        amount = amount,
+                        payerName = companyDetails.CompanyName,
+                        payerEmail = companyDetails.UserEmail,
+                        payerPhone = companyDetails.PhoneNum,
+                        description = applicationDetails.AgencyName
+                    };
+                    var initiatePaymentResponse = _remitaPaymentService.InitiatePaymentAsync(requestRRR).Result;
+                    if (initiatePaymentResponse != null)
+                    {
+                        if (initiatePaymentResponse.Success)
+                        {
+                            InsertPaymentLog(initiatePaymentResponse, requestRRR);
+                        }
+                    }
+                }
+
             }
-            else
-            {
-                amt = Convert.ToDecimal(checkRRRExit.TxnAmount);
-                resultrrr = checkRRRExit.Rrreference;
-            }
-            return RedirectToAction("ChargeSummary", new { RRR = resultrrr, applicationId = ApplicationId, amount = amt });
+            return RedirectToAction("ChargeSummary", new { applicationId });
         }
+
+        /// <summary>
+        /// adds payment details
+        /// </summary>
+        /// <param name="status">status string</param>
+        /// <returns>A tuple consisting of success & message</returns>
+        private void InsertPaymentLog(RemitaInitiatePaymentResponse response, RRRRequestModel request)
+        {
+            if (response != null)
+            {
+                var paymentLog = new PaymentLog()
+                {
+                    ApplicationId = request.orderId,
+                    TransactionDate = DateTime.UtcNow,
+                    LastRetryDate = DateTime.UtcNow,
+                    PaymentCategory = request.description,
+                    TransactionId = response.RemitaInitiatePaymentStatusResponse.statuscode,
+                    ApplicantId = request.payerEmail,
+                    Rrreference = response.RemitaInitiatePaymentStatusResponse.RRR,
+                    AppReceiptId = AppMessages.APP_RECEIPT_ID,
+                    TxnAmount = Convert.ToDecimal(request.amount),
+                    Arrears = 0,
+                    TxnMessage = response.RemitaInitiatePaymentStatusResponse.status,
+                    Account = _remitaOptions.AccountNumber,
+                    BankCode = _remitaOptions.BankCode,
+                    RetryCount = 0,
+                    Status = AppMessages.INIT
+                };
+                _unitOfWork.PaymentLogRepository.Add(paymentLog);
+                _unitOfWork.Complete();
+            }
+        }
+
+
+        //public ActionResult GenerateRRRs(string ApplicationId, string Amount)
+        //{
+        //    string resultrrr = "";
+        //    decimal amt = 0;
+        //    var checkRRRExit = (from a in _context.PaymentLog where a.ApplicationId == ApplicationId select a).FirstOrDefault();
+        //    var checkGovAgency = (from a in _context.ApplicationRequestForm where a.ApplicationId == ApplicationId select a).FirstOrDefault();
+        //    // move to work flow state 3(documents attach) if application is from gov agency
+        //    if (checkGovAgency?.AgencyId == 1)
+        //    {
+        //        checkGovAgency.CurrentStageId = 3;
+        //        _context.SaveChanges();
+        //        return RedirectToAction("DocumentUpload", new { ApplicationId = ApplicationId });
+        //    }
+        //    // generate RRR if it doesnt exist
+        //    if (checkRRRExit == null)
+        //    {
+        //        amt = Convert.ToDecimal(Amount);
+        //        var baseUrl = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
+        //        resultrrr = _utilityHelper.GeneratePaymentReference(ApplicationId, baseUrl, checkGovAgency.AgencyName, amt);
+        //    }
+        //    else
+        //    {
+        //        amt = Convert.ToDecimal(checkRRRExit.TxnAmount);
+        //        resultrrr = checkRRRExit.Rrreference;
+        //    }
+        //    return RedirectToAction("ChargeSummary", new { RRR = resultrrr, applicationId = ApplicationId, amount = amt });
+        //}
 
 
 
@@ -1059,7 +1393,25 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            return _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+            };
+        }
+
+        public ActionResult DownloadCertificate(string id)
+        {
+            var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
+
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4,
+                FileName = id + ".pdf"
+            };
         }
 
 

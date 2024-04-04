@@ -1,9 +1,6 @@
 ﻿using log4net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRCoder;
-using RSPP.Configurations;
-using RSPP.Controllers;
 using RSPP.Models.DB;
 using System;
 using System.Collections.Generic;
@@ -11,10 +8,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RSPP.Helpers
 {
@@ -31,7 +26,9 @@ namespace RSPP.Helpers
         //public string PostPaymentUrl = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/merchant/api/paymentinit";
         //public string GetPaymentBaseUrl = "https://remitademo.net/remita/exapp/api/v1/send/api/echannelsvc/";
         //public string PortalBaseUrl = "http://rprspu-demo.azurewebsites.net";
+        //public string PortalBaseUrlLive = "http://registration.shipperscouncil.gov.ng";
         //public string FinalizePaymentURL = "https://remitademo.net/remita/ecomm/finalize.reg";
+
         //Remita live credentials
         public string merchantIdLive = "2987258165";
         public string AppKeyLive = "897260";
@@ -46,26 +43,6 @@ namespace RSPP.Helpers
         public string HostedNSCLogo = "http://www.shipperstradedata.gov.ng/ServiceProvider/images/DesktopLogoImage.bmp";
         public string FinalizePaymentURLLive = "https://login.remita.net/remita/ecomm/finalize.reg";
         private Object lockThis = new object();
-
-        public string GenerateSHA512(string inputString)
-        {
-            SHA512 sha512 = SHA512Managed.Create();
-            byte[] bytes = Encoding.UTF8.GetBytes(inputString);
-            byte[] hash = sha512.ComputeHash(bytes);
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < hash.Length; i++)
-            {
-                sb.Append(hash[i].ToString("X2"));
-            }
-
-            return sb.ToString();
-        }
-
-
-      
-
-
 
         public string Encrypt(string clearText)
         {
@@ -84,8 +61,6 @@ namespace RSPP.Helpers
                 throw ex;
             }
         }
-
-
 
         public string Decrypt(string cipherText)
         {
@@ -154,28 +129,43 @@ namespace RSPP.Helpers
         }
         public Byte[] GenerateQR(string url)
         {
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
+            using QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            using QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+            using QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
             var imageResult = BitmapToBytes(qrCodeImage);
             return imageResult;
         }
 
-
-
-        public string ForgotPasswordTemplate(string email, string subject, string content, string EncrptedPassword)
+        public string ConfirmationEmailTemplate(string email, string subject, string content)
         {
             string body = "<div>";
-            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+ HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
             body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
             body += "<div style='padding: 10px 30px 30px 30px;'>";
             body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
             body += "<p>Dear Sir/Madam,</p>";
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
-            body += "<p><a href='"+ PortalBaseUrlLive + passwordactivationlinkExtension+ "" + email + "&Password="+ EncrptedPassword + "'>Please click on this activation link to activate your new password</a></p>";
-            body += "<p>Nigerian Shipper's Council<br/> <small>(RSPP) </small></p> </div>";
+            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'>Please click on this activation link to activate your new password</a></p>";
+            body += "<p>Nigerian Shipper's Council<br/> <small>(RRPSPU) </small></p> </div>";
+            body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
+            return body;
+        }
+
+        public string ForgotPasswordTemplate(string email, string subject, string content, string EncrptedPassword)
+        {
+            string body = "<div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
+            body += "<div style='padding: 10px 30px 30px 30px;'>";
+            body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
+            body += "<p>Dear Sir/Madam,</p>";
+            body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
+            body += "<br>";
+            body += "<p><a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + EncrptedPassword + "'>Please click on this activation link to activate your new password</a></p>";
+            //body += "<p>Please click on this activation link to activate your new password: <a href='" + PortalBaseUrlLive + passwordactivationlinkExtension + "" + email + "&Password=" + "'> + Url.Action("PasswordActivation", "Account", new { token = token }, protocol: Request.Scheme) + </a></p>";
+            body += "<p>Nigerian Shipper's Council<br/> <small>(RRPSPU) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
         }
@@ -185,7 +175,7 @@ namespace RSPP.Helpers
             var message = "";
             var password = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rprspu-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rprspu-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -194,17 +184,96 @@ namespace RSPP.Helpers
             MailMessage _mail = new MailMessage();
             SmtpClient client = new SmtpClient(Host, Port);
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
+            client.Credentials = new System.Net.NetworkCredential(username, password);
+            client.UseDefaultCredentials = false;
+            client.EnableSsl = true;
+
+            _mail.From = new MailAddress(emailFrom);
+            _mail.To.Add(new MailAddress(email));
+            _mail.Subject = subject;
+
+            _mail.Body = msgBody;
+            _mail.IsBodyHtml = true;
+            try
+            {
+                client.Send(_mail);
+                result = "success";
+            }
+            catch (Exception ex)
+            {
+                message = ex.ToString();
+                result = "failed";
+            }
+            return result;
+        }
+
+        //public string ForgotPasswordEmailMessage(string email, string subject, string content, string EncrptedPassword)
+        //{
+        //    var result = "";
+        //    var password = "BGgG3V+HB0G9y6cj1OoHvo5c7YA+sEZmgis7ZltwTf1X";
+        //    var username = "AKIA4R3D7VDR3DUB3OZZ";
+        //    var emailFrom = "nmdpra-no-reply@nmdpra.gov.ng";
+        //    var Host = "email-smtp.us-east-1.amazonaws.com";
+        //    var Port = 587;
+
+        //    var msgBody = ForgotPasswordTemplate(email, subject, content, EncrptedPassword);
+
+        //    MailMessage _mail = new MailMessage();
+        //    SmtpClient client = new SmtpClient(Host, Port);
+        //    client.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+        //    client.UseDefaultCredentials = false;
+        //    client.EnableSsl = true;
+        //    client.Credentials = new System.Net.NetworkCredential(username, password);
+        //    _mail.From = new MailAddress(emailFrom);
+        //    _mail.To.Add(new MailAddress(email));
+        //    _mail.Subject = subject;
+        //    _mail.IsBodyHtml = true;
+        //    _mail.Body = msgBody;
+        //    //if (attach != null)
+        //    //{
+        //    //    string name = "App Letter";
+        //    //    Attachment at = new Attachment(new MemoryStream(attach), name);
+        //    //    _mail.Attachments.Add(at);
+        //    //}
+        //    //_mail.CC=
+        //    try
+        //    {
+
+        //        client.Send(_mail);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result = ex.Message;
+        //    }
+        //    return result;
+        //}
+        public string ConfirmationEmailMessage(string message, MailAddress email, string subject)
+        {
+            var result = "";
+
+            var password = "nsc2018#";
+            var username = "nscregistration@shipperscouncil.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng";//"rprspu-noreply@nscregistration.gov.ng";
+            var Host = "webmail.shipperscouncil.gov.ng";
+            var Port = 587;
+
+
+
+            MailMessage _mail = new MailMessage();
+            SmtpClient client = new SmtpClient(Host, Port);
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
             client.UseDefaultCredentials = false;
             client.EnableSsl = true;
             client.Credentials = new System.Net.NetworkCredential(username, password);
             _mail.From = new MailAddress(emailFrom);
-            _mail.To.Add(new MailAddress(email));
+            _mail.To.Add(email);
             _mail.Subject = subject;
             _mail.IsBodyHtml = true;
-            _mail.Body = msgBody;
+            _mail.Body = message;
             try
             {
-               client.Send(_mail);
+                client.Send(_mail);
                 result = "success";
             }
             catch (Exception ex)
@@ -216,22 +285,17 @@ namespace RSPP.Helpers
         }
 
 
-
-
-
-
-
         public string StaffMessageTemplate(string subject, string content)
         {
             string body = "<div>";
-            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='"+ HostedNSCLogo + "' alt='Logo'/></div>";
+            body += "<div style='width: 700px; background-color: #ece8d4; padding: 5px 0 5px 0;'><img style='width: 30%; height: 120px; display: block; margin: 0 auto;' src='" + HostedNSCLogo + "' alt='Logo'/></div>";
             body += "<div class='text-left' style='background-color: #ece8d4; width: 700px; min-height: 200px;'>";
             body += "<div style='padding: 10px 30px 30px 30px;'>";
             body += "<h5 style='text-align: center; font-weight: 300; padding-bottom: 10px; border-bottom: 1px solid #ddd;'>" + subject + "</h5>";
             body += "<p>Dear Sir/Madam,</p>";
             body += "<p style='line-height: 30px; text-align: justify;'>" + content + "</p>";
             body += "<br>";
-            body += "<p>Kindly go to <a href='"+ PortalBaseUrlLive + "'>RRPSPU PORTAL(CLICK HERE)</a></p>";
+            body += "<p>Kindly go to <a href='" + PortalBaseUrlLive + "'>RRPSPU PORTAL(CLICK HERE)</a></p>";
             body += "<p>Nigerian Shipper's Council<br/> <small>(RRPSPU) </small></p> </div>";
             body += "<div style='padding:10px 0 10px; 10px; background-color:#888; color:#f9f9f9; width:700px;'> &copy; " + DateTime.Now.Year + " Nigerian Shipper's Council &minus; NSC Nigeria</div></div></div>";
             return body;
@@ -240,10 +304,10 @@ namespace RSPP.Helpers
 
         public string SendStaffEmailMessage(string staffemail, string subject, string content)
         {
-            var result = "";          
+            var result = "";
             var apiKey = "nsc2018#";
             var username = "nscregistration@shipperscouncil.gov.ng";
-            var emailFrom = "rspp-noreply@nscregistration.gov.ng";
+            var emailFrom = "nscregistration@shipperscouncil.gov.ng"; //"rspp-noreply@nscregistration.gov.ng";
             var Host = "webmail.shipperscouncil.gov.ng";
             var Port = 587;
 
@@ -286,22 +350,22 @@ namespace RSPP.Helpers
                 var todayDate = DateTime.Today.Date;
                 var intervalDate = todayDate.AddDays(-AllocInterval);
 
-                        foreach (var userlist in (from item in dbCtxt.UserMaster
-                                                  where item.UserRole == targetRole && item.Status == "ACTIVE"
-                                                  select item).OrderBy(x => Guid.NewGuid()).Take(100).ToList())
-                        {
+                foreach (var userlist in (from item in dbCtxt.UserMaster
+                                          where item.UserRole == targetRole && item.Status == "ACTIVE"
+                                          select item).OrderBy(x => Guid.NewGuid()).Take(100).ToList())
+                {
 
-                            UserActivityCountTbl.Add(userlist.UserEmail, UserActivityCount);
-                        }
-                        if (UserActivityCountTbl.Keys.Count != 0)
-                        {
-                            string returnuser = UserActivityCountTbl.OrderBy(a => a.Value).ToList().First().Key;
-                           
+                    UserActivityCountTbl.Add(userlist.UserEmail, UserActivityCount);
+                }
+                if (UserActivityCountTbl.Keys.Count != 0)
+                {
+                    string returnuser = UserActivityCountTbl.OrderBy(a => a.Value).ToList().First().Key;
 
-                            assignedUser = returnuser;
-                            dbCtxt.SaveChanges();
-                        }
-                    
+
+                    assignedUser = returnuser;
+                    dbCtxt.SaveChanges();
+                }
+
 
 
             }
@@ -312,10 +376,6 @@ namespace RSPP.Helpers
 
             return assignedUser;
         }
-
-
-
-
 
 
         public string NumberToWords(long number)
@@ -370,14 +430,11 @@ namespace RSPP.Helpers
             return words;
         }
 
-
-
-
         public string GenerateCertificateNumber(RSPPdbContext dbCtxt)
         {
             String LicenseNum = null;
 
-            LicenseNum = "NSC/RPRSPU/";
+            LicenseNum = "NSC/RRPSPU/";
 
             CertificateSerialNumber seriallist = (from c in dbCtxt.CertificateSerialNumber select c).FirstOrDefault();
             long result = Convert.ToInt64(seriallist.SerialNumber);

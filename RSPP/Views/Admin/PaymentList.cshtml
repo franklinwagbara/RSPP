@@ -2,60 +2,61 @@
     ViewBag.Title = "Payment List";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
 }
+
+<environment include="Development">
+</environment>
+
 <div class="content">
-
-
-
     <div class="row top_tiles">
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3 col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-info">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.BargeOperators </div>
+                <div class="count">₦@ViewBag.BargeOperators </div>
                 <p>
                     <b> Barge Operators</b>
                 </p>
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-warning">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CargoConsolidatorsDeConsolidators</div>
+                <div class="count">₦@ViewBag.CargoConsolidatorsDeConsolidators</div>
                 <p>
-                    <b> Cargo Consolidators/De-Consolidators</b>
+                    <b> Cargo Consolidators and De-Consolidators</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.Chandling</div>
+                <div class="count">₦@ViewBag.Chandling</div>
                 <p>
                     <b> Chandlers</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-success">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.DryPortOperator</div>
+                <div class="count">₦@ViewBag.DryPortOperator</div>
                 <p>
                     <b>Dry Port Operators</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.FreightForwardersClearingAgents</div>
+                <div class="count">₦@ViewBag.FreightForwardersClearingAgents</div>
                 <p>
                     <b> Freight Forwarders and Clearing Agents</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-warning">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.HaulersTruckers</div>
+                <div class="count">₦@ViewBag.HaulersTruckers</div>
                 <p>
-                    <b> Haulers/Truckers</b>
+                    <b> Haulers and Truckers</b>
                 </p>
 
             </div>
@@ -65,54 +66,54 @@
 
 
     <div class="row top_tiles">
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-info">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ICD</div>
+                <div class="count">₦@ViewBag.ICD</div>
                 <p>
                     <b>ICD</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-warning">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.LogististicsServiceProvider</div>
+                <div class="count">₦@ViewBag.LogististicsServiceProvider</div>
                 <p>
                     <b>Logististics Service Providers</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.StevedoringWarehousing</div>
+                <div class="count">₦@ViewBag.StevedoringWarehousing</div>
                 <p>
-                    <b>Stevedoring/Warehousing</b>
+                    <b>Stevedoring and Warehousing</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-success">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.SeaportTerminalOperator</div>
+                <div class="count">₦@ViewBag.SeaportTerminalOperator</div>
                 <p>
                     <b> Seaport Terminal Operators</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.OffDockTerminalOperator</div>
+                <div class="count">₦@ViewBag.OffDockTerminalOperator</div>
                 <p>
                     <b>Off Dock Terminal Operators</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-warning">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippersAssociation</div>
+                <div class="count">₦@ViewBag.ShippersAssociation</div>
                 <p>
                     <b> Shippers Association</b>
                 </p>
@@ -124,36 +125,36 @@
 
 
     <div class="row top_tiles">
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-info">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CargoSurveyor</div>
+                <div class="count">₦@ViewBag.CargoSurveyor</div>
                 <p>
                     <b>Cargo Surveyor</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-warning">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.IndividualCategory</div>
+                <div class="count">₦@ViewBag.IndividualCategory</div>
                 <p>
                     <b>Individual Category (Importer & Exporter)</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.CorperateCategory</div>
+                <div class="count">₦@ViewBag.CorperateCategory</div>
                 <p>
                     <b>Corperate Category</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-success">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.OtherPortServiceProviders</div>
+                <div class="count">₦@ViewBag.OtherPortServiceProviders</div>
                 <p>
                     <b>Other Port Service Providers</b>
                 </p>
@@ -162,18 +163,18 @@
         </div>
 
 
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippingAgency</div>
+                <div class="count">₦@ViewBag.ShippingAgency</div>
                 <p>
                     <b>Shipping Agency</b>
                 </p>
 
             </div>
         </div>
-        <div class="animated flipInY col-lg-2 col-md-3 col-sm-3 col-xs-3">
+        <div class="animated flipInY col-lg-2 col-mdm-3  col-sm-3 col-xs-3">
             <div class="alert alert-mini alert-danger">
-                <div class="count" style="font-size:xx-large; font-weight:bolder; padding-left:5px">₦@ViewBag.ShippingLine</div>
+                <div class="count">₦@ViewBag.ShippingLine</div>
                 <p>
                     <b>Shipping Line</b>
                 </p>
@@ -188,14 +189,15 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="panel">
-                        <header class="panel-heading panel-border">
+              
+                        <header class="panel-heading panel-border invisible">
                             <h3 class="text-primary"> Payment Report </h3>
 
                         </header>
                         <div class="panel-body">
 
 
-                            <div class="col-md-12">
+                            <div class="col-md-12" style="overflow-x:scroll">
                                 <table class="table table-striped table-bordered" id="paymentsumary" style="font-size:small">
                                     <thead>
                                         <tr>
@@ -301,56 +303,53 @@
                             </div>
 
                             <div class="row" style="margin-top:10%">
-                                <div class="col-md-3">
+                                <div style="margin-bottom:15px">
 
-                                    <div class="input-group">
+                                    <div class="input-group" style="width:100%">
 
                                         <div class="input-group-addon" style="background-color:orange"><i class="fa fa-calendar"></i> From</div>
-                                        <div><input type="date" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" /></div>
+                                        <div><input type="date" class="min form-control" autocomplete="off" id="min" name="min" placeholder="From" style="width:92%" /></div>
                                     </div>
-                                </div><div class="col-md-3">
-                                    <div class="input-group">
+                                </div>
+                                <div style="margin-bottom:15px">
+                                    <div class="input-group" style="width:100%">
                                         <div class="input-group-addon" style="background-color:yellowgreen"><i class="fa fa-calendar"></i> To</div>
-                                        <div><input type="date" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" /></div>
-                                        <div class="input-group-addon" style="background-color:red">
+                                        <div><input type="date" class="maxdate form-control" autocomplete="off" id="maxdate" name="maxdate" placeholder="To" style="width:92%" /></div>
+                                        @*<div class="input-group-addon" style="background-color:red">
                                             <button id="searchdate" class="fa fa-search" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none"></button>
-                                        </div>
+                                        </div>*@
 
                                     </div>
                                 </div>
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <div class="input-group-addon" style="background-color:darkred">
+                                <div style="margin-bottom:15px">
+                                    <div class="input-group" style="width:100%">
+                                        <div class="input-group-addon" style="background-color:darkred;">
                                             <span class="fa fa-home"></span>
                                         </div>
-                                        <div><input id="companyemail" name="companyemail" placeholder="search by company email" class="form-control companyemail" /></div>
+                                        <div><input id="companyemail" name="companyemail" placeholder="search by company email" class="form-control companyemail" style="width:92%" /></div>
                                     </div>
                                 </div>
-                                <div class="input-group">
-                                    <input type="button" class="btn btn-danger" id="all" name="all" value="Show All Record" />
+                                
+                            </div>
+
+                             <div class="">
+                                <div class="input-group" style="width:100%">
+                                    <select id="appstatus" name="appstatus" class="form-control adjust"> </select>
+                                    @*<div class="input-group-addon" style="background-color:red">
+                                            <button id="clearbtn1" style="background-color:red;border:none; color:white">Clear</button>
+                                        </div>*@
                                 </div>
-                            </div><br /><br />
+                             </div>
+                            <br />
+                            <div class="input-group">
+                            <input type="button" class="btn btn-danger" id="all" name="all" value="Show All Record" />
+                            </div>
+
+                            <br /><br /><br /><br />
 
 
 
-
-
-                            <div class="row" style="margin-top:-100px">
-
-                                <div class="col-md-3">
-                                    <div class="input-group">
-                                        <select id="appstatus" name="appstatus" class="form-control"> </select>                                       
-                                        <div class="input-group-addon" style="background-color:red">
-                                            <button id="clearbtn1" style="margin-left:-4px; background-color:red; margin-top:-10px; border:none; color:white">Clear</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div><br /><br /><br /><br />
-
-
-
-                            <div style="margin-top:-50px" class="col-md-12">
+                            <div style="margin-top:-50px; overflow-x:scroll" class="col-md-12">
                                 <table class="table table-striped table-bordered" id="payment" style="font-size:small">
                                     <thead>
                                         <tr>
@@ -386,12 +385,12 @@
             </div>
         </div>
     </div>
-    <div class="jumbotron">
-        <div id="container" style="min-width: 310px; height: 400px; max-width: 600px; margin: 0 auto">
+    <div class="jumbotron" >
+        <div id="container" class="panel-wrapper">
             <div class="panel short-states">
                 <div class="panel-title">
                 </div>
-                <div class="panel-body img-circle" style="border-radius:100%">
+                <div class="panel-body img-circle" style="border-radius:100%;">
                     <table>
                         <tr class="cell-">
                             <td>
@@ -413,6 +412,13 @@
         </div>
     </div>
 </div>
+
+
+@*@section css {
+    <link href="~/css/certificateReport.css" rel="stylesheet" />
+}*@
+
+
 @section Scripts {
 
     <script type="text/javascript">

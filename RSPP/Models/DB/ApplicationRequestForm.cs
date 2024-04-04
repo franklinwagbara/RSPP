@@ -33,6 +33,7 @@ namespace RSPP.Models.DB
         public string CacregNum { get; set; }
         public string NameOfAssociation { get; set; }
         public string IsLegacy { get; set; }
+        public bool? IsRead { get; set; }=false;
 
         public virtual Agency Agency { get; set; }
         public virtual ICollection<MissingDocuments> MissingDocuments { get; set; }

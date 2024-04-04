@@ -1,7 +1,6 @@
-﻿@using RSPP.Helpers;
+﻿@model RSPP.Models.ViewModels.ChargeSummaryVM
 
 @{
-    GeneralClass generalClass = new GeneralClass();
     ViewData["Title"] = "Charge Summary";
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 
@@ -22,43 +21,46 @@
         <div class="col-md-8 col-md-offset-1">
             <div style="color: gray; font-size: 14px; box-sizing: border-box;">
 
-                <div style="background-color: #ece8d4; width:700px; min-height:200px;">
-                    <div style="padding: 10px 30px 30px 30px;">
-                        <button id="btn" type="button" style="float:right" onclick="printDiv()" class="btn btn-warning"><i class="fa fa-print"></i><b>Print</b></button>
+                @if (string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                {
 
-                        <h3 style="text-align: center; font-weight: 300; padding-bottom: 8px; border-bottom: 1px solid #ddd;"><b class="text-success">Awaiting Payment</b></h3>
+                    <div style="background-color: #ece8d4; width:700px; min-height:200px;">
+                        <div style="padding: 10px 30px 30px 30px;">
+                            <button id="btn" type="button" style="float:right" onclick="printDiv()" class="btn btn-warning"><i class="fa fa-print"></i><b>Print</b></button>
 
-                        <p style="text-align: right; font-size: 14px;"></p>
-                        <div id='DivIdToPrint'>
-                            <b class="text-danger">Details of the transaction is listed below:</b> <br /><br />
-                            <ul style="font-family:Cambria; font-size:large">
-                                <li><b class="text-danger">Application ID:</b><strong class="text-success"> @ViewBag.Applicationid</strong></li>
-                                <li><b class="text-danger">Remita Reference:</b><strong class="text-success"> @ViewBag.RRR</strong></li>
-                                <li><b class="text-danger">Payment Category:</b><strong class="text-success"> @ViewBag.AgencyName</strong></li>
-                                <li><b class="text-danger">Total Amount:</b><strong class="text-success"> ₦@ViewBag.Amount</strong></li>
-                                <li><b class="text-danger">Payment Status:</b><strong class="text-success"> Payment Pending</strong></li>
-                            </ul>
+                            <h3 style="text-align: center; font-weight: 300; padding-bottom: 8px; border-bottom: 1px solid #ddd;"><b class="text-success">Awaiting Payment</b></h3>
+
+                            <p style="text-align: right; font-size: 14px;"></p>
+                            <div id='DivIdToPrint'>
+                                <b class="text-danger">Details of the transaction is listed below:</b> <br /><br />
+                                <ul style="font-family:Cambria; font-size:large">
+                                    <li><b class="text-danger">Application ID:</b><strong class="text-success"> @Model.ApplicationId</strong></li>
+                                    <li><b class="text-danger">Remita Reference:</b><strong class="text-success"> @Model.RRR</strong></li>
+                                    <li><b class="text-danger">Payment Category:</b><strong class="text-success"> @Model.AgencyName</strong></li>
+                                    <li><b class="text-danger">Total Amount:</b><strong class="text-success"> ₦@Model.Amount</strong></li>
+                                    <li><b class="text-danger">Payment Status:</b><strong class="text-success"> Payment Pending</strong></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <form action="@generalClass.FinalizePaymentURLLive"  method="POST">
-                    <input name="merchantId" value="@ViewBag.MerchantId" type="hidden" />
-                    <input name="hash" value="@ViewBag.AppkeyHashed" type="hidden" />
-                    <input name="rrr" value="@ViewBag.RRR" type="hidden" />
-                    <input name="responseurl" value="@ViewBag.BaseUrl/Company/PaymentReceipt?ApplicationId=@ViewBag.Applicationid" type="hidden" /><br>
-                    <button name="submit_btn" type="submit" style="margin-left:300px" class="btn btn-success"><i class="fa fa-money"></i> <b>Pay Now</b></button>
-                </form>
-                @*<div name="bypassbtn" id="bypassbtn" onclick="ByPassPayment()" style="margin-left:300px" class="btn btn-success"><i class="fa fa-money"></i> <b>By Pass Payment</b></div>*@
+                    <form action="@Model.FinalizePaymentURL" method="POST" id="form_id">
+                        <input name="merchantId" value="@Model.MerchantId" type="hidden" />
+                        <input name="hash" value="@Model.ApiKey" type="hidden" />
+                        <input name="rrr" value="@Model.RRR" type="hidden" />
+                        <input name="responseurl" value="@Model.BaseUrl/Company/PaymentReceipt?applicationId=@Model.ApplicationId" type="hidden" /><br>
+                        <button name="submit_btn" type="submit" style="margin-left:300px" class="btn btn-success"><i class="fa fa-money"></i> <b>Pay Now</b></button>
 
+                    </form>
+                    <br />
+
+                }
+                else
+                {
+                    <h4>@Model.ErrorMessage</h4>
+                }
             </div>
         </div>
     </div>
-
-
-
-
-
-    @*}*@
 
 </div>
 
@@ -67,33 +69,50 @@
 
         $(document).ready(function () {
 
-            //$('#bypassbtn').click(function (e) {
-            //    e.preventDefault();
+            //$('#bypassbtn').click(function () {
+            //    //e.preventDefault();
             //    debugger;
+            //if ($("#formid").valid()) {
+            //debugger;
+            //    var Applicationid = '@ViewBag.Applicationid';
+            //    var txtPaymentName = '@ViewBag.AgencyName';
+            //    var txtpaymentamount = '@ViewBag.Amount';
+
+            //$.post("/Company/ByPassPayment", { applicationid: Applicationid, PaymentName: txtPaymentName, paymentamount: txtpaymentamount }, function (data) {
+
+            //        if (data.status === "success") {
+            //            window.location = "/Company/DocumentUpload?ApplicationId=" + Applicationid;
+            //        } else {
+            //            alert(data.message);
+            //        }
+
+            //    });
+            //}
+            //    //debugger;
 
             //});
 
         });
-        function ByPassPayment() {
+        //function ByPassPayment() {
 
-            //if ($("#formid").valid()) {
-            debugger;
-                var Applicationid = '@ViewBag.Applicationid';
-                var txtPaymentName = '@ViewBag.AgencyName';
-                var txtpaymentamount = '@ViewBag.Amount';
+        //    if ($("#form_id").valid()) {
+        //    debugger;
+        //        var Applicationid = '@ViewBag.Applicationid';
+        //        var txtPaymentName = '@ViewBag.AgencyName';
+        //        var txtpaymentamount = '@ViewBag.Amount';
 
-            $.post("/Company/ByPassPayment", { applicationid: Applicationid, PaymentName: txtPaymentName, paymentamount: txtpaymentamount }, function (data) {
+        //    $.post("/Company/ByPassPayment", { applicationid: Applicationid, PaymentName: txtPaymentName, paymentamount: txtpaymentamount }, function (data) {
 
-                    if (data.status === "success") {
-                        window.location = "/Company/DocumentUpload?ApplicationId=" + Applicationid;
-                    } else {
-                        alert(data.message);
-                    }
+        //            if (data.status === "success") {
+        //                window.location = "/Company/DocumentUpload?ApplicationId=" + Applicationid;
+        //            } else {
+        //                alert(data.message);
+        //            }
 
-                });
-            //}
+        //        });
+        //    }
 
-        }
+        //}
 
         function printDiv() {
 
@@ -107,7 +126,7 @@
 
             newWin.document.close();
 
-            setTimeout(function () { newWin.close(); }, 10);
+            //setTimeout(function () { newWin.close(); }, 10);
 
         }
     </script>

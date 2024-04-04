@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_ClientLayout.cshtml";
 }
 
+
 <br />
 <div class="row" style="height: 10%">
     <div class="pageTitle bg1" style="background: url('/images/bgblue11.jpg'); width: 100%; background-repeat:no-repeat; background-size:cover ">
@@ -107,7 +108,7 @@
 
 
             <div id="Agencyid1" style="display:none">
-                <div class="row form-group">
+                @*<div class="row form-group">
                     <label class="control-label col-md-2">Services Provided In Port<sup style="color:red; font-weight:bold">*</sup></label>
                     <div class="col-md-4">
                         <textarea class="form-control" id="ServicesProvidedInPort" name="ServicesProvidedInPort" cols="3" rows="3">@Model.ServicesProvidedInPort</textarea>
@@ -119,7 +120,7 @@
                         <textarea class="form-control" id="AnyOtherRelevantInfo" name="AnyOtherRelevantInfo" cols="3" rows="3">@Model.AnyOtherRelevantInfo</textarea>
 
                     </div>
-                </div>
+                </div>*@
             </div>
 
             <div id="Agencyid2" style="display:none">
@@ -387,7 +388,7 @@
 
             <br />
             <div class="col-xs-12 col-md-offset-12 text-md-center">
-                <button type="submit" class="btn btn-primary btn-default round" id="addbtn">Submit and Continue</button>
+                <button type="submit" class="btn btn-primary btn-default round" id="addbtn">Submit</button>
             </div>
 
         </div>
@@ -646,7 +647,7 @@
                             $("#AgencyName").val(data.agencyName);
                             $("#AgencyId").val(data.agencyId);
                             $("#txtagency").append('<option value="' + data.agencyName + '">' + data.agencyName + '</option>');
-                            $("#DateofEstablishment").val(dateofEstablishmentnewDate);
+                            $("#hideDoE").val(dateofEstablishmentnewDate);
                             $("#CompanyAddress").val(data.companyAddress);
                             $("#PostalAddress").val(data.postalAddress);
                             $("#PhoneNum").val(data.phoneNum);
@@ -665,9 +666,9 @@
 
                             if (data.agencyId === 1) {
 
-                                $("#ServicesProvidedInPort").val(data.servicesProvidedInPort);
-                                $("#AnyOtherRelevantInfo").val(data.anyOtherRelevantInfo);
-                                $("#ServicesProvidedInPort").attr("readonly", true);
+                                //$("#ServicesProvidedInPort").val(data.servicesProvidedInPort);
+                                //$("#AnyOtherRelevantInfo").val(data.anyOtherRelevantInfo);
+                                //$("#ServicesProvidedInPort").attr("readonly", true);
                                 $("#Agencyid1").show();
                                 $("#Agencyid2").hide();
                                 $("#Agencyid3").hide();
@@ -872,7 +873,7 @@
                     $("#Agencyid5").hide();
                         $("#Agencyid6").hide();
                         $(".nepcregnumhide").hide();
-                    $("#ServicesProvidedInPort").attr("required", true);
+                    $("#ServicesProvidedInPort").attr("required", false);
 
                     $("#CustomLicenseNum").attr("required", false);
                     $("#CustomLicenseExpiryDate").attr("required", false);
@@ -1005,55 +1006,6 @@
             });
 
 
-            //$(".Logistics").on("change", function () {
-            //    debugger;
-            //    var logistic = $(".Logistics:checked").val();
-
-
-            //    var logisticlist = [];
-
-
-
-
-            //    if (logistic === "LogisticsOthers") {
-            //        $("#LogisticsLineOfBusiness").show();
-            //        $("#LogisticsLineOfBusiness").attr("required", true);
-            //    } else {
-            //        $("#LogisticsLineOfBusiness").hide();
-            //        $.each($(".Logistics:checked"), function () {
-            //            logisticlist.push($(this).val());
-            //        });
-            //        $("#LogisticsLineOfBusiness").val(logisticlist.join(", "));
-            //    }
-            //    var FeeTypeName = $(".Logistics:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
-
-
-
-            //$(".LineOfBusinessTerminals").on("change", function () {
-
-            //    debugger;
-            //    var LineOfBusinessTerminalslist = [];
-            //    $.each($(".LineOfBusinessTerminals:checked"), function () {
-            //        LineOfBusinessTerminalslist.push($(this).val());
-            //    });
-            //    $("#portoffdockLineOfBusiness").val(LineOfBusinessTerminalslist.join(", "));
-
-            //    var FeeTypeName = $(".LineOfBusinessTerminals:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-
-            //});
-
-
             $(".StatusTerminals").on("change", function () {
                 debugger;
                 var StatusTerminal = $(".StatusTerminals:checked").val();
@@ -1090,41 +1042,6 @@
                 }
 
             });
-
-
-
-            //$(".LineofBusinessUsers").on("change", function () {
-            //    var portoffdocklist = [];
-            //    $.each($(".LineofBusinessUsers:checked"), function () {
-            //        portoffdocklist.push($(this).val());
-            //    });
-            //    $("#userportLineOfBusiness").val(portoffdocklist.join(", "));
-
-            //    var FeeTypeName = $(".LineofBusinessUsers:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
-
-
-
-
-            //$(".LineOfBusinessShipping").on("change", function () {
-            //    var portoffdocklist = [];
-            //    $.each($(".LineOfBusinessShipping:checked"), function () {
-            //        portoffdocklist.push($(this).val());
-            //    });
-            //    $("#ShippingagencyLineOfBusiness").val(portoffdocklist.join(", "));
-
-            //    var FeeTypeName = $(".LineOfBusinessShipping:checked").val();
-
-            //    $.getJSON("/Company/GetFees", { "feename": FeeTypeName }, function (data) {
-            //        $("#fees").val(data.feeamount);
-            //        $("#lineofbusinessid").val(data.lineofbusinessid);
-            //    });
-            //});
 
 
             $(".ShippingCargoType").on("change", function () {
@@ -1203,9 +1120,8 @@
                             else {
                                 alert("Reference Number " + data.applicationId + " Generated For this Application");
                                 $(".loadingImage").hide();
-                                window.location.href = getContextPath() + "/GenerateRRR?ApplicationId=" + data.applicationId + "&Amount=" + fee;
+                                window.location.href = getContextPath() + "/GenerateRRR?applicationId=" + data.applicationId + "&amount=" + fee;
 
-                                //window.location.href = getContextPath() + "/ChargeSummary?ApplicationId=" + data.applicationId;
                             }
 
                         }).fail(function (data) {

@@ -16,7 +16,7 @@
             <li role="presentation" id="liDocument" class=""><a href="#Document" aria-controls="Document" role="tab" data-toggle="tab">Company Document</a></li>
         </ul>
 
-        <div class="tab-content">
+        <div class="tab-content" >
             <div role="tabpanel" class="tab-pane" id="Profile">
 
                 <form action="@Url.Action("UpdateCompanyRecord")" enctype="multipart/form-data" method="post" id="profileform">
@@ -27,28 +27,28 @@
                     <br /><br />
 
                     <div class="row" style="padding-left:2%">
-                        <div class="pad company">
+                        <div class="pad company" style="width:100%;">
 
-                            <div class="form-group">
+                            <div class="form-group" style="width:100%;">
 
 
 
-                                <div class="row form-group">
+                                <div class="row form-group mx-sm-0 mx-auto" style="width:100%;">
                                     <label class="control-label col-md-5">Company Email</label>
                                     <div class="col-md-12">
                                         @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @readonly = "readonly" })
                                     </div>
                                 </div>
 
-                                <div class="row form-group">
+                                <div class="row form-group mx-sm-0 mx-auto" style="width:100%;">
                                     <label class="control-label col-md-5">Company Name</label>
                                     <div class="col-md-12">
-                                        @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "readonly" })
                                     </div>
                                 </div>
 
 
-                                <div class="row form-group">
+                                <div class="row form-group mx-sm-0 mx-auto" style="width:100%;">
                                     <label class="control-label col-md-9">Contact Phone Number</label>
                                     <div class="col-md-12">
                                         @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
@@ -58,7 +58,7 @@
 
                                 <div class="form-group">
                                     <div class="txtcenter">
-                                        <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
+                                        <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success mx-sm-0 mx-auto" tabindex="10" style="width: 200px; display:block" />
                                     </div>
                                 </div>
 
@@ -79,14 +79,14 @@
                     @Html.HiddenFor(model => model.CompanyAddress)
                     <input type="hidden" name="actionType" id="actionType" value="ADDRESS" />
                     <br />
-                    <div class="row" style="padding-left:2%">
+                    <div class="row" style="padding-left:2%;">
 
                         <div class="col-md-12 company">
                             <div class="row form-group">
                                 @*<label class="control-label" style="padding-left:1.5%">Company Address</label>&nbsp;<span class="req">*</span>*@
                                 <div class="col-md-12">
 
-                                    @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @style = "min-width:900px", @required = "required" })
+                                    @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @style = "max-width:100%;", @required = "required" })
 
                                 </div>
 
@@ -306,7 +306,8 @@
                                     window.location.href = "/Company/CompanyProfile";
                                 }
                                 else {
-                                    alert(data.Status);
+                                    //console.log('inside else');
+                                    //alert(data.Status); throwing error here
                                 }
                             })
                             .fail(function (data) {
@@ -323,12 +324,12 @@
                 e.preventDefault();
                 if ($("#addressform").valid()) {
 
-                    var r = confirm("Are you Sure the Profile Informations are Correct ?");
+                    var r = confirm("Are you Sure the Profile Informations are Correct?");
                     if (r == true) {
                         $.post($("#addressform").attr('action'), $("#addressform").serialize())
                             .done(function (data) {
 
-                                alert(data.Status);
+                                //alert(data.Status);
                                 window.location.href = "/Company/CompanyProfile";
                             })
                             .fail(function (data) {

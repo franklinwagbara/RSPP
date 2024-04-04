@@ -37,13 +37,28 @@ namespace RSPP.Controllers
             }
             else
             {
-               
-                    var details = (from a in _context.ApplicationRequestForm
-                                   join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
-                                   join f in _context.PaymentLog on a.ApplicationId equals f.ApplicationId
-                                   where a.ApplicationId == id
-                                   select new { f.TxnAmount, a.CompanyEmail, a.ApplicationId, a.LicenseReference, a.AgencyName, a.PostalAddress, a.LicenseExpiryDate, a.LicenseIssuedDate, u.CompanyName, a.CompanyAddress }).FirstOrDefault();
-                    
+                var details = (from a in _context.ApplicationRequestForm
+                               join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
+                               join f in _context.PaymentLog on a.ApplicationId equals f.ApplicationId into userApplicationPayments
+                               from subCertificates in userApplicationPayments.DefaultIfEmpty()
+                               where a.ApplicationId == id
+                               select new
+                               {
+                                   TxnAmount = subCertificates == null ? 0 : (subCertificates.TxnAmount ?? 0),
+                                   a.CompanyEmail,
+                                   a.ApplicationId,
+                                   a.LicenseReference,
+                                   a.AgencyName,
+                                   a.PostalAddress,
+                                   a.LicenseExpiryDate,
+                                   a.LicenseIssuedDate,
+                                   u.CompanyName,
+                                   a.CompanyAddress
+                               }).FirstOrDefault();
+
+
+                if (details != null)
+                {
                     permit.CompanyName = details.CompanyName;
                     permit.LocationAddress = details.PostalAddress;
                     permit.LicenseNumber = details.LicenseReference;
@@ -53,6 +68,8 @@ namespace RSPP.Controllers
                     permit.DateIssued = Convert.ToDateTime(details.LicenseIssuedDate);
                     permit.ApprefNo = details.ApplicationId;
                     permit.Amountpaid = Convert.ToDecimal(details.TxnAmount);
+                    permit.AgencyName = details.AgencyName;
+                }
 
             }
             return View(permit);

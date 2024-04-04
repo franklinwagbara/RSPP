@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Rotativa.AspNetCore;
 using RSPP.Configurations;
 using RSPP.Helper;
 using RSPP.Helpers;
 using RSPP.Helpers.SerilogService.GeneralLogs;
 using RSPP.Models;
 using RSPP.Models.DB;
+using RSPP.Models.DTOs;
+using RSPP.Models.Options;
+using RSPP.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,10 +25,8 @@ using System.Threading.Tasks;
 
 namespace RSPP.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : AppUserController
     {
-
-
 
         public RSPPdbContext _context;
         IHttpContextAccessor _httpContextAccessor;
@@ -35,24 +35,39 @@ namespace RSPP.Controllers
         HelperController _helpersController;
         WorkFlowHelper _workflowHelper;
         List<UserMaster> staffJsonList = new List<UserMaster>();
-        private readonly string directory = "AdminLogs";
-        private readonly GeneralLogger _generalLogger;
+        UtilityHelper _utilityHelper;
+
+
+        private ILog log = log4net.LogManager.GetLogger(typeof(AdminController));
+
+        private readonly IWebHostEnvironment _hostingEnv;
+        private readonly IEmailer _emailer;
+        //private readonly IPaymentService _paymentService;
+
+        private const string SUPERVISOR = "SUPERVISOR";
+        private const string REGISTRAR = "REGISTRAR";
+        private const string OFFICER = "OFFICER";
+        private const string COMPANY = "COMPANY";
+
 
         [Obsolete]
-        private readonly IHostingEnvironment _hostingEnv;
-
-
-        [Obsolete]
-        public AdminController(RSPPdbContext context, IConfiguration configuration, GeneralLogger generalLogger, IHttpContextAccessor httpContextAccessor, IHostingEnvironment hostingEnv)
+        public AdminController(
+            RSPPdbContext context, 
+            IConfiguration configuration, 
+            IHttpContextAccessor httpContextAccessor, 
+            IWebHostEnvironment hostingEnv, 
+            IEmailer emailer,
+            IPaymentService paymentService,
+            IOptions<RemitaOptions> remitaOptions) : base(hostingEnv,paymentService)
         {
             _context = context;
             _configuration = configuration;
             _httpContextAccessor = httpContextAccessor;
             _hostingEnv = hostingEnv;
-            _generalLogger = generalLogger;
+            _emailer = emailer;
             _helpersController = new HelperController(_context, _configuration, _httpContextAccessor);
             _workflowHelper = new WorkFlowHelper(_context);
-
+            _utilityHelper = new UtilityHelper(_context);
         }
 
 
@@ -64,11 +79,10 @@ namespace RSPP.Controllers
             String errorMessage = null;
 
             ViewBag.LoggedInRole = _helpersController.getSessionRoleName();
+            ViewBag.UserGuides = this.GetUserGuides(USER_TYPE_ADMIN, USER_GUIDES_ADMIN_PATH);
 
             try
             {
-
-
                 foreach (ApplicationRequestForm appRequest in _context.ApplicationRequestForm.ToList())
                 {
                     switch (_context.WorkFlowState.Where(w => w.StateId == appRequest.CurrentStageId).FirstOrDefault().StateType)
@@ -315,14 +329,6 @@ namespace RSPP.Controllers
             return Json(new { Status = status, Message = message });
         }
 
-
-
-
-
-
-
-
-
         [HttpPost]
         public ActionResult DeactivateUser()
         {
@@ -351,9 +357,6 @@ namespace RSPP.Controllers
             }
             return Json(new { Status = status, Message = message });
         }
-
-
-
 
         public JsonResult GetFees(int MyCategoryid)
         {
@@ -412,16 +415,13 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
         public ActionResult AllApplications()
         {
             List<MyApplicationRequestForm> apps = null;
 
             apps = (from a in _context.ApplicationRequestForm
                     join u in _context.UserMaster on a.CompanyEmail equals u.UserEmail
-                    join p in _context.PaymentLog on a.ApplicationId equals p.ApplicationId
+                    //join p in _context.PaymentLog on a.ApplicationId equals p.ApplicationId
                     join w in _context.WorkFlowState on a.CurrentStageId equals w.StateId
                     where a.IsLegacy == "NO"
                     orderby a.AddedDate descending
@@ -429,7 +429,7 @@ namespace RSPP.Controllers
                     {
                         ApplicationId = a.ApplicationId,
                         CompanyEmail = a.CompanyEmail,
-                        AmountPaid = p.TxnAmount,
+                        AmountPaid = 0,
                         CompanyName = u.CompanyName,
                         AgencyName = a.AgencyName,
                         Status = a.Status,
@@ -490,9 +490,6 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-
-
         public ActionResult AllPayment()
         {
             List<PaymentModel> payment = new List<PaymentModel>();
@@ -531,32 +528,30 @@ namespace RSPP.Controllers
             return View();
         }
 
-
-
-
-
         public ActionResult AllStaffOutofOffice()
         {
             ViewBag.AllStaffOutofOfficeList = _helpersController.GetAllOutofOffice();
             return View();
         }
 
-        
-
         [HttpGet]
         public ActionResult ApplicationDetails(string applicationId)
         {
             MyApplicationRequestForm br = null;
-            br = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail where p.ApplicationId == applicationId select new MyApplicationRequestForm {
-                ApplicationId = p.ApplicationId,
-                AgencyId = p.AgencyId,
-                AgencyName = p.AgencyName,
-                CompanyAddress = p.CompanyAddress,
-                CompanyEmail = p.CompanyEmail,
-                CompanyName = u.CompanyName,
-                CompanyWebsite = p.CompanyWebsite,
-                DateofEstablishment = p.DateofEstablishment
-            }).FirstOrDefault();
+            br = (from p in _context.ApplicationRequestForm
+                  join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+                  where p.ApplicationId == applicationId
+                  select new MyApplicationRequestForm
+                  {
+                      ApplicationId = p.ApplicationId,
+                      AgencyId = p.AgencyId,
+                      AgencyName = p.AgencyName,
+                      CompanyAddress = p.CompanyAddress,
+                      CompanyEmail = p.CompanyEmail,
+                      CompanyName = u.CompanyName,
+                      CompanyWebsite = p.CompanyWebsite,
+                      DateofEstablishment = p.DateofEstablishment
+                  }).FirstOrDefault();
             if (br != null)
             {
                 ViewBag.MyAgencyId = br.AgencyId;
@@ -595,9 +590,6 @@ namespace RSPP.Controllers
 
             return View(br);
         }
-
-
-
 
         private object FilterApplications()
         {
@@ -728,7 +720,80 @@ namespace RSPP.Controllers
 
         }
 
+        //public ActionResult ApplicationReport()
+        //{
+        //    int totalapplication = (from a in _context.ApplicationRequestForm select a).ToList().Count();
+        //    TempData["totalapplication"] = totalapplication;
+        //    return View();
+        //}
 
+
+
+
+
+        //[AllowAnonymous]
+        //[HttpPost]
+        //public ActionResult GetApplicationReport()
+        //{
+        //    var draw = Request.Form["draw"].FirstOrDefault();
+        //    var start = Request.Form["start"].FirstOrDefault();
+        //    var length = Request.Form["length"].FirstOrDefault();
+
+        //    var sortColumn = Request.Form["columns[" + Request.Form["order[0][column]"].FirstOrDefault() + "][name]"].FirstOrDefault();
+        //    var sortColumnDir = Request.Form["order[0][dir]"].FirstOrDefault();
+
+        //    var searchTxt = Request.Form["search[value]"][0];
+
+        //    int pageSize = length != null ? Convert.ToInt32(length) : 0;
+        //    int skip = start != null ? Convert.ToInt32(start) : 0;
+        //    int totalRecords = 0;
+        //    var today = DateTime.Now.Date;
+        //    var staff = (from p in _context.ApplicationRequestForm
+
+        //                 select new
+        //                 {
+        //                     p.ApplicationId,
+        //                     p.Status,
+        //                     p.CompanyEmail,
+        //                     p.AgencyName,
+        //                     LicenseIssuedDate = p.LicenseIssuedDate.ToString(),
+        //                     LicenseExpiryDate = p.LicenseExpiryDate.ToString(),
+        //                     expiryDATE = p.LicenseExpiryDate,
+        //                     issuedDATE = p.LicenseIssuedDate
+        //                 });
+
+        //    if (!(string.IsNullOrEmpty(sortColumn) && string.IsNullOrEmpty(sortColumnDir)))
+        //    {
+        //        staff = staff.OrderBy(s => s.ApplicationId + " " + sortColumnDir);
+        //    }
+        //    if (!string.IsNullOrEmpty(searchTxt))
+        //    {
+        //        if (searchTxt == "All Company")
+        //        {
+        //            staff = staff.Where(s => s.ApplicationId == s.ApplicationId);
+        //        }
+        //        else
+        //        {
+        //            staff = staff.Where(a => a.ApplicationId.Contains(searchTxt) || a.CompanyEmail.Contains(searchTxt)
+        //           || a.Status.Contains(searchTxt) || a.AgencyName.Contains(searchTxt)
+        //           || a.LicenseIssuedDate.Contains(searchTxt) || a.LicenseExpiryDate.Contains(searchTxt));
+        //        }
+        //    }
+        //    string firstdate = Request.Form["mymin"];
+        //    string lastdate = Request.Form["mymax"];
+        //    if ((!string.IsNullOrEmpty(firstdate) && (!string.IsNullOrEmpty(lastdate))))
+        //    {
+        //        var mindate = Convert.ToDateTime(firstdate);
+        //        var maxdate = Convert.ToDateTime(lastdate);
+        //        staff = staff.Where(a => a.ApplicationId == a.ApplicationId && a.issuedDATE >= mindate && a.issuedDATE <= maxdate);
+        //    }
+
+        //    totalRecords = staff.Count();
+        //    var data = staff.Skip(skip).Take(pageSize).ToList();
+
+        //    return Json(new { draw = draw, recordsFiltered = totalRecords, recordsTotal = totalRecords, data = data });
+
+        //}
 
         [HttpGet]
         public ActionResult GetApplicationChart(ApplicationRatio Appobj)
@@ -740,8 +805,6 @@ namespace RSPP.Controllers
             Appobj.Legacy = (from a in _context.ApplicationRequestForm where a.IsLegacy == "YES" select a).ToList().Count();
             return Json(Appobj);
         }
-
-
 
         [HttpGet]
         public ActionResult ChangePassword()
@@ -758,12 +821,10 @@ namespace RSPP.Controllers
             try
             {
                 AppResponse appResponse = _helpersController.ChangePassword(_helpersController.getSessionEmail(), model.OldPassword, model.NewPassword);
-                _generalLogger.LogRequest($"{"Response from Elps =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
-
+                log.Info("Response from shippers council =>" + appResponse.message);
                 if (appResponse.message.Trim() != "SUCCESS")
                 {
-                    _generalLogger.LogRequest($"{"Response from Elps, An Error Message occured during Service Call to Elps Server =>" + appResponse.message}{"-"}{DateTime.Now}", false, directory);
-                    responseMessage = "An Error Message occured during Service Call to Elps Server, Please try again Later";
+                    responseMessage = "An Error occurred, Please try again Later";
                 }
                 else
                 {
@@ -804,9 +865,6 @@ namespace RSPP.Controllers
             return View(_context.UserMaster.Where(u => u.UserType == "COMPANY").ToList());
         }
 
-
-
-
         [HttpGet]
         public ActionResult CompanyDocuments(string compId)
         {
@@ -833,11 +891,6 @@ namespace RSPP.Controllers
             return View(companypermit);
         }
 
-
-
-
-
-
         [HttpGet]
         public ActionResult CompanyProfile(string CompanyEmail)
         {
@@ -845,8 +898,118 @@ namespace RSPP.Controllers
             var companydetails = (from a in _context.UserMaster where a.UserEmail == CompanyEmail select a).FirstOrDefault();
 
             ViewBag.AllCompanyDocument = _helpersController.CompanyDocument(CompanyEmail);
+            var companyProfileForUpdate = new CompanyProfileModel
+            {
+                UserEmail = CompanyEmail,
+                EmailForUpdate = CompanyEmail,
+                CompanyName = companydetails.CompanyName,
+                PhoneNum = companydetails.PhoneNum,
+                CompanyAddress = companydetails.CompanyAddress,
+            };
 
-            return View(companydetails);
+            return View(companyProfileForUpdate);
+        }
+
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateCompanyRecord(CompanyProfileModel model)
+        {
+            string status = "failed";
+            string message = "unable to update company details";
+            string emailResponseMessage = string.Empty;
+            string actionType = Request.Form["actionType"];
+
+            var companydetails = (from u in _context.UserMaster where u.UserEmail == model.UserEmail select u).FirstOrDefault();
+            if (companydetails is null)
+            {
+                return Json(new
+                {
+                    Status = status,
+                    Message = "User Not found"
+                });
+            }
+
+            if (actionType.Contains("UPDATE_PROFILE"))
+            {
+                companydetails.CompanyName = model.CompanyName;
+                companydetails.PhoneNum = model.PhoneNum;
+
+                if (companydetails.UserEmail != model.EmailForUpdate)
+                {
+                    var existingUser = (from u in _context.UserMaster where u.UserEmail == model.EmailForUpdate select u).FirstOrDefault();
+                    if (existingUser != null)
+                    {
+                        return Json(new
+                        {
+                            Status = status,
+                            Message = "Unable to update company details because the provided email already exists"
+                        });
+                    }
+
+                    var applicationsForThisUser = _context.ApplicationRequestForm
+                        .Where(app => app.CompanyEmail == companydetails.UserEmail).ToList();
+                    foreach (var app in applicationsForThisUser)
+                    {
+                        app.CompanyEmail = model.EmailForUpdate;
+                    }
+                    companydetails.UserEmail = model.EmailForUpdate;
+
+                    var emailMessage = GenerateEmailBodyForCompanyEmailUpdate(companydetails.UserEmail);
+
+                    var emailResponse = _emailer.SendEmail(
+                        companydetails.CompanyName,
+                        companydetails.UserEmail,
+                        "Password Reset Confirmation",
+                        emailMessage);
+                    if (!emailResponse.Success)
+                    {
+                        return Json(new
+                        {
+                            Status = status,
+                            emailResponse.ResultMessage
+                        });
+                    }
+                    emailResponseMessage = "A reset link has been sent to <strong>" + companydetails.UserEmail + "</strong>";
+                }
+            }
+            else if (actionType.Contains("ADDRESS"))
+            {
+                companydetails.CompanyAddress = model.CompanyAddress;
+            }
+
+            //_context.UserMaster.Update(companydetails);
+
+
+            if (_context.SaveChanges() > 0)
+            {
+
+                status = "success";
+                message = "Company details updated. " + emailResponseMessage;
+            }
+            else
+            {
+                message = "No updates were made.";
+            };
+
+            return Json(new
+            {
+                Status = status,
+                Message = message
+            });
+        }
+
+        private string GenerateEmailBodyForCompanyEmailUpdate(string userEmail)
+        {
+            Random rnd = new Random();
+            int value = rnd.Next(100000, 999999);
+            string password = "nsc-" + value;
+            string content = "Your New Password is " + password;
+            password = generalClass.Encrypt(password);
+
+            string subject = "Reset Password Activation Link";
+
+            var msgBody = generalClass.ForgotPasswordTemplate(userEmail, subject, content, password);
+
+            return msgBody;
         }
 
 
@@ -870,9 +1033,6 @@ namespace RSPP.Controllers
             return View();
 
         }
-
-
-
 
         [HttpPost]
         public ActionResult AddExtraPayment()
@@ -935,15 +1095,11 @@ namespace RSPP.Controllers
         }
 
 
-
         public ActionResult GetRelievedStaffOutofOffice()
         {
             ViewBag.ReliverStaffOutofOfficeList = _helpersController.GetReliverStaffOutofOffice(_helpersController.getSessionEmail());
             return View();
         }
-
-
-
 
         [HttpPost]
         public ActionResult GetStaffStartOutofOffice()
@@ -969,8 +1125,6 @@ namespace RSPP.Controllers
             }
             return Json(status);
         }
-
-
 
         [HttpPost]
         public ActionResult GetStaffEndOutofOffice()
@@ -998,9 +1152,6 @@ namespace RSPP.Controllers
             return Json(status);
         }
 
-
-
-
         [HttpPost]
         public JsonResult EndLeave(OutofOffice office)
         {
@@ -1027,15 +1178,6 @@ namespace RSPP.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
         public ActionResult ALLPermits()
         {
             return View();
@@ -1059,7 +1201,9 @@ namespace RSPP.Controllers
             int totalRecords = 0;
             var today = DateTime.Now.Date;
 
-            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail orderby p.LicenseReference descending
+            var staff = (from p in _context.ApplicationRequestForm
+                         join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+                         orderby p.LicenseReference descending
                          where p.LicenseReference != null && p.IsLegacy == "NO"
 
                          select new
@@ -1110,14 +1254,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-
-
-
         [HttpPost]
         public ActionResult ApplicationAcceptDecline(string applicationId, string myaction, string mycomment)//, string DocId
         {
@@ -1149,9 +1285,8 @@ namespace RSPP.Controllers
                 responseWrapper = _workflowHelper.processAction(appRequest.ApplicationId, myaction, email, (mycomment == "=> " || mycomment == "") ? "Application was proccessed by " + email : mycomment);
                 if (!responseWrapper.status)
                 {
-                    response = responseWrapper.value;
-                    _generalLogger.LogRequest($"{"ApplicationAcceptDecline (processAction response) --"} {response} {"-"}{DateTime.Now}", false, directory);
-
+                    log.Error(responseWrapper.value);
+                    response = "You are not authorized to process this application!";
                     return Json(new
                     {
                         status = "failure",
@@ -1172,12 +1307,6 @@ namespace RSPP.Controllers
 
 
 
-
-
-
-
-
-
         [HttpGet]
 
         public ActionResult WorkFlow()
@@ -1192,8 +1321,6 @@ namespace RSPP.Controllers
             string result = _helpersController.UpdateWorkFlowRecord(WorkFlowId, Action, ActionRole, CurrentStageID, NextStateID, TargetRole);
             return Json(result);
         }
-
-
 
         [HttpPost]
         public JsonResult AddWorkFlowRecord(string Action, string ActionRole, short CurrentStageID, short NextStateID, string TargetRole)
@@ -1281,11 +1408,11 @@ namespace RSPP.Controllers
             return Json(result);
         }
 
-        [HttpGet]
-        public ActionResult GiveValueList()
-        {
-            return View();
-        }
+        //[HttpGet]
+        //public ActionResult GiveValueList()
+        //{
+        //    return View();
+        //}
 
 
         [HttpPost]
@@ -1343,73 +1470,64 @@ namespace RSPP.Controllers
 
         }
 
+        //[HttpPost]
+        //public ActionResult GiveValue(string Appid)
+        //{
+        //    decimal processFeeAmt = 0, statutoryFeeAmt = 0;
+        //    string errorMessage = "";
+        //    string status = "";
+        //    var appRequest = (from a in _context.ApplicationRequestForm where a.ApplicationId == Appid select a).FirstOrDefault();
+
+        //    /// decimal Arrears = commonHelper.CalculateArrears(Appid, userMaster.UserId, dbCtxt);
+        //    try
+        //    {
+        //        //errorMessage = commonHelper.GetApplicationFees(appRequest, out processFeeAmt, out statutoryFeeAmt);
+        //        log.Info("Response Message =>" + errorMessage);
 
 
+        //        var paylog = (from l in _context.PaymentLog where l.ApplicationId == Appid select l).FirstOrDefault();
+
+        //        if (paylog == null)
+        //        {
+        //            PaymentLog paymentLog = new PaymentLog();
+        //            paymentLog.ApplicationId = appRequest.ApplicationId;
+        //            paymentLog.TransactionDate = DateTime.UtcNow;
+        //            paymentLog.TransactionId = "Value Given";
+        //            paymentLog.ApplicantId = appRequest.CompanyEmail;
+        //            paymentLog.TxnMessage = "Given";
+        //            paymentLog.Rrreference = "Value Given";
+        //            paymentLog.AppReceiptId = "Value Given";
+        //            paymentLog.TxnAmount = processFeeAmt + statutoryFeeAmt;
+        //            paymentLog.Arrears = 0;
+        //            paymentLog.Account = generalClass.AccountNumberLive;
+        //            paymentLog.BankCode = generalClass.BankCodeLive;
+        //            paymentLog.RetryCount = 0;
+        //            paymentLog.ActionBy = _helpersController.getSessionEmail();
+        //            paymentLog.Status = "AUTH";
+        //            log.Info("About to Add Payment Log");
+        //            _context.PaymentLog.Add(paymentLog);
+        //            _context.SaveChanges();
+        //            log.Info("Added Payment Log to Table");
+        //            status = "success";
+        //            log.Info("Saved it Successfully");
+        //        }
+        //        else
+        //        {
+        //            paylog.Status = "AUTH";
+        //            _context.SaveChanges();
+        //            status = "success";
+        //        }
+
+        //        if (appRequest != null)
+        //        {
+        //            ResponseWrapper responseWrapper = _workflowHelper.processAction(Appid, "GenerateRRR", appRequest.CompanyEmail, "Application has moved to document upload after value given");
+        //        }
 
 
-
-
-
-
-        [HttpPost]
-        public ActionResult GiveValue(string Appid)
-        {
-            decimal processFeeAmt = 0, statutoryFeeAmt = 0;
-            string errorMessage = "";
-            string status = "";
-            var appRequest = (from a in _context.ApplicationRequestForm where a.ApplicationId == Appid select a).FirstOrDefault();
-
-            try
-            {
-
-                var paylog = (from l in _context.PaymentLog where l.ApplicationId == Appid select l).FirstOrDefault();
-
-                if (paylog == null)
-                {
-                    PaymentLog paymentLog = new PaymentLog();
-                    paymentLog.ApplicationId = appRequest.ApplicationId;
-                    paymentLog.TransactionDate = DateTime.UtcNow;
-                    paymentLog.TransactionId = "Value Given";
-                    paymentLog.ApplicantId = appRequest.CompanyEmail;
-                    paymentLog.TxnMessage = "Given";
-                    paymentLog.Rrreference = "Value Given";
-                    paymentLog.AppReceiptId = "Value Given";
-                    paymentLog.TxnAmount = processFeeAmt + statutoryFeeAmt;
-                    paymentLog.Arrears = 0;
-                    paymentLog.Account = generalClass.AccountNumberLive;
-                    paymentLog.BankCode = generalClass.BankCodeLive;
-                    paymentLog.RetryCount = 0;
-                    paymentLog.ActionBy = _helpersController.getSessionEmail();
-                    paymentLog.Status = "AUTH";
-                    _generalLogger.LogRequest($"{"GiveValue -- About to Add Payment Log"} {"-"}{DateTime.Now}", false, directory);
-                    _context.PaymentLog.Add(paymentLog);
-                    _context.SaveChanges();
-                    _generalLogger.LogRequest($"{"GiveValue -- Added Payment Log to Table"} {"-"}{DateTime.Now}", false, directory);
-                    status = "success";
-                }
-                else
-                {
-                    paylog.Status = "AUTH";
-                    _context.SaveChanges();
-                    status = "success";
-                }
-
-                if (appRequest != null)
-                {
-                    ResponseWrapper responseWrapper = _workflowHelper.processAction(Appid, "GenerateRRR", appRequest.CompanyEmail, "Application has moved to document upload after value given");
-                }
-
-
-            }
-            catch (Exception ex) {
-                _generalLogger.LogRequest($"{"GiveValue -- An exception occurred why trying to give value"} {ex} {"-"}{DateTime.Now}", false, directory);
-
-                ViewBag.message = ex.Message; 
-            }
-            return Json(new { Status = status });
-        }
-
-
+        //    }
+        //    catch (Exception ex) { ViewBag.message = ex.Message; }
+        //    return Json(new { Status = status });
+        //}
 
 
         [HttpGet]
@@ -1430,9 +1548,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
         public ActionResult CertificateReport()
         {
 
@@ -1446,10 +1561,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
-
 
         [AllowAnonymous]
         [HttpPost]
@@ -1468,7 +1579,8 @@ namespace RSPP.Controllers
             int skip = start != null ? Convert.ToInt32(start) : 0;
             int totalRecords = 0;
             var today = DateTime.Now.Date;
-            var staff = (from p in _context.ApplicationRequestForm join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
+            var staff = (from p in _context.ApplicationRequestForm
+                         join u in _context.UserMaster on p.CompanyEmail equals u.UserEmail
                          where p.LicenseReference != null && p.LicenseReference != ""
 
                          select new
@@ -1519,20 +1631,21 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
+        /// <summary>
+        /// Fetches applications on a user's desk
+        /// </summary>
+        /// <returns>A view with the users' tasks</returns>
         [HttpGet]
         public ActionResult MyDesk()
         {
             String errorMessage = null;
-            List<ApplicationRequestForm> appRequestList = new List<ApplicationRequestForm>();
+            var applicationsOnMyDesk = new List<MyDeskModel>();
+            //List<ApplicationRequestForm> applicationsOnMyDesk = new List<ApplicationRequestForm>();
             try
             {
-                appRequestList = _helpersController.GetApprovalRequest(out errorMessage);
-                _generalLogger.LogRequest($"{"MyDesk -- Application Returned Count =>" + appRequestList.Count} {"-"}{DateTime.Now}", false, directory);
+                //applicationsOnMyDesk = _helpersController.GetApprovalRequest(out errorMessage);
+                applicationsOnMyDesk = _helpersController.GetMyDeskApplications(out errorMessage);
+                log.Info("Application Returned Count =>" + applicationsOnMyDesk.Count);
                 ViewBag.ErrorMessage = errorMessage;
             }
             catch (Exception ex)
@@ -1541,14 +1654,8 @@ namespace RSPP.Controllers
                 ViewBag.ErrorMessage = "Error Occured when calling MyDesk, Please try again Later";
             }
 
-            return View(appRequestList);
+            return View(applicationsOnMyDesk);
         }
-
-
-
-
-
-
 
 
         public ActionResult PrintedLicense()
@@ -1560,9 +1667,6 @@ namespace RSPP.Controllers
         {
             return View();
         }
-
-
-
 
 
         [HttpPost]
@@ -1631,9 +1735,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
         [HttpPost]
         public ActionResult GetNonPrintedLicense()
         {
@@ -1698,11 +1799,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
         public ActionResult OutOfOffice()
         {
             ViewBag.UserID = _helpersController.getSessionEmail();
@@ -1710,9 +1806,6 @@ namespace RSPP.Controllers
             staffJsonList = _context.UserMaster.Where(s => s.UserType != "COMPANY").ToList();
             return View();
         }
-
-
-
 
         [HttpPost]
         public JsonResult AddOutofOffice()//OutofOffice usr
@@ -1749,11 +1842,6 @@ namespace RSPP.Controllers
             return Json(new { Status = status, Message = message });
         }
 
-
-
-
-
-
         [HttpPost]
         public JsonResult DeleteOutofOffice()//OutofOffice office
         {
@@ -1780,11 +1868,6 @@ namespace RSPP.Controllers
             }
             return Json(new { Status = status, Message = message });
         }
-
-
-
-
-
 
         [HttpPost]
         public JsonResult EditOutofOffice()//OutofOffice usr
@@ -1815,12 +1898,6 @@ namespace RSPP.Controllers
 
             return Json(new { Status = status, Message = message });
         }
-
-
-
-
-
-
 
         [AllowAnonymous]
         [HttpPost]
@@ -1868,8 +1945,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
         [HttpGet]
         public ActionResult UserIdAutosearch(string term = "")
         {
@@ -1883,9 +1958,6 @@ namespace RSPP.Controllers
             return Json(staffJsonList1);
 
         }
-
-
-
 
         public ActionResult PaymentList()
         {
@@ -1950,10 +2022,10 @@ namespace RSPP.Controllers
 
             var generatedapplicationid = generalClass.GenerateApplicationNo();
             var status = _helpersController.ApplicationForm(model, MyTerminals, "YES", generatedapplicationid);
-            if(status == "success")
+            if (status == "success")
             {
                 string subject = "Legacy Application Added";
-                string content = "Your legacy application with the certificate reference number "+ model.LicenseReference+ " was successfully added to the system.";
+                string content = "Your legacy application with the certificate reference number " + model.LicenseReference + " was successfully added to the system.";
                 generalClass.SendStaffEmailMessage(model.CompanyEmail, subject, content);
             }
             return Json(new { Status = status });
@@ -1981,7 +2053,7 @@ namespace RSPP.Controllers
 
 
             var staff = (from p in _context.PaymentLog
-                         
+
                          join r in _context.ApplicationRequestForm on p.ApplicationId equals r.ApplicationId
                          join u in _context.UserMaster on r.CompanyEmail equals u.UserEmail
                          where p.Status == "AUTH"
@@ -2035,38 +2107,89 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-        [HttpGet]
+        /// <summary>
+        /// Fetches the details for staff (with lower hierarchy) together with the number of applications on their desk
+        /// </summary>
+        /// <returns>A view with the staff desk model</returns>
         public ActionResult StaffDesk()
         {
-            string ErrorMessage = "";
-            StaffDeskModel model = new StaffDeskModel();
-            List<StaffDesk> staffDeskList = new List<StaffDesk>();
-            var desk = _context.UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT").ToList();
-            foreach (UserMaster up in desk)
+            var model = new StaffDeskModel();
+            model.StaffDeskList = new List<StaffDesk>();
+
+            var currentAdminRole = _helpersController.getSessionRoleName();
+            if (currentAdminRole != OFFICER && currentAdminRole != COMPANY)
             {
-                staffDeskList.Add(new StaffDesk()
+
+                IQueryable<UserMaster> query = _context.UserMaster;
+
+                if (currentAdminRole == SUPERVISOR)
+                    query = query.Where(q => q.UserRole == OFFICER);
+
+                if (currentAdminRole == REGISTRAR)
+                    query = query.Where(q => q.UserRole == SUPERVISOR || q.UserRole == OFFICER);
+
+                foreach (var staff in query.ToList())
                 {
-                    Role = up.UserRole,
-                    StaffEmail = up.UserEmail,
-                    StaffName = up.FirstName,
-                    status = up.Status,
-                    OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
-                });
+                    var onDesk = _context.ApplicationRequestForm
+                        .Where(app => app.LastAssignedUser == staff.UserEmail).Count();
+
+                    model.StaffDeskList.Add(new StaffDesk()
+                    {
+                        Role = staff.UserRole,
+                        StaffEmail = staff.UserEmail,
+                        StaffName = staff.FirstName,
+                        status = staff.Status,
+                        OnDesk = onDesk
+                    });
+                }
 
             }
-            model.StaffDeskList = staffDeskList;
-            ViewBag.ErrorMessage = ErrorMessage;
-            ViewBag.UserRole = _helpersController.getSessionRoleName();
+
+            ViewBag.UserRole = currentAdminRole;
             return View(model);
         }
 
+        //[Authorize ]
+        //[HttpGet]
+        //public ActionResult StaffDesk1()
+        //{
+        //    var userMaster = (from u in _context.UserMaster select u).FirstOrDefault();
+        //    string ErrorMessage = "";
+        //    StaffDeskModel model = new StaffDeskModel();
+        //    List<StaffDesk> staffDeskList = new List<StaffDesk>();
+        //    // select all users who are not company, superadmin, & ict
+        //    var desk = _context
+        //        .UserMaster.Where(a => a.UserRole != "COMPANY" && a.UserRole != "SUPERADMIN" && a.UserRole != "ICT")
+        //        .ToList();
+        //    //if (userMaster.UserRole != "Officer")
+        //    //{
 
+        //    //}
+        //    //else
+        //    //{
+        //    //    ErrorMessage = "You do not have access to view this page as an Officer";
+        //    //    ViewBag.ErrorMessage = ErrorMessage;    
 
+        //    //}
+
+        //    foreach (UserMaster up in desk)
+        //    {
+        //        staffDeskList.Add(new StaffDesk()
+        //        {
+        //            Role = up.UserRole,
+        //            StaffEmail = up.UserEmail,
+        //            StaffName = up.FirstName,
+        //            status = up.Status,
+        //            OnDesk = (from a in _context.ApplicationRequestForm where a.LastAssignedUser == up.UserEmail select a).ToList().Count()
+        //        });
+
+        //    }
+
+        //    model.StaffDeskList = staffDeskList;
+        //    ViewBag.ErrorMessage = ErrorMessage;
+        //    ViewBag.UserRole = _helpersController.getSessionRoleName();
+        //    return View(model);
+        //}
 
         [HttpGet]
         public ActionResult StaffTaskAssignment(string userid, string role)
@@ -2080,10 +2203,6 @@ namespace RSPP.Controllers
             ViewBag.ErrorMessage = ErrorMessage;
             return PartialView("TaskAssignment", appRequestList);
         }
-
-
-
-
 
         [HttpPost]
         public ActionResult Rerouteuser()
@@ -2115,9 +2234,11 @@ namespace RSPP.Controllers
                             apprequest.LastAssignedUser = newassigned;
                             apprequest.ModifiedDate = DateTime.Now;
                             _context.SaveChanges();
-                            var subject = "Re-Routed Application";
-                            string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
-                            generalClass.SendStaffEmailMessage(newassigned, subject, content);
+
+                            /* this is no more required*/
+                            //var subject = "Re-Routed Application";
+                            //string content = "Application with the reference number " + apprequest.ApplicationId + " has been re-routed to your desk.";
+                            //generalClass.SendStaffEmailMessage(newassigned, subject, content);
 
                         }
                         if (apphistry != null)
@@ -2139,11 +2260,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
         [HttpGet]
         public JsonResult AutoSearchCompanyAppId(string term = "")
         {
@@ -2151,8 +2267,6 @@ namespace RSPP.Controllers
             var CompanyAppId = (from a in _context.PaymentLog where a.ApplicationId.Contains(term) select new { textvalue = a.ApplicationId }).ToList();
             return Json(CompanyAppId);
         }
-
-
 
         [HttpGet]
         public ActionResult StaffMaintenance()
@@ -2162,12 +2276,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
-
-
-
 
         [HttpGet]
         public JsonResult GetUserRole()
@@ -2183,12 +2291,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
-
-
         [HttpGet]
         public ActionResult StaffReport()
         {
@@ -2197,9 +2299,6 @@ namespace RSPP.Controllers
 
             return View();
         }
-
-
-
 
         [HttpPost]
         public ActionResult GetStaffReport()
@@ -2255,10 +2354,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         [HttpPost]
         public JsonResult GetNewAssignedUser(string myrole, string myoldemail)
         {
@@ -2271,12 +2366,6 @@ namespace RSPP.Controllers
                                 }).ToList();
             return Json(Newuseremail);
         }
-
-
-
-
-
-
 
         [HttpPost]
         public ActionResult TaskDelegationList()
@@ -2315,10 +2404,6 @@ namespace RSPP.Controllers
 
         }
 
-
-
-
-
         [HttpGet]
         public ActionResult ViewStaffDesk(string userid)
         {
@@ -2331,10 +2416,6 @@ namespace RSPP.Controllers
 
             return PartialView("_StaffDesk", appRequestList);
         }
-
-
-
-
 
         [HttpGet]
         public ActionResult TransitionHistory(string applicationId)
@@ -2493,13 +2574,6 @@ namespace RSPP.Controllers
             return Json(new { Status = result });
         }
 
-
-
-
-
-
-
-
         [HttpGet]
         public ActionResult ViewApplication(string applicationId)
         {
@@ -2520,8 +2594,11 @@ namespace RSPP.Controllers
                 var expirydate = (from a in _context.ApplicationRequestForm where a.CompanyEmail == appRequest.CompanyEmail && a.LicenseReference != null select a.LicenseExpiryDate).ToList().LastOrDefault();
 
                 var ReceivedFrom = (from a in _context.ActionHistory where a.ApplicationId == applicationId select a).ToList().LastOrDefault();
-                ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
-                ViewBag.LastMessage = ReceivedFrom.Message;
+                if (ReceivedFrom != null)
+                {
+                    ViewBag.ReceivedFrom = ReceivedFrom.TriggeredBy + " (" + ReceivedFrom.TriggeredByRole + ")";
+                    ViewBag.LastMessage = ReceivedFrom.Message;
+                }
                 ViewBag.ReceivedDate = (from a in _context.ApplicationRequestForm where a.ApplicationId == applicationId select a.ModifiedDate).FirstOrDefault();
                 var CurrentDesk = appRequest.LastAssignedUser;
                 ViewBag.Applicationstatus = appRequest.Status;
@@ -2566,12 +2643,6 @@ namespace RSPP.Controllers
 
             return View(appRequest);
         }
-
-
-
-
-
-
 
         [HttpGet]
         public ActionResult ApproveLicense(string applicationId, string myaction, string mycomment)
@@ -2625,9 +2696,6 @@ namespace RSPP.Controllers
             return Json(new { status = "success", Message = responseWrapper.value });
         }
 
-
-
-
         private void GenerateLicenseDocument(string applicationId)
         {
             try
@@ -2648,7 +2716,12 @@ namespace RSPP.Controllers
         {
             var Host = HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + "" + "" + HttpContext.Request.PathBase;
 
-            return _helpersController.ViewCertificate(id, Host);
+            var pdf = _helpersController.ViewCertificate(id, Host);
+
+            return new ViewAsPdf("ViewCertificate", pdf)
+            {
+                PageSize = (Rotativa.AspNetCore.Options.Size?)Rotativa.Options.Size.A4
+            };
         }
 
 

@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.AccountModel
+﻿@model RSPP.Models.DTOs.RegistrationRequest
 
 @{
     Layout = null;
@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>RSPP|Register</title>
+    <title>RRPSPU | Register</title>
 
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
@@ -30,12 +30,12 @@
             position: absolute;
         }
     </style>
+    <link href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 </head>
 
 <body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
-    @*@Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryval")*@
-
 
     @using (Html.BeginForm("AccountRegister", "Account", FormMethod.Post, new { @id = "formid" }))
     {
@@ -50,17 +50,6 @@
 
                         <div class="logo"><big><b class="text-info"></b> </big>  <img src="~/images/nsclogo.png" height="100" width="120" style="margin-left:110px" /></div>
                         <br />
-
-                        @*<div class="form-group">
-                                <div class="">
-                                    <div class="input-group">
-                                        <span class="input-group-addon"><i class="fa fa-at text-dark"></i></span>
-                                        <select class="form-control agency" required="required" id="txtagency" name="txtagency"></select>
-                                    </div>
-
-                                </div>
-                            </div>*@
-
 
                         <div class="form-group">
                             <div class="">
@@ -82,13 +71,11 @@
                             </div>
                         </div>
 
-
-
                         <div class="form-group">
                             <div class="">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-phone-square text-dark"></i></span>
-                                    @Html.TextBoxFor(log => log.PhoneNum, new { @class = "form-control", @required = "required", @placeholder = "Enter Phone Number", @autocomplete = "off" })
+                                    @Html.TextBoxFor(log => log.MobilePhoneNumber, new { @class = "form-control", @required = "required", @placeholder = "Enter Phone Number", @autocomplete = "off" })
                                 </div>
 
                             </div>
@@ -138,9 +125,6 @@
                             <span class="text-success" style="font-size:12px">Already have an account on this portal? <a href="/Account/Login" style="text-decoration:underline">Login here</a></span>
                         </div>
 
-
-
-
                     </div>
 
                 </div>
@@ -157,9 +141,36 @@
             <div id="MapContainer" style="height: 430px; width: 100%;border: 5px solid green;"></div>
         </div>
     }
+
+    <!-- Other errors response Modal -->
+    <div class="modal" id="modalGeneralResponse">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Account Registration Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;"></div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
     <script src="~/js/jquery-3.3.1.js"></script>
     <script src="~/js/jquery.validate.min.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
+
 
     <script src="~/js/jquery.ui.widget.js"></script>
     <script src="~/js/jquery.iframe-transport.js"></script>
@@ -264,44 +275,53 @@
 
 
         $(document).ready(function () {
-            debugger;
+            //debugger;
 
-            $("#btnregister").click(function () {
-                debugger;
+            $("#btnregister").click(function (e) {
+                e.preventDefault();
+
                 if ($("#formid").valid()) {
                     $(".loadingImage").show();
-                    var email = $("#UserEmail").val();
-                    var PhoneNum = $("#PhoneNum").val();
-                    var CompanyAddress = $("#CompanyAddress").val();
+
                     var Password = $("#Password").val();
-                    var ConfirmPassword = $("#ConfirmPassword").val()
-                    var CompanyName = $("#CompanyName").val();
+                    var ConfirmPassword = $("#ConfirmPassword").val();
                     if (Password != ConfirmPassword) {
                         $(".loadingImage").hide();
                         alert("Password and Confirm Password do not match");
                         return false;
+
+                    } else {
+
+                        var formData = $("#formid").serialize();
+                        $.ajax({
+                            type: "POST",
+                            url: "/Account/AccountRegister",
+                            data: formData,
+                            success: function (response) {
+                                $(".loadingImage").hide();
+
+                                if (response.success) {
+                                    window.location = "/Account/Login";
+                                } else {
+                                    $('#modalGeneralResponse .modal-body').html(response.resultMessage);
+                                    $('#modalGeneralResponse').modal('show');
+                                }
+
+                            },
+                            failure: function (response) {
+                                $(".loadingImage").hide();
+                                //console.log(response.responseText);
+                            },
+                            error: function (response) {
+                                $(".loadingImage").hide();
+                                //console.log(response.responseText);
+                            },
+                            complete: function () {}
+                        });
                     }
-
-                    $.post("/Account/AccountRegister", { Email: email, PhoneNbr: PhoneNum, Companyaddress: CompanyAddress, Passwrd: Password, Companyname: CompanyName }, function (data) {
-                        debugger;
-                        var status = data.status;
-                        var message = data.message;
-                        if (status === "success") {
-                            $(".loadingImage").hide();
-                            alert(message);
-                            window.location = "/Account/Login";
-                        } else {
-                            $(".loadingImage").hide();
-                            alert(message);
-                        }
-
-                    })
-
-
 
                 }
             });
-
 
         });
     </script>

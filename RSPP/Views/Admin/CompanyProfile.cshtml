@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.DB.UserMaster
+﻿@model RSPP.Models.CompanyProfileModel
 @{
     ViewBag.Title = "Company Profile";
     Layout = "~/Views/Shared/_ElaLayout.cshtml";
@@ -6,6 +6,8 @@
 
 }
 <div class="content">
+
+
 
     <div class="row" style="margin-top:-24px">
         <br />
@@ -25,14 +27,15 @@
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane" id="Profile">
 
-                <form action="@Url.Action("UpdateCompanyRecord")" enctype="multipart/form-data" method="post" id="profileform">
+                <form action="@Url.Action("UpdateCompanyRecord","Admin")" enctype="multipart/form-data" method="post" id="profileform">
                     <input type="hidden" name="actionType" id="actionType" value="UPDATE_PROFILE" />
 
                     @Html.AntiForgeryToken()
 
 
 
-                    <div class="row xrow og_form"><br /><br />
+                    <div class="row xrow og_form">
+                        <br /><br />
                         <div class="pad company">
                             @*<h3>Company Information</h3>
                             <hr />*@
@@ -44,15 +47,10 @@
                                     <label class="control-label">Company Email</label>
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @if (ViewBag.LoginRole == "SUPPORT")
-                                        {
-                                            @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control" })
-                                        }
-                                        else
-                                        {@Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control", @readonly = "readonly" })}
+                                        @Html.TextBoxFor(model => model.EmailForUpdate, new { @class = "form-control" })
+                                        @Html.HiddenFor(model => model.UserEmail)
                                     </div>
                                 </div>
-
 
 
                                 <div class="form-group">
@@ -60,19 +58,12 @@
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
                                         <div class="input-group">
-                                            @if (ViewBag.LoginRole == "SUPPORT")
-                                            {
-                                                @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
-                                            }
-                                            else
-                                            { @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control", @readonly = "readonly" })}
-
+                                            @Html.TextBoxFor(model => model.CompanyName, new { @class = "form-control" })
 
                                             <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar"></i></span>
                                         </div>
                                     </div>
                                 </div>
-
 
 
                             </div>
@@ -81,14 +72,7 @@
                                     <label class="control-label">Contact Phone Number</label>
                                     &nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @if (ViewBag.LoginRole == "SUPPORT")
-                                        {
-                                            @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
-                                        }
-                                        else
-                                        { @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control", @readonly = "readonly" })}
-
-
+                                        @Html.TextBoxFor(model => model.PhoneNum, new { @class = "form-control" })
                                     </div>
                                 </div>
 
@@ -97,21 +81,20 @@
                             </div>
                         </div>
                         <hr class="clear" />
-                        @if (ViewBag.LoginRole == "SUPPORT")
-                        {
-                            <div class="form-group">
-                                <div class="txtcenter">
-                                    <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
-                                </div>
+
+                        <div class="form-group">
+                            <div class="txtcenter">
+                                <input type="submit" value="Update Profile" id="updateProfile" class="btn btn-success" tabindex="10" style="width: 200px;" />
                             </div>
-                        }
+                        </div>
+
                     </div>
                 </form>
             </div>
 
 
             <div role="tabpanel" enctype="multipart/form-data" class="tab-pane" id="Address">
-                <form action="@Url.Action("UpdateCompanyRecord")" enctype="multipart/form-data" method="post" id="addressform">
+                <form action="@Url.Action("UpdateCompanyRecord", "Admin")" enctype="multipart/form-data" method="post" id="addressform">
 
                     @*<form id="addressform">*@
                     @*action="@Url.Action("UpdateCompanyRecord", "Company", "")" enctype="multipart/form-data" method="post"*@
@@ -122,23 +105,24 @@
                     <div class="row xrow og_form">
                         <div class="pad">
                             @*<h3>Address</h3>
-        <hr />
-        <div class="col-md-12">
-            <p>Fields with <span class="req">*</span> are required</p>
-        </div>*@
+                            <hr />
+                            <div class="col-md-12">
+                            <p>Fields with <span class="req">*</span> are required</p>
+                            </div>*@
 
                             <div class="col-md-12 company">
                                 <div class="form-group">
                                     <label class="control-label">Company Address</label>&nbsp;<span class="req">*</span>
                                     <div class="">
-                                        @if (ViewBag.LoginRole == "SUPPORT")
+                                        @*@if (ViewBag.LoginRole == "SUPPORT")
                                         {
-                                            @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control" })
 
                                         }
                                         else
-                                        {@Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
-                                    }
+                                        {*@
+                                        @Html.TextBoxFor(model => model.CompanyAddress, new { @class = "form-control", @readonly = "readonly" })
+                                        @*}*@
                                     </div>
                                     <div style="display:none">
                                         <label class="control-label col-md-2">GPS Cordinates</label>
@@ -154,14 +138,14 @@
                         </div>
                         <hr class="clear" />
                         <div class="clear"></div>
-                        @if (ViewBag.LoginRole == "SUPPORT")
+                        @*@if (ViewBag.LoginRole == "SUPPORT")
                         {
-                            <div class="form-group">
-                                <div class="txtcenter">
-                                    <input type="submit" value="Update Address" id="updateAddress" class="btn btn-success" style="width: 200px;" tabindex="14" />
-                                </div>
-                            </div>
-                        }
+                        <div class="form-group">
+                        <div class="txtcenter">
+                        <input type="submit" value="Update Address" id="updateAddress" class="btn btn-success" style="width: 200px;" tabindex="14" />
+                        </div>
+                        </div>
+                        }*@
                     </div>
                 </form>
             </div>
@@ -198,29 +182,29 @@
 
                                                         <a href="javascript:FileView('@d.DocumentSource')">
                                                             <img src="@Url.Content("~/images/pdficon.png")" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                 style="max-height: 40px; max-width: 40px; display: inline-block;"/>
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block;" />
                                                         </a>
                                                     }
                                                     else
                                                     {
                                                         <a href="javascript:FileView('@d.DocumentSource')" data-name="@d.DocumentName">
                                                             <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                 style="max-height: 40px; max-width: 40px; display: inline-block"/>
+                                                                 style="max-height: 40px; max-width: 40px; display: inline-block" />
                                                         </a>
 
                                                     }
                                                 </td>
                                                 @*}
-                                                    else
-                                                    {
-                                                        <td>
+                                            else
+                                            {
+                                            <td>
 
-                                                            <a href='@(d.DocumentSource)' target="_blank" data-name="@d.DocumentName">
-                                                                <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
-                                                                     style="max-height: 40px; max-width: 40px; display: inline-block" alt="@d.DocumentName" />
-                                                            </a>
-                                                        </td>
-                                                    }*@
+                                            <a href='@(d.DocumentSource)' target="_blank" data-name="@d.DocumentName">
+                                            <img src="@(d.DocumentSource)" class="thumbnail img-thumbnail" data-toggle="tooltip" data-placement="bottom" data-original-title="Uploaded Document"
+                                            style="max-height: 40px; max-width: 40px; display: inline-block" alt="@d.DocumentName" />
+                                            </a>
+                                            </td>
+                                            }*@
 
                                             </tr>
                                         }
@@ -240,7 +224,69 @@
     </div>
     <br />
     <br />
+
+    <!-- The confirm update modal -->
+    <div class="modal" id="modalConfirmCompanyUpdate">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Confirm Company Details Update</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                    
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-success" type="submit" id="btnUpdateCompanyDetailsAndSendLink">Update</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- The company update response modal -->
+    <div class="modal" id="modalCompanyUpdateResponse">
+
+        <div class="modal-dialog" style="margin-left:2px;">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Company Details Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+
+
+
+
+
+
 @section scripts{
     <script src="@Url.Content("~/Scripts/jquery.ui.widget.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/jquery.iframe-transport.js")" type="text/javascript"></script>
@@ -362,9 +408,110 @@
 
     <script type="text/javascript">
 
-
-
         $(function () {
+
+            $('#updateProfile').click(function (e) {
+                e.preventDefault();
+                if ($("#profileform").valid()) {
+                    var message = "Are you sure you want to continue with this update.";
+                    var companyEmail = $('#Profile #UserEmail').val();
+                    var emailForUpdate = $('#Profile #EmailForUpdate').val();
+                    if(companyEmail != emailForUpdate){
+                        message += " This action will send a reset password link to the updated email.";
+                    }
+                    $('#modalConfirmCompanyUpdate .modal-body').html(message);
+                    $('#modalConfirmCompanyUpdate').modal('show');
+                }
+            });
+
+            $('#btnUpdateCompanyDetailsAndSendLink').click(function (e) {
+
+                $('#modalConfirmCompanyUpdate').modal('hide');
+
+                var antiForgeryToken = $('#Profile input[name="__RequestVerificationToken"]').val();
+                var companyEmail = $('#Profile #UserEmail').val();
+                var emailForUpdate = $('#Profile #EmailForUpdate').val();
+                var companyName = $('#Profile #CompanyName').val();
+                var phoneNumber = $('#Profile #PhoneNum').val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/UpdateCompanyRecord",
+                    data: {
+                        actionType: "UPDATE_PROFILE",
+                        __RequestVerificationToken: antiForgeryToken,
+                        UserEmail: companyEmail,
+                        EmailForUpdate: emailForUpdate,
+                        CompanyName: companyName,
+                        PhoneNum: phoneNumber
+                    },
+                    success: function (response) {
+
+                        $('#modalConfirmCompanyUpdate').modal('hide');
+                        $('#modalCompanyUpdateResponse').modal('show');
+                        $('#modalCompanyUpdateResponse .modal-body').html(response.message);
+
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+
+            });
+
+            //$('#updateProfile').click(function (e) {
+            //    e.preventDefault();
+            //    if ($("#profileform").valid()) {
+
+            //        var r = confirm("Do you want to continue With the Update ?");
+            //        if (r == true) {
+            //            $.post($("#profileform").attr('action'), $("#profileform").serialize())
+            //                .done(function (data) {
+            //                    console.log(data);
+            //                    if (data.Status === "success") {
+            //                        //console.log('inside success');
+            //                        alert("Profile Update Was Successfull");
+            //                        window.location.href = "/Admin/CompanyProfile";
+            //                    }
+            //                    else {
+            //                        //console.log('inside else');
+            //                        //alert(data.Status); throwing error here
+            //                    }
+            //                })
+            //                .fail(function (data) {
+            //                    alert('Network  Error, Restore Connection and Try again');
+            //                })
+            //                .always(function (data) {
+            //                });
+            //        }
+            //    }
+            //});
+
+
+            //$('#updateAddress').click(function (e) {
+            //    e.preventDefault();
+            //    if ($("#addressform").valid()) {
+
+            //        var r = confirm("Are you Sure the Profile Informations are Correct ?");
+            //        if (r == true) {
+            //            $.post($("#addressform").attr('action'), $("#addressform").serialize())
+            //                .done(function (data) {
+
+            //                    alert(data.Status);
+            //                    window.location.href = "/Company/CompanyProfile";
+            //                })
+            //                .fail(function (data) {
+            //                    alert('Network Communication Error, Restore Connection and Try again');
+            //                })
+            //                .always(function (data) {
+            //                });
+            //        }
+            //    }
+            //});
+
             if (''.length > 0) {
                 $("ul.nav-tabs > li").addClass("disabled").find("a").attr("disabled", "disabled");
                 if ('Directors'.length > 0) {
@@ -440,16 +587,11 @@
             });
         });
 
-
-
-
         function FileView(docname) {
             debugger;
             var url = window.location.origin + "/UploadedFiles/" + docname;
             window.open(url, '_blank');
         }
-
-
 
     </script>
 

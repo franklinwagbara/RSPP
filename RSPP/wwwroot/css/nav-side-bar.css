@@ -1,0 +1,46 @@
+﻿.bar-color {
+    background-color: #7f2307 !important;
+}
+
+.navbar-toggle {
+    background-color: #9b5a5a4d !important;
+    border: 1px solid #eaff00 !important;
+    height: 45px;
+}
+
+
+@media only screen and (max-width: 768px){
+    .ctrl-sidebar{
+        width: 100%;
+    }
+
+    .content {
+        background-color: red;
+        margin-left: 0px !important;
+    }
+
+    .sidebar{
+        width: 100% !important;
+        overflow-y: hidden !important;
+        height: 100% !important;
+        z-index: 50;
+    }
+
+    .brand-responsive{
+        display: none !important;
+        background-color: red;
+    }
+
+    .jumbotron{
+        padding: 0px !important;
+        margin-bottom: 30px !important;
+    }
+
+    .margin-bottom{
+        margin-bottom: 20px !important;
+    }
+
+    .margin-top {
+        margin-top: 40px !important;
+    }
+}

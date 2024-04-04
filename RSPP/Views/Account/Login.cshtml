@@ -1,4 +1,4 @@
-﻿@model RSPP.Models.AccountModel
+﻿@model RSPP.Models.DTOs.AuthenticationRequest
 
 @{
     Layout = null;
@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>RSPP|Login</title>
+    <title>RRPSPU | Login</title>
 
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/ogisp_style/bootstrap.min.css" rel="stylesheet" />
@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/regular.css" integrity="sha384-aubIA90W7NxJ+Ly4QHAqo1JBSwQ0jejV75iHhj59KRwVjLVHjuhS3LkDAoa/ltO4" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/brands.css" integrity="sha384-1KLgFVb/gHrlDGLFPgMbeedi6tQBLcWvyNUN+YKXbD7ZFbjX6BLpMDf0PJ32XJfX" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/fontawesome.css" integrity="sha384-jLuaxTTBR42U2qJ/pm4JRouHkEDHkVqH0T1nyQXn1mZ7Snycpf6Rl25VBNthU4z0" crossorigin="anonymous">
+
 
     <style>
         .container {
@@ -38,9 +39,6 @@
 </head>
 
 <body class="bgimg" style="background-image:url('../../images/bg1.png');background-repeat:no-repeat; background-position:initial; background-size:cover; opacity:0.9">
-    @*@Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryval")*@
-
 
     @using (Html.BeginForm("ForgotPassword", "Account", FormMethod.Post, new { @id = "forgotpasswordformid" }))
     {
@@ -81,13 +79,9 @@
     }
 
 
-
-
-    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "formid" }))
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @id = "loginFormid" }))
     {
         @Html.AntiForgeryToken()
-
-
         <div class="container">
 
             <center>
@@ -112,7 +106,7 @@
 
                         <div class="">
                             <div class="input-group">
-                                <span class="input-group-addon" style=""><i class="fa fa-lock text-dark"></i></span>
+                                <span class="input-group-addon" style=""><i class="fa fa-eye text-dark" id="togglePassword" style="cursor: pointer;"></i></span>
                                 @Html.TextBoxFor(log => log.Password, new { @class = "form-control", @placeholder = "Enter Password", @type = "password", @autocomplete = "off" })
                             </div>
 
@@ -124,7 +118,6 @@
                             <div><a href="#" id="forgotpassword" style="float:right" class="text-success" data-toggle="modal" data-target=".ForgotPasswordmodal">Forgot Password?</a></div>
                             <button class="col-lg-12 col-sm-12 col-xs-12 btn btn-success" id="btnlogin" type="submit" style="height:45px;"> Login </button>
                             <span class="text-success" style="font-size:12px; float:left">Don't have an existing account on this portal? <a href="/Account/AccountRegister" style="text-decoration:underline">Register here</a></span>
-
                         </div>
 
 
@@ -141,13 +134,104 @@
             </div>
         </div>
     }
+
+    <!-- The Resend email confirmation Modal -->
+    <div class="modal" id="modalResendEmailConfirmation">
+        @using (Html.BeginForm("Login", "ResendEmailConfirmation", FormMethod.Post, new { @id = "ResendEmailConfirmationFormid" }))
+        {
+            @*@Html.AntiForgeryToken()*@
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Resend Email Confirmation</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body" style="font-weight:500;font-size:large;"></div>
+                    <input type="hidden" id="emailToResend" />
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-success" type="submit" id="btnResendEmailConfirmation">Resend</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- The Resend email confirmation response Modal -->
+    <div class="modal" id="modalResendEmailConfirmationResponse">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Resend Email Confirmation Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;"></div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Other errors response Modal -->
+    <div class="modal" id="modalGeneralResponse">
+
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Login Response</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body" style="font-weight:500;font-size:large;"></div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
     <script src="~/js/jquery-3.3.1.js"></script>
     <script src="~/js/bootstrap.min.js"></script>
     <script src="~/js/jquery.validate.min.js"></script>
     <script type="text/javascript">
 
-        $(document).ready(function () {
+        const togglePassword = document.querySelector('#loginFormid #togglePassword');
+        const password = document.querySelector('#loginFormid #Password');
 
+        togglePassword.addEventListener('click', function (e) {
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // toggle the eye slash icon
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        $(document).ready(function () {
 
             $("#forgotpasswordbtn").click(function (e) {
                 e.preventDefault();
@@ -164,28 +248,91 @@
 
             });
 
+            $("#btnResendEmailConfirmation").click(function (e) {
+                e.preventDefault();
+
+                if ($("#ResendEmailConfirmationFormid").valid()) {
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Account/ResendEmailConfirmation",
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                            Email: $("#modalResendEmailConfirmation #emailToResend").val()
+                        },
+                        success: function (response) {
+
+                            $('#modalResendEmailConfirmation .emailToResend').val("");
+                            $('#modalResendEmailConfirmation .modal-body').html("");
+                            $('#modalResendEmailConfirmation').modal('hide');
+
+                            var status = response.status;
+                            var message = response.message;
+
+                            if (status === "success") {
+
+                                $('#modalResendEmailConfirmationResponse').modal('show');
+                                $('#modalResendEmailConfirmationResponse .modal-body').html(response.message);
+                            }
+                        },
+                        failure: function (response) {
+                            //console.log(response.responseText);
+                        },
+                        error: function (response) {
+                            //console.log(response.responseText);
+                        }
+                    });
+
+                } else {
+                    $('#modalResendEmailConfirmation .emailToResend').val("");
+                    $('#modalResendEmailConfirmation .modal-body').html("");
+                    $('#modalResendEmailConfirmation').modal('hide');
+                }
+
+            });
+
 
             $("#btnlogin").click(function (e) {
                 e.preventDefault();
 
-                if ($("#formid").valid()) {
+                if ($("#loginFormid").valid()) {
                     $(".loadingImage").show();
-                    var email = $("#UserEmail").val();
-                    var passwrd = $("#Password").val();
+                    var email = $("#loginFormid #UserEmail").val();
+                    var formData = $("#loginFormid").serialize();
 
-                    $.post("/Account/Login", { Email: email, Password: passwrd }, function (data) {
-                        var status = data.status;
-                        var message = data.message;
-                        if (status === "success" && message === "Company") {
-                            window.location = "/Company/Index";
-                        } else if (status === "success" && message === "Admin") {
-                            window.location = "/Admin/Index";
-                        } else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Account/Login",
+                        data: formData,
+                        success: function (response) {
                             $(".loadingImage").hide();
-                            alert(message);
-                        }
 
+                            if (response.success === false) {
+                                $('#modalGeneralResponse .modal-body').html(response.resultMessage);
+                                $('#modalGeneralResponse').modal('show');
+                            }
+                            else {
+                                if (response.isEmailConfirmed) {
+                                    if (response.userType === "COMPANY")
+                                        window.location = "/Company/Index";
+                                    else
+                                        window.location = "/Admin/Index";
+                                } else {
+                                    $('#modalResendEmailConfirmation .modal-body').html(response.resultMessage);
+                                    $('#modalResendEmailConfirmation #emailToResend').val(email);
+                                    $('#modalResendEmailConfirmation').modal('show');
+                                }
+                            }
+                        },
+                        failure: function (response) {
+                            $(".loadingImage").hide();
+                        },
+                        error: function (response) {
+                            $(".loadingImage").hide();
+                        }
                     });
+
+
                 } else {
                     $(".loadingImage").hide();
                 }

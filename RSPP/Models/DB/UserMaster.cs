@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//#nullable enable
+using System;
 
 namespace RSPP.Models.DB
 {
@@ -23,5 +23,7 @@ namespace RSPP.Models.DB
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string SignatureImage { get; set; }
+        public bool? EmailConfirmed { get; set; }
+        public string? EmailConfirmationToken { get; set; }
     }
 }
